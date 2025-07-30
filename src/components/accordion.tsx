@@ -8,15 +8,17 @@ import { createSignal, JSX, onMount } from "solid-js";
  * @property {string} name - Required for radio grouping - accordions with the same name form a group where only one can be open.
  * @property {boolean} [open] - Whether the accordion should be open by default.
  * @property {string} [class] - Additional CSS classes to apply to the accordion container.
+ * @property {Record<string, boolean>} [classList] - Dynamic class list for conditional styling.
  * @property {string} [id] - Custom ID for the accordion. If not provided, a random ID will be generated.
  * @property {"arrow" | "plus"} [variant] - The visual indicator variant - "arrow" (default) or "plus" icon.
  */
-interface AccordionProps {
+export interface AccordionProps {
   title: string;
   children: JSX.Element;
   name: string; // Required for radio grouping
   open?: boolean;
   class?: string;
+  classList?: Record<string, boolean>;
   id?: string;
   variant?: "arrow" | "plus";
 }
@@ -28,8 +30,8 @@ interface AccordionProps {
  * Accordions with the same `name` prop form a group where only one can be open at a time.
  * Supports keyboard navigation and proper accessibility attributes.
  * 
- * @param props - The accordion component props
- * @returns JSX element representing the accordion
+ * @param {AccordionProps} props - The accordion component props
+ * @returns {JSX.Element} JSX element representing the accordion
  */
 export default function Accordion(props: AccordionProps) {
   const [isOpen, setIsOpen] = createSignal(props.open ?? false);
@@ -58,7 +60,13 @@ export default function Accordion(props: AccordionProps) {
   });
 
   return (
-    <div class={`collapse ${variantClass} ${props.class ?? ""}`.trim()}>
+    <div 
+      class={`collapse ${variantClass}`.trim()}
+      classList={{
+        ...(props.class ? { [props.class]: true } : {}),
+        ...props.classList,
+      }}
+    >
       <input
         id={radioId}
         type="radio"
