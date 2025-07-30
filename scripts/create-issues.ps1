@@ -215,8 +215,8 @@ if (-not $env:GITHUB_TOKEN) {
 # Get existing issues
 $existingIssues = Get-AllIssues
 if (-not $existingIssues) {
-    Write-Host "ABORTING: Could not fetch existing issues" -ForegroundColor Red
-    exit 1
+    Write-Host "No existing issues found - will create new issues" -ForegroundColor Yellow
+    $existingIssues = @()
 }
 
 # Filter out pull requests
