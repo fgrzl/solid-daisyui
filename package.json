@@ -1,0 +1,79 @@
+{
+  "name": "solid-daisyui",
+  "version": "1.0.0",
+  "description": "SolidJS components for DaisyUI",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && tsc --emitDeclarationOnly",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "prettier": "prettier --write .",
+    "format": "npm run prettier && npm run lint:fix",
+    "test": "vitest --run",
+    "test:ui": "vitest --ui",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "solidjs",
+    "daisyui",
+    "components",
+    "ui",
+    "tailwindcss"
+  ],
+  "author": "smiggleworth",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fgrzl/solid-daisyui.git"
+  },
+  "homepage": "https://github.com/fgrzl/solid-daisyui#readme",
+  "bugs": {
+    "url": "https://github.com/fgrzl/solid-daisyui/issues"
+  },
+  "dependencies": {
+    "daisyui": "^5.0.50",
+    "solid-js": "^1.9.7"
+  },
+  "peerDependencies": {
+    "daisyui": "^5.0.50",
+    "solid-js": "^1.9.7"
+  },
+  "devDependencies": {
+    "@solidjs/testing-library": "^0.8.10",
+    "@tailwindcss/vite": "^4.1.11",
+    "@testing-library/jest-dom": "^6.6.4",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.1.0",
+    "@typescript-eslint/eslint-plugin": "^8.38.0",
+    "@typescript-eslint/parser": "^8.38.0",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.32.0",
+    "eslint-plugin-solid": "^0.14.5",
+    "jsdom": "^26.1.0",
+    "npm-check-updates": "^18.0.2",
+    "postcss": "^8.5.6",
+    "prettier": "^3.6.2",
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5.8.3",
+    "vite": "^7.0.6",
+    "vite-plugin-solid": "^2.11.8",
+    "vitest": "^3.2.4"
+  }
+}
