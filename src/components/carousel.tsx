@@ -31,21 +31,29 @@ export interface CarouselProps {
  * Carousel component for displaying a scrollable collection of slides.
  * Follows official DaisyUI Carousel component patterns with support for
  * snap alignment, orientation, navigation controls, and accessibility features.
- * 
+ *
  * Supports all official DaisyUI carousel classes and modifiers including
  * carousel-start, carousel-center, carousel-end, carousel-vertical, and carousel-horizontal.
- * 
+ *
  * @param {CarouselProps} props - The properties to configure the Carousel component.
  * @returns {JSX.Element} The rendered Carousel component.
  */
 export default function Carousel(props: CarouselProps): JSX.Element {
   // Initialize current slide index
-  const [currentSlideIndex, setCurrentSlideIndex] = createSignal(props.currentSlide ?? 0);
-  
+  const [currentSlideIndex, setCurrentSlideIndex] = createSignal(
+    props.currentSlide ?? 0,
+  );
+
   // Resolve children to array for easier manipulation
   const slidesArray = () => {
     const resolved = children(() => props.children);
-    const slides = resolved.toArray ? resolved.toArray() : Array.isArray(resolved()) ? resolved() : resolved() ? [resolved()] : [];
+    const slides = resolved.toArray
+      ? resolved.toArray()
+      : Array.isArray(resolved())
+        ? resolved()
+        : resolved()
+          ? [resolved()]
+          : [];
     return slides as JSX.Element[];
   };
 
@@ -109,7 +117,7 @@ export default function Carousel(props: CarouselProps): JSX.Element {
   // Handle keyboard navigation
   const handleKeyDown = (event: KeyboardEvent) => {
     const isVertical = props.vertical;
-    
+
     switch (event.key) {
       case "ArrowLeft":
         if (!isVertical) {
@@ -157,9 +165,9 @@ export default function Carousel(props: CarouselProps): JSX.Element {
   });
 
   const slides = slidesArray();
-  const currentIndex = currentSlideIndex();
-  const isFirstSlide = currentIndex === 0;
-  const isLastSlide = currentIndex === slides.length - 1;
+  const currentIndex = () => currentSlideIndex();
+  const isFirstSlide = () => currentIndex() === 0;
+  const isLastSlide = () => currentIndex() === slides.length - 1;
 
   return (
     <div
@@ -188,7 +196,7 @@ export default function Carousel(props: CarouselProps): JSX.Element {
             type="button"
             aria-label="Previous slide"
             onClick={goToPrevious}
-            disabled={isFirstSlide}
+            disabled={isFirstSlide()}
           >
             <svg
               class="w-5 h-5"
@@ -209,7 +217,7 @@ export default function Carousel(props: CarouselProps): JSX.Element {
             type="button"
             aria-label="Next slide"
             onClick={goToNext}
-            disabled={isLastSlide}
+            disabled={isLastSlide()}
           >
             <svg
               class="w-5 h-5"
@@ -238,10 +246,10 @@ export default function Carousel(props: CarouselProps): JSX.Element {
                 type="button"
                 role="button"
                 aria-label={`Go to slide ${index() + 1}`}
-                aria-pressed={index() === currentIndex ? "true" : "false"}
+                aria-pressed={index() === currentIndex() ? "true" : "false"}
                 onClick={() => goToSlide(index())}
                 classList={{
-                  active: index() === currentIndex,
+                  active: index() === currentIndex(),
                 }}
               />
             )}

@@ -25,22 +25,24 @@ export interface AccordionProps {
 
 /**
  * Accordion component for creating collapsible content sections with radio group behavior.
- * 
+ *
  * Follows DaisyUI Collapse component patterns with radio input controls for mutual exclusion.
  * Accordions with the same `name` prop form a group where only one can be open at a time.
  * Supports keyboard navigation and proper accessibility attributes.
- * 
+ *
  * @param {AccordionProps} props - The accordion component props
  * @returns {JSX.Element} JSX element representing the accordion
  */
 export default function Accordion(props: AccordionProps) {
   const [isOpen, setIsOpen] = createSignal(props.open ?? false);
-  const contentId = props.id ?? `accordion-content-${Math.random().toString(36).slice(2)}`;
+  const contentId =
+    props.id ?? `accordion-content-${Math.random().toString(36).slice(2)}`;
   const buttonId = `${contentId}-button`;
   const radioId = `${contentId}-radio`;
-  
+
   // Determine variant class
-  const variantClass = props.variant === "plus" ? "collapse-plus" : "collapse-arrow";
+  const variantClass =
+    props.variant === "plus" ? "collapse-plus" : "collapse-arrow";
 
   // Listen for changes to other radios in the same group
   onMount(() => {
@@ -53,14 +55,14 @@ export default function Accordion(props: AccordionProps) {
     };
 
     document.addEventListener("input", handleRadioChange);
-    
+
     return () => {
       document.removeEventListener("input", handleRadioChange);
     };
   });
 
   return (
-    <div 
+    <div
       class={`collapse ${variantClass}`.trim()}
       classList={{
         ...(props.class ? { [props.class]: true } : {}),
@@ -72,7 +74,7 @@ export default function Accordion(props: AccordionProps) {
         type="radio"
         name={props.name}
         checked={isOpen()}
-        onInput={e => setIsOpen(e.currentTarget.checked)}
+        onInput={(e) => setIsOpen(e.currentTarget.checked)}
         class="peer"
         aria-hidden="true"
       />
@@ -85,13 +87,13 @@ export default function Accordion(props: AccordionProps) {
         aria-expanded={isOpen()}
         aria-controls={contentId}
         aria-describedby={props.id ? `${props.id}-desc` : undefined}
-        onKeyDown={e => {
+        onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
             const radio = document.getElementById(radioId) as HTMLInputElement;
             if (radio) {
               radio.checked = true;
-              radio.dispatchEvent(new Event('input', { bubbles: true }));
+              radio.dispatchEvent(new Event("input", { bubbles: true }));
             }
           }
         }}

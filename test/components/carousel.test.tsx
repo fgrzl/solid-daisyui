@@ -22,10 +22,10 @@ describe("Carousel Component", () => {
           <div>Slide 2</div>
         </Carousel>
       ));
-      
+
       expect(getByText("Slide 1")).toBeInTheDocument();
       expect(getByText("Slide 2")).toBeInTheDocument();
-      
+
       // Check carousel-item classes are applied
       const items = container.querySelectorAll(".carousel-item");
       expect(items).toHaveLength(2);
@@ -42,7 +42,7 @@ describe("Carousel Component", () => {
 
     it("applies classList prop", () => {
       const { container } = render(() => (
-        <Carousel classList={{ "active": true, "disabled": false }}>
+        <Carousel classList={{ active: true, disabled: false }}>
           <div>Slide 1</div>
         </Carousel>
       ));
@@ -110,7 +110,10 @@ describe("Carousel Component", () => {
           <div>Slide 1</div>
         </Carousel>
       ));
-      expect(container.firstChild).toHaveClass("carousel", "carousel-horizontal");
+      expect(container.firstChild).toHaveClass(
+        "carousel",
+        "carousel-horizontal",
+      );
     });
 
     it("applies carousel-horizontal class by default", () => {
@@ -119,7 +122,10 @@ describe("Carousel Component", () => {
           <div>Slide 1</div>
         </Carousel>
       ));
-      expect(container.firstChild).toHaveClass("carousel", "carousel-horizontal");
+      expect(container.firstChild).toHaveClass(
+        "carousel",
+        "carousel-horizontal",
+      );
     });
   });
 
@@ -132,7 +138,7 @@ describe("Carousel Component", () => {
           <div>Slide 2</div>
         </Carousel>
       ));
-      
+
       expect(getByLabelText("Previous slide")).toBeInTheDocument();
       expect(getByLabelText("Next slide")).toBeInTheDocument();
     });
@@ -144,7 +150,7 @@ describe("Carousel Component", () => {
           <div>Slide 2</div>
         </Carousel>
       ));
-      
+
       expect(queryByLabelText("Previous slide")).not.toBeInTheDocument();
       expect(queryByLabelText("Next slide")).not.toBeInTheDocument();
     });
@@ -156,8 +162,10 @@ describe("Carousel Component", () => {
           <div>Slide 2</div>
         </Carousel>
       ));
-      
-      const indicators = container.querySelectorAll("[role='button'][aria-label*='Go to slide']");
+
+      const indicators = container.querySelectorAll(
+        "[role='button'][aria-label*='Go to slide']",
+      );
       expect(indicators).toHaveLength(2);
     });
 
@@ -168,8 +176,10 @@ describe("Carousel Component", () => {
           <div>Slide 2</div>
         </Carousel>
       ));
-      
-      const indicators = container.querySelectorAll("[role='button'][aria-label*='Go to slide']");
+
+      const indicators = container.querySelectorAll(
+        "[role='button'][aria-label*='Go to slide']",
+      );
       expect(indicators).toHaveLength(0);
     });
   });
@@ -183,7 +193,7 @@ describe("Carousel Component", () => {
           <div>Slide 2</div>
         </Carousel>
       ));
-      
+
       const carousel = container.firstChild as HTMLElement;
       expect(carousel).toHaveAttribute("role", "region");
       expect(carousel).toHaveAttribute("aria-label", "Carousel");
@@ -195,8 +205,11 @@ describe("Carousel Component", () => {
           <div>Slide 1</div>
         </Carousel>
       ));
-      
-      expect(container.firstChild).toHaveAttribute("aria-label", "Product images");
+
+      expect(container.firstChild).toHaveAttribute(
+        "aria-label",
+        "Product images",
+      );
     });
 
     it("carousel items have proper tab order", () => {
@@ -206,7 +219,7 @@ describe("Carousel Component", () => {
           <div>Slide 2</div>
         </Carousel>
       ));
-      
+
       const items = container.querySelectorAll(".carousel-item");
       items.forEach((item) => {
         expect(item).toHaveAttribute("tabindex", "0");
@@ -224,11 +237,11 @@ describe("Carousel Component", () => {
           <div>Slide 2</div>
         </Carousel>
       ));
-      
+
       // Test clicking Next button
       fireEvent.click(getByLabelText("Next slide"));
       expect(onChange).toHaveBeenNthCalledWith(1, 1);
-      
+
       // Test clicking Previous button
       fireEvent.click(getByLabelText("Previous slide"));
       expect(onChange).toHaveBeenNthCalledWith(2, 0);
@@ -242,10 +255,12 @@ describe("Carousel Component", () => {
           <div>Slide 2</div>
         </Carousel>
       ));
-      
-      const secondIndicator = container.querySelector("[aria-label='Go to slide 2']");
+
+      const secondIndicator = container.querySelector(
+        "[aria-label='Go to slide 2']",
+      );
       expect(secondIndicator).toBeInTheDocument();
-      
+
       fireEvent.click(secondIndicator!);
       expect(onChange).toHaveBeenCalledWith(1);
     });
@@ -257,8 +272,10 @@ describe("Carousel Component", () => {
           <div>Slide 2</div>
         </Carousel>
       ));
-      
-      const indicators = container.querySelectorAll("[role='button'][aria-label*='Go to slide']");
+
+      const indicators = container.querySelectorAll(
+        "[role='button'][aria-label*='Go to slide']",
+      );
       expect(indicators[0]).toHaveAttribute("aria-pressed", "false");
       expect(indicators[1]).toHaveAttribute("aria-pressed", "true");
     });
@@ -274,12 +291,12 @@ describe("Carousel Component", () => {
           <div>Slide 2</div>
         </Carousel>
       ));
-      
+
       const carousel = container.firstChild as HTMLElement;
-      
+
       fireEvent.keyDown(carousel, { key: "ArrowRight" });
       expect(onChange).toHaveBeenCalledWith(1);
-      
+
       fireEvent.keyDown(carousel, { key: "ArrowLeft" });
       expect(onChange).toHaveBeenCalledWith(0);
     });
@@ -292,12 +309,12 @@ describe("Carousel Component", () => {
           <div>Slide 2</div>
         </Carousel>
       ));
-      
+
       const carousel = container.firstChild as HTMLElement;
-      
+
       fireEvent.keyDown(carousel, { key: "ArrowDown" });
       expect(onChange).toHaveBeenCalledWith(1);
-      
+
       fireEvent.keyDown(carousel, { key: "ArrowUp" });
       expect(onChange).toHaveBeenCalledWith(0);
     });
@@ -311,12 +328,12 @@ describe("Carousel Component", () => {
           <div>Slide 3</div>
         </Carousel>
       ));
-      
+
       const carousel = container.firstChild as HTMLElement;
-      
+
       fireEvent.keyDown(carousel, { key: "Home" });
       expect(onChange).toHaveBeenCalledWith(0);
-      
+
       fireEvent.keyDown(carousel, { key: "End" });
       expect(onChange).toHaveBeenCalledWith(2);
     });
@@ -336,7 +353,7 @@ describe("Carousel Component", () => {
           <div>Single Slide</div>
         </Carousel>
       ));
-      
+
       expect(getByText("Single Slide")).toBeInTheDocument();
       expect(container.querySelectorAll(".carousel-item")).toHaveLength(1);
     });
@@ -359,7 +376,7 @@ describe("Carousel Component", () => {
           <div>Slide 2</div>
         </Carousel>
       ));
-      
+
       expect(getByLabelText("Previous slide")).toBeDisabled();
       expect(getByLabelText("Next slide")).not.toBeDisabled();
     });
@@ -371,7 +388,7 @@ describe("Carousel Component", () => {
           <div>Slide 2</div>
         </Carousel>
       ));
-      
+
       expect(getByLabelText("Previous slide")).not.toBeDisabled();
       expect(getByLabelText("Next slide")).toBeDisabled();
     });

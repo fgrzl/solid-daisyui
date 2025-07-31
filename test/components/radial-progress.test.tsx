@@ -7,7 +7,7 @@ describe("RadialProgress Component", () => {
     const { container } = render(() => (
       <RadialProgress value={50}>50%</RadialProgress>
     ));
-    
+
     const progress = container.querySelector(".radial-progress");
     expect(progress).toBeInTheDocument();
     expect(progress).toHaveAttribute("role", "progressbar");
@@ -27,7 +27,7 @@ describe("RadialProgress Component", () => {
     const { container } = render(() => (
       <RadialProgress value={30}>30%</RadialProgress>
     ));
-    
+
     const progress = container.querySelector(".radial-progress");
     expect(progress).toHaveStyle({ "--value": "30" });
   });
@@ -36,7 +36,8 @@ describe("RadialProgress Component", () => {
     const { container: containerNegative } = render(() => (
       <RadialProgress value={-10}>Invalid</RadialProgress>
     ));
-    const progressNegative = containerNegative.querySelector(".radial-progress");
+    const progressNegative =
+      containerNegative.querySelector(".radial-progress");
     expect(progressNegative).toHaveAttribute("aria-valuenow", "0");
     expect(progressNegative).toHaveStyle({ "--value": "0" });
 
@@ -52,7 +53,7 @@ describe("RadialProgress Component", () => {
     const { container } = render(() => (
       <RadialProgress value={50}>50%</RadialProgress>
     ));
-    
+
     const progress = container.querySelector(".radial-progress");
     expect(progress).toHaveClass("text-base");
   });
@@ -62,29 +63,41 @@ describe("RadialProgress Component", () => {
     const sizeClassMap = {
       xs: "text-xs",
       sm: "text-sm",
-      md: "text-base", 
+      md: "text-base",
       lg: "text-lg",
       xl: "text-xl",
     };
 
-    sizes.forEach(size => {
+    sizes.forEach((size) => {
       const { container } = render(() => (
-        <RadialProgress value={50} size={size}>50%</RadialProgress>
+        <RadialProgress value={50} size={size}>
+          50%
+        </RadialProgress>
       ));
-      
+
       const progress = container.querySelector(".radial-progress");
       expect(progress).toHaveClass(sizeClassMap[size]);
     });
   });
 
   it("applies color classes correctly", () => {
-    const colors = ["primary", "secondary", "accent", "info", "success", "warning", "error"] as const;
-    
-    colors.forEach(color => {
+    const colors = [
+      "primary",
+      "secondary",
+      "accent",
+      "info",
+      "success",
+      "warning",
+      "error",
+    ] as const;
+
+    colors.forEach((color) => {
       const { container } = render(() => (
-        <RadialProgress value={50} color={color}>50%</RadialProgress>
+        <RadialProgress value={50} color={color}>
+          50%
+        </RadialProgress>
       ));
-      
+
       const progress = container.querySelector(".radial-progress");
       expect(progress).toHaveClass(`text-${color}`);
     });
@@ -94,52 +107,66 @@ describe("RadialProgress Component", () => {
     const { container } = render(() => (
       <RadialProgress value={50}>50%</RadialProgress>
     ));
-    
+
     const progress = container.querySelector(".radial-progress");
-    const colorClasses = ["text-primary", "text-secondary", "text-accent", "text-info", "text-success", "text-warning", "text-error"];
-    
-    colorClasses.forEach(colorClass => {
+    const colorClasses = [
+      "text-primary",
+      "text-secondary",
+      "text-accent",
+      "text-info",
+      "text-success",
+      "text-warning",
+      "text-error",
+    ];
+
+    colorClasses.forEach((colorClass) => {
       expect(progress).not.toHaveClass(colorClass);
     });
   });
 
   it("applies custom thickness", () => {
     const { container } = render(() => (
-      <RadialProgress value={50} thickness="4px">50%</RadialProgress>
+      <RadialProgress value={50} thickness="4px">
+        50%
+      </RadialProgress>
     ));
-    
+
     const progress = container.querySelector(".radial-progress");
     expect(progress).toHaveStyle({ "--thickness": "4px" });
   });
 
   it("applies custom size", () => {
     const { container } = render(() => (
-      <RadialProgress value={50} customSize="8rem">50%</RadialProgress>
+      <RadialProgress value={50} customSize="8rem">
+        50%
+      </RadialProgress>
     ));
-    
+
     const progress = container.querySelector(".radial-progress");
     expect(progress).toHaveStyle({ "--size": "8rem" });
   });
 
   it("applies additional CSS classes", () => {
     const { container } = render(() => (
-      <RadialProgress value={50} class="custom-class">50%</RadialProgress>
+      <RadialProgress value={50} class="custom-class">
+        50%
+      </RadialProgress>
     ));
-    
+
     const progress = container.querySelector(".radial-progress");
     expect(progress).toHaveClass("custom-class");
   });
 
   it("merges classList correctly", () => {
     const { container } = render(() => (
-      <RadialProgress 
-        value={50} 
+      <RadialProgress
+        value={50}
         classList={{ "dynamic-class": true, "inactive-class": false }}
       >
         50%
       </RadialProgress>
     ));
-    
+
     const progress = container.querySelector(".radial-progress");
     expect(progress).toHaveClass("dynamic-class");
     expect(progress).not.toHaveClass("inactive-class");
@@ -147,9 +174,11 @@ describe("RadialProgress Component", () => {
 
   it("applies custom aria-label", () => {
     const { container } = render(() => (
-      <RadialProgress value={80} aria-label="Custom progress label">80%</RadialProgress>
+      <RadialProgress value={80} aria-label="Custom progress label">
+        80%
+      </RadialProgress>
     ));
-    
+
     const progress = container.querySelector(".radial-progress");
     expect(progress).toHaveAttribute("aria-label", "Custom progress label");
   });
@@ -158,25 +187,25 @@ describe("RadialProgress Component", () => {
     const { container } = render(() => (
       <RadialProgress value={65}>65%</RadialProgress>
     ));
-    
+
     const progress = container.querySelector(".radial-progress");
     expect(progress).toHaveAttribute("aria-label", "65% complete");
   });
 
   it("applies id attribute", () => {
     const { container } = render(() => (
-      <RadialProgress value={90} id="test-progress">90%</RadialProgress>
+      <RadialProgress value={90} id="test-progress">
+        90%
+      </RadialProgress>
     ));
-    
+
     const progress = container.querySelector(".radial-progress");
     expect(progress).toHaveAttribute("id", "test-progress");
   });
 
   it("renders without children", () => {
-    const { container } = render(() => (
-      <RadialProgress value={45} />
-    ));
-    
+    const { container } = render(() => <RadialProgress value={45} />);
+
     const progress = container.querySelector(".radial-progress");
     expect(progress).toBeInTheDocument();
     expect(progress).toHaveAttribute("aria-valuenow", "45");
@@ -187,7 +216,7 @@ describe("RadialProgress Component", () => {
     const { container } = render(() => (
       <RadialProgress value={0}>0%</RadialProgress>
     ));
-    
+
     const progress = container.querySelector(".radial-progress");
     expect(progress).toHaveAttribute("aria-valuenow", "0");
     expect(progress).toHaveStyle({ "--value": "0" });
@@ -197,7 +226,7 @@ describe("RadialProgress Component", () => {
     const { container } = render(() => (
       <RadialProgress value={100}>100%</RadialProgress>
     ));
-    
+
     const progress = container.querySelector(".radial-progress");
     expect(progress).toHaveAttribute("aria-valuenow", "100");
     expect(progress).toHaveStyle({ "--value": "100" });
@@ -205,7 +234,7 @@ describe("RadialProgress Component", () => {
 
   it("combines all props correctly", () => {
     const { container } = render(() => (
-      <RadialProgress 
+      <RadialProgress
         value={85}
         size="lg"
         color="success"
@@ -219,7 +248,7 @@ describe("RadialProgress Component", () => {
         85%
       </RadialProgress>
     ));
-    
+
     const progress = container.querySelector(".radial-progress");
     expect(progress).toHaveClass("radial-progress");
     expect(progress).toHaveClass("text-lg");
@@ -229,10 +258,10 @@ describe("RadialProgress Component", () => {
     expect(progress).toHaveAttribute("aria-valuenow", "85");
     expect(progress).toHaveAttribute("aria-label", "Test progress");
     expect(progress).toHaveAttribute("id", "test-id");
-    expect(progress).toHaveStyle({ 
+    expect(progress).toHaveStyle({
       "--value": "85",
       "--thickness": "3px",
-      "--size": "10rem"
+      "--size": "10rem",
     });
   });
 });

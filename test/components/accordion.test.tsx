@@ -9,7 +9,7 @@ describe("Accordion Component", () => {
         <div>Test Content</div>
       </Accordion>
     ));
-    
+
     expect(getByText("Test Title")).toBeInTheDocument();
     expect(getByText("Test Content")).toBeInTheDocument();
   });
@@ -20,7 +20,7 @@ describe("Accordion Component", () => {
         <div>Content</div>
       </Accordion>
     ));
-    
+
     const radioInput = container.querySelector('input[type="radio"]');
     expect(radioInput).toBeInTheDocument();
     expect(radioInput).toHaveAttribute("name", "test-group");
@@ -32,7 +32,7 @@ describe("Accordion Component", () => {
         <div>Content</div>
       </Accordion>
     ));
-    
+
     const radioInput = container.querySelector('input[type="radio"]');
     expect(radioInput).toBeChecked();
   });
@@ -43,7 +43,7 @@ describe("Accordion Component", () => {
         <div>Test Content</div>
       </Accordion>
     ));
-    
+
     const content = getByText("Test Content");
     expect(content).toBeVisible();
   });
@@ -54,7 +54,7 @@ describe("Accordion Component", () => {
         <div>Test Content</div>
       </Accordion>
     ));
-    
+
     const content = getByText("Test Content");
     expect(content).not.toBeVisible();
   });
@@ -65,13 +65,13 @@ describe("Accordion Component", () => {
         <div>Test Content</div>
       </Accordion>
     ));
-    
+
     const button = getByRole("button");
     const content = getByText("Test Content");
-    
+
     // Initially closed
     expect(content).not.toBeVisible();
-    
+
     // Click to open
     fireEvent.click(button);
     expect(content).toBeVisible();
@@ -83,25 +83,29 @@ describe("Accordion Component", () => {
         <div>Test Content</div>
       </Accordion>
     ));
-    
+
     const button = getByRole("button");
-    const radio = container.querySelector('input[type="radio"]') as HTMLInputElement;
-    const contentPanel = container.querySelector('.collapse-content') as HTMLElement;
-    
+    const radio = container.querySelector(
+      'input[type="radio"]',
+    ) as HTMLInputElement;
+    const contentPanel = container.querySelector(
+      ".collapse-content",
+    ) as HTMLElement;
+
     // Check button attributes
     expect(button).toHaveAttribute("aria-expanded", "false");
     expect(button).toHaveAttribute("aria-controls");
     expect(button).toHaveAttribute("tabindex", "0");
     expect(button).toHaveAttribute("role", "button");
-    
+
     // Check radio input is hidden from screen readers
     expect(radio).toHaveAttribute("aria-hidden", "true");
-    
+
     // Check content panel attributes
     expect(contentPanel).toHaveAttribute("role", "region");
     expect(contentPanel).toHaveAttribute("aria-labelledby");
     expect(contentPanel).toHaveAttribute("aria-hidden", "true");
-    
+
     // Test state changes
     fireEvent.click(button);
     expect(button).toHaveAttribute("aria-expanded", "true");
@@ -114,22 +118,22 @@ describe("Accordion Component", () => {
         <div>Content</div>
       </Accordion>
     ));
-    
+
     const accordion = container.firstChild;
     expect(accordion).toHaveClass("custom-class");
   });
 
   it("supports dynamic classList", () => {
     const { container } = render(() => (
-      <Accordion 
-        title="Test" 
-        name="test-group" 
+      <Accordion
+        title="Test"
+        name="test-group"
         classList={{ "dynamic-class": true, "inactive-class": false }}
       >
         <div>Content</div>
       </Accordion>
     ));
-    
+
     const accordion = container.firstChild;
     expect(accordion).toHaveClass("dynamic-class");
     expect(accordion).not.toHaveClass("inactive-class");
@@ -141,18 +145,18 @@ describe("Accordion Component", () => {
         <div>Test Content</div>
       </Accordion>
     ));
-    
+
     const button = getByRole("button");
-    
+
     // Test Enter key
     expect(button).toHaveAttribute("aria-expanded", "false");
     fireEvent.keyDown(button, { key: "Enter" });
     expect(button).toHaveAttribute("aria-expanded", "true");
-    
+
     // Test Space key
     fireEvent.keyDown(button, { key: " " });
     expect(button).toHaveAttribute("aria-expanded", "true");
-    
+
     // Test other keys don't trigger (like Arrow keys)
     fireEvent.keyDown(button, { key: "ArrowDown" });
     expect(button).toHaveAttribute("aria-expanded", "true"); // Should remain unchanged
@@ -164,7 +168,7 @@ describe("Accordion Component", () => {
         <div>Content</div>
       </Accordion>
     ));
-    
+
     const accordion = container.firstChild;
     expect(accordion).toHaveClass("collapse-arrow");
   });
@@ -175,7 +179,7 @@ describe("Accordion Component", () => {
         <div>Content</div>
       </Accordion>
     ));
-    
+
     const accordion = container.firstChild;
     expect(accordion).toHaveClass("collapse-plus");
   });
@@ -191,18 +195,18 @@ describe("Accordion Component", () => {
         </Accordion>
       </div>
     ));
-    
+
     const buttons = getAllByRole("button");
     const firstContent = getByText("First Content");
     const secondContent = getByText("Second Content");
-    
+
     // Initially first is open, second is closed
     expect(firstContent).toBeVisible();
     expect(secondContent).not.toBeVisible();
-    
+
     // Click second accordion
     fireEvent.click(buttons[1]);
-    
+
     // Now second should be open, first should be closed
     expect(firstContent).not.toBeVisible();
     expect(secondContent).toBeVisible();
