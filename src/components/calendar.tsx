@@ -17,6 +17,11 @@ import {
   isWithinInterval,
 } from "date-fns";
 
+// Constants for magic numbers
+const DAYS_IN_WEEK = 7;
+const DEFAULT_DATE_FORMAT = "EEEE, MMMM do, yyyy";
+const DAY_NUMBER_FORMAT = "d";
+
 /**
  * Range selection result for calendar range mode.
  *
@@ -112,25 +117,80 @@ export interface CalendarProps {
  * @returns {JSX.Element} The rendered Calendar component.
  */
 export default function Calendar(props: CalendarProps): JSX.Element {
-  // ===== STATE MANAGEMENT =====
+  // ===== UTILITY FUNCTIONS =====
   
-  // Initialize current date, handle invalid dates gracefully
-  const getValidDate = (date?: Date) => {
-    if (!date || !isValid(date)) {
-      return new Date();
-    }
-    return date;
+  /** Validates and returns a safe date, defaulting to current date if invalid */
+  const getValidDate = (date?: Date): Date => {
+    return date && isValid(date) ? date : new Date();
   };
+
+  /** Formats date for accessibility with error handling */
+  const formatDateForAccessibility = (date: Date): string => {
+    if (!props.dateFormat) {
+      return format(date, DEFAULT_DATE_FORMAT);
+    }
+    
+    try {
+      return format(date, props.dateFormat);
+    } catch {
+      return format(date, DEFAULT_DATE_FORMAT);
+    }
+  };
+
+  /** Checks if a date is disabled based on constraints */
+  const isDateDisabled = (date: Date): boolean => {
+    if (props.disabledDates?.some(disabled => isSameDay(disabled, date))) {
+      return true;
+    }
+    
+    if (props.minDate && isBefore(date, props.minDate)) {
+      return true;
+    }
+    
+    if (props.maxDate && isAfter(date, props.maxDate)) {
+      return true;
+    }
+    
+    return false;
+  };
+
+  /** Checks if a date is selected in any mode */
+  const isDateSelected = (date: Date): boolean => {
+    if (props.selectedDate && isSameDay(date, props.selectedDate)) {
+      return true;
+    }
+    
+    if (props.multiple && selectedDates().some(selected => isSameDay(selected, date))) {
+      return true;
+    }
+    
+    if (props.range && props.selectedRange) {
+      const { start, end } = props.selectedRange;
+      return isWithinInterval(date, { start, end });
+    }
+    
+    return false;
+  };
+
+  /** Checks if date is in the currently displayed month */
+  const isInCurrentMonth = (date: Date): boolean => {
+    return isSameMonth(date, displayDate());
+  };
+
+  // ===== STATE MANAGEMENT =====
 
   const [displayDate, setDisplayDate] = createSignal(getValidDate(props.currentDate));
   const [selectedDates, setSelectedDates] = createSignal<Date[]>(props.selectedDates || []);
-  const [rangeStart, setRangeStart] = createSignal<Date | null>(null);
-  const [focusedDate, setFocusedDate] = createSignal<Date | null>(null);
+  const [rangeStartDate, setRangeStartDate] = createSignal<Date | null>(null);
+  const [focusedDateTimestamp, setFocusedDateTimestamp] = createSignal<number | null>(null);
 
+  // ===== REACTIVE EFFECTS =====
+  
   // Update display date when currentDate prop changes
   createEffect(() => {
-    if (props.currentDate && isValid(props.currentDate)) {
-      setDisplayDate(props.currentDate);
+    const current = props.currentDate;
+    if (current && isValid(current)) {
+      setDisplayDate(current);
     }
   });
 
@@ -138,20 +198,6 @@ export default function Calendar(props: CalendarProps): JSX.Element {
   createEffect(() => {
     if (props.selectedDates) {
       setSelectedDates(props.selectedDates);
-    }
-  });
-
-  // Handle focus management reactively
-  createEffect(() => {
-    const focused = focusedDate();
-    if (focused) {
-      // Find the button for this date and focus it
-      const dateButton = document.querySelector(
-        `[data-date="${focused.getTime()}"]`
-      ) as HTMLButtonElement;
-      if (dateButton) {
-        dateButton.focus();
-      }
     }
   });
 
@@ -203,72 +249,10 @@ export default function Calendar(props: CalendarProps): JSX.Element {
     return baseClasses;
   });
 
-  // ===== DATE UTILITY FUNCTIONS =====
-
-  // Check if a date is disabled
-  const isDateDisabled = (date: Date): boolean => {
-    // Check disabled dates array
-    if (props.disabledDates?.some(disabled => isSameDay(disabled, date))) {
-      return true;
-    }
-    
-    // Check min/max constraints
-    if (props.minDate && isBefore(date, props.minDate)) {
-      return true;
-    }
-    
-    if (props.maxDate && isAfter(date, props.maxDate)) {
-      return true;
-    }
-    
-    return false;
-  };
-
-  // Check if a date is selected
-  const isDateSelected = (date: Date): boolean => {
-    // Check single selected date
-    if (props.selectedDate) {
-      return isSameDay(date, props.selectedDate);
-    }
-    
-    // Check multiple selected dates
-    if (props.multiple && selectedDates().some(selected => isSameDay(selected, date))) {
-      return true;
-    }
-    
-    // Check range selection
-    if (props.range && props.selectedRange) {
-      const { start, end } = props.selectedRange;
-      return isWithinInterval(date, { start, end });
-    }
-    
-    return false;
-  };
-
-  // Check if date is in current month
-  const isInCurrentMonth = (date: Date): boolean => {
-    return isSameMonth(date, displayDate());
-  };
-
-  // Format date for accessibility
-  const formatDateForAccessibility = (date: Date): string => {
-    if (props.dateFormat) {
-      // Use date-fns format with the provided pattern
-      try {
-        return format(date, props.dateFormat);
-      } catch {
-        // Fallback to default if custom format is invalid
-        return format(date, "EEEE, MMMM do, yyyy");
-      }
-    }
-    
-    return format(date, "EEEE, MMMM do, yyyy");
-  };
-
   // ===== EVENT HANDLERS =====
 
-  // Handle date selection
-  const handleDateSelect = (date: Date) => {
+  /** Handles date selection based on current mode */
+  const handleDateSelect = (date: Date): void => {
     if (isDateDisabled(date)) return;
     
     if (props.range) {
@@ -276,38 +260,34 @@ export default function Calendar(props: CalendarProps): JSX.Element {
     } else if (props.multiple) {
       handleMultipleSelection(date);
     } else {
-      // Single selection
       props.onDateSelect?.(date);
     }
   };
 
-  // Handle range selection logic
-  const handleRangeSelection = (date: Date) => {
-    const start = rangeStart();
+  /** Handles range selection logic */
+  const handleRangeSelection = (date: Date): void => {
+    const start = rangeStartDate();
     
     if (!start) {
-      setRangeStart(date);
+      setRangeStartDate(date);
     } else {
       const range = start <= date 
         ? { start, end: date }
         : { start: date, end: start };
       
       props.onRangeSelect?.(range);
-      setRangeStart(null);
+      setRangeStartDate(null);
     }
   };
 
-  // Handle multiple selection logic
-  const handleMultipleSelection = (date: Date) => {
+  /** Handles multiple selection logic */
+  const handleMultipleSelection = (date: Date): void => {
     const current = selectedDates();
     const exists = current.some(selected => isSameDay(selected, date));
     
-    let newSelection: Date[];
-    if (exists) {
-      newSelection = current.filter(selected => !isSameDay(selected, date));
-    } else {
-      newSelection = [...current, date];
-    }
+    const newSelection = exists
+      ? current.filter(selected => !isSameDay(selected, date))
+      : [...current, date];
     
     setSelectedDates(newSelection);
     props.onMultipleSelect?.(newSelection);
@@ -316,15 +296,15 @@ export default function Calendar(props: CalendarProps): JSX.Element {
 
   // ===== NAVIGATION HANDLERS =====
 
-  // Navigate to previous month
-  const navigatePrevMonth = () => {
+  /** Navigate to previous month */
+  const navigatePrevMonth = (): void => {
     const newDate = subMonths(displayDate(), 1);
     setDisplayDate(newDate);
     props.onMonthChange?.(newDate);
   };
 
-  // Navigate to next month
-  const navigateNextMonth = () => {
+  /** Navigate to next month */
+  const navigateNextMonth = (): void => {
     const newDate = addMonths(displayDate(), 1);
     setDisplayDate(newDate);
     props.onMonthChange?.(newDate);
@@ -332,8 +312,31 @@ export default function Calendar(props: CalendarProps): JSX.Element {
 
   // ===== KEYBOARD NAVIGATION =====
 
-  // Handle keyboard navigation
-  const handleKeyDown = (event: KeyboardEvent, date: Date) => {
+  /** Navigate to a relative date and update focused element */
+  const navigateToDate = (currentDate: Date, dayOffset: number): void => {
+    const newDate = addDays(currentDate, dayOffset);
+    
+    // If we're going to a different month, update display
+    if (!isSameMonth(newDate, currentDate)) {
+      setDisplayDate(startOfMonth(newDate));
+    }
+    
+    // Set the timestamp for the date to focus
+    setFocusedDateTimestamp(newDate.getTime());
+    
+    // Focus the target element after DOM update
+    setTimeout(() => {
+      const targetElement = document.querySelector(
+        `[data-date="${newDate.getTime()}"]`
+      ) as HTMLButtonElement;
+      if (targetElement) {
+        targetElement.focus();
+      }
+    }, 0);
+  };
+
+  /** Handle keyboard navigation */
+  const handleKeyDown = (event: KeyboardEvent, date: Date): void => {
     switch (event.key) {
       case "Enter":
       case " ":
@@ -343,37 +346,24 @@ export default function Calendar(props: CalendarProps): JSX.Element {
         
       case "ArrowRight":
         event.preventDefault();
-        navigateDate(date, 1);
+        navigateToDate(date, 1);
         break;
         
       case "ArrowLeft":
         event.preventDefault();
-        navigateDate(date, -1);
+        navigateToDate(date, -1);
         break;
         
       case "ArrowDown":
         event.preventDefault();
-        navigateDate(date, 7);
+        navigateToDate(date, DAYS_IN_WEEK);
         break;
         
       case "ArrowUp":
         event.preventDefault();
-        navigateDate(date, -7);
+        navigateToDate(date, -DAYS_IN_WEEK);
         break;
     }
-  };
-
-  // Navigate to a relative date and update focused date reactively
-  const navigateDate = (currentDate: Date, dayOffset: number) => {
-    const newDate = addDays(currentDate, dayOffset);
-    
-    // If we're going to a different month, update display
-    if (!isSameMonth(newDate, currentDate)) {
-      setDisplayDate(startOfMonth(newDate));
-    }
-    
-    // Update focused date signal for reactive focus management
-    setFocusedDate(newDate);
   };
 
   // ===== RENDER =====
@@ -432,14 +422,23 @@ export default function Calendar(props: CalendarProps): JSX.Element {
             const isDisabled = isDateDisabled(date);
             const isSelected = isDateSelected(date);
             const inCurrentMonth = isInCurrentMonth(date);
-            const isFocused = focusedDate() && isSameDay(date, focusedDate()!);
+            const timestamp = date.getTime();
+            const isFocused = focusedDateTimestamp() === timestamp;
             
             return (
               <button
                 type="button"
                 role="gridcell"
+                ref={(el) => {
+                  if (isFocused && el) {
+                    // Use requestAnimationFrame for proper timing
+                    requestAnimationFrame(() => {
+                      el.focus();
+                    });
+                  }
+                }}
                 tabIndex={isFocused ? 0 : -1}
-                data-date={date.getTime()}
+                data-date={timestamp}
                 disabled={isDisabled}
                 aria-label={formatDateForAccessibility(date)}
                 aria-selected={isSelected}
@@ -452,7 +451,7 @@ export default function Calendar(props: CalendarProps): JSX.Element {
                 onClick={() => handleDateSelect(date)}
                 onKeyDown={(e) => handleKeyDown(e, date)}
               >
-                {format(date, "d")}
+                {format(date, DAY_NUMBER_FORMAT)}
               </button>
             );
           }}
