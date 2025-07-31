@@ -7,19 +7,15 @@ Solid DaisyUI is a comprehensive component library built with SolidJS and styled
 ## Build and Test Instructions
 
 ### Build the Project
-
 ```bash
 npm run build
 ```
-
 This compiles TypeScript files and generates the production-ready build.
 
 ### Run Tests
-
 ```bash
 npm test
 ```
-
 This executes all tests using Vitest to ensure components behave as expected.
 
 ## Component Implementation Standards
@@ -29,7 +25,6 @@ This executes all tests using Vitest to ensure components behave as expected.
 Use the `Alert` component in `src/components/alert.tsx` as the reference implementation. It demonstrates:
 
 #### 1. **TypeScript Interface Definition**
-
 ```tsx
 export interface AlertProps {
   children?: JSX.Element;
@@ -46,7 +41,6 @@ export interface AlertProps {
 ```
 
 #### 2. **Comprehensive JSDoc Documentation**
-
 ```tsx
 /**
  * Props for the Alert component.
@@ -59,13 +53,11 @@ export interface AlertProps {
 ```
 
 #### 3. **SolidJS Reactive State Management**
-
 ```tsx
 const [isVisible, setIsVisible] = createSignal(true);
 ```
 
 #### 4. **Dynamic Class Construction**
-
 ```tsx
 const classes = () => ({
   alert: true,
@@ -75,7 +67,6 @@ const classes = () => ({
 ```
 
 #### 5. **Accessibility Implementation**
-
 ```tsx
 <div
   role="alert"
@@ -85,7 +76,6 @@ const classes = () => ({
 ```
 
 #### 6. **DaisyUI Class Usage**
-
 - Use official DaisyUI CSS classes (`alert`, `alert-info`, `alert-success`, etc.)
 - Support DaisyUI modifiers (`alert-outline`, `alert-soft`, etc.)
 - Follow DaisyUI naming conventions
@@ -93,7 +83,6 @@ const classes = () => ({
 ### Component Implementation Guidelines
 
 #### 1. **File Structure**
-
 ```
 src/components/component-name.tsx
 test/components/component-name.test.tsx
@@ -101,7 +90,6 @@ docs/components/component-name.md
 ```
 
 #### 2. **Required Exports**
-
 ```tsx
 export interface ComponentNameProps {
   // Props definition with JSDoc
@@ -113,7 +101,6 @@ export default function ComponentName(props: ComponentNameProps): JSX.Element {
 ```
 
 #### 3. **Props Design**
-
 - **children**: Always use `JSX.Element` for child content
 - **class**: Support additional CSS classes as `string`
 - **classList**: Support dynamic classes as `Record<string, boolean>`
@@ -121,7 +108,6 @@ export default function ComponentName(props: ComponentNameProps): JSX.Element {
 - **Optional Props**: Mark non-essential props as optional with `?`
 
 #### 4. **State Management**
-
 ```tsx
 import { createSignal, createEffect } from "solid-js";
 
@@ -129,7 +115,6 @@ const [state, setState] = createSignal(initialValue);
 ```
 
 #### 5. **Event Handling**
-
 ```tsx
 // Prefer explicit event types
 onClick?: (event: MouseEvent) => void;
@@ -143,7 +128,6 @@ const handleClick = (event: MouseEvent) => {
 ```
 
 #### 6. **Accessibility Requirements**
-
 - Use semantic HTML elements
 - Include ARIA attributes (`role`, `aria-label`, `aria-expanded`, etc.)
 - Support keyboard navigation
@@ -151,14 +135,12 @@ const handleClick = (event: MouseEvent) => {
 - Use `aria-live` for dynamic content announcements
 
 #### 7. **DaisyUI Integration**
-
 - Use official DaisyUI component classes
 - Support all DaisyUI variants and modifiers
 - Follow DaisyUI naming conventions
 - Reference [DaisyUI documentation](https://daisyui.com/components/) for accurate implementation
 
 #### 8. **Error Handling**
-
 ```tsx
 // Graceful degradation
 if (!isVisible()) return null;
@@ -170,7 +152,6 @@ const variant = props.variant ?? "primary";
 ## Test-Driven Development (TDD)
 
 ### 1. **Write Tests First**
-
 ```tsx
 describe("ComponentName", () => {
   it("renders with required props", () => {
@@ -199,7 +180,6 @@ describe("ComponentName", () => {
 ```
 
 ### 2. **Test Categories**
-
 - **Rendering**: Component renders correctly with props
 - **Interactions**: User interactions work as expected
 - **Accessibility**: ARIA attributes and keyboard navigation
@@ -209,63 +189,53 @@ describe("ComponentName", () => {
 ## Component Documentation
 
 ### Required Documentation Structure
-
 ```markdown
 # ComponentName Component
 
 ## Overview
-
 Brief description of the component and its purpose.
 
 ## Usage
-
 \`\`\`tsx
 <ComponentName variant="primary" onClick={handleClick}>
-Content
+  Content
 </ComponentName>
 \`\`\`
 
 ## Props
-
-| Prop    | Type                     | Default   | Description    |
-| ------- | ------------------------ | --------- | -------------- |
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
 | variant | "primary" \| "secondary" | "primary" | Button variant |
 
 ## Accessibility
-
 - Supports keyboard navigation
 - Includes ARIA attributes
 - Compatible with screen readers
 
 ## Examples
-
 [Additional usage examples]
 ```
 
 ## Code Quality Standards
 
 ### 1. **TypeScript**
-
 - Use strict TypeScript configuration
 - Define explicit types for all props
 - Use union types for variants
 - Avoid `any` type
 
 ### 2. **SolidJS Best Practices**
-
 - Use `createSignal` for reactive state
 - Use `createEffect` for side effects
 - Leverage `classList` for dynamic classes
 - Use `Show` and `For` components for conditional rendering
 
 ### 3. **Performance**
-
 - Minimize re-renders with proper signal usage
 - Use `createMemo` for expensive calculations
 - Avoid unnecessary DOM updates
 
 ### 4. **Imports**
-
 ```tsx
 import { JSX, createSignal, createEffect } from "solid-js";
 // Import only what you need

@@ -15,14 +15,7 @@ export interface RadialProgressProps {
   /** Size of the radial progress */
   size?: "xs" | "sm" | "md" | "lg" | "xl";
   /** Color variant */
-  color?:
-    | "primary"
-    | "secondary"
-    | "accent"
-    | "info"
-    | "success"
-    | "warning"
-    | "error";
+  color?: "primary" | "secondary" | "accent" | "info" | "success" | "warning" | "error";
   /** Custom thickness of the progress ring */
   thickness?: string;
   /** Custom size (overrides size prop) */
@@ -35,13 +28,11 @@ export interface RadialProgressProps {
 
 /**
  * The RadialProgress component displays a circular progress indicator with DaisyUI styling.
- *
+ * 
  * @param {RadialProgressProps} props - The properties to configure the RadialProgress component.
  * @returns {JSX.Element} The rendered RadialProgress component.
  */
-export default function RadialProgress(
-  props: RadialProgressProps,
-): JSX.Element {
+export default function RadialProgress(props: RadialProgressProps): JSX.Element {
   const defaultProps = {
     value: 0,
     size: "md" as const,
@@ -54,7 +45,7 @@ export default function RadialProgress(
 
   const sizeClasses: Record<string, string> = {
     xs: "text-xs",
-    sm: "text-sm",
+    sm: "text-sm", 
     md: "text-base",
     lg: "text-lg",
     xl: "text-xl",
