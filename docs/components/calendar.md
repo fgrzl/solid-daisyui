@@ -2,17 +2,19 @@
 
 ## Component Overview
 
-The Calendar component provides a comprehensive date selection interface following DaisyUI design standards and SolidJS reactive patterns. It supports single date selection, multiple date selection, and date range selection with full keyboard navigation and accessibility features.
+The Calendar component provides a comprehensive date selection interface following DaisyUI design standards and SolidJS reactive patterns. Built with **date-fns** for robust date handling and timezone safety, it supports single date selection, multiple date selection, and date range selection with full keyboard navigation and accessibility features.
 
 ## Features
 
 - ✅ **Single, Multiple, and Range Selection** - Flexible date selection modes
-- ✅ **DaisyUI Integration** - Supports all DaisyUI variants and modifiers
+- ✅ **DaisyUI Integration** - Supports all DaisyUI variants and modifiers  
 - ✅ **Keyboard Navigation** - Full arrow key navigation with Enter/Space selection
 - ✅ **Accessibility** - WCAG 2.1 AA compliant with proper ARIA attributes
 - ✅ **Month Navigation** - Previous/next month controls with callbacks
 - ✅ **Date Constraints** - Min/max dates and disabled date support
 - ✅ **Customizable** - Week start day, date formats, and styling options
+- ✅ **date-fns Integration** - Robust date handling with timezone safety
+- ✅ **SolidJS Reactivity** - Proper reactive patterns and performance optimization
 
 ## Usage Examples
 
