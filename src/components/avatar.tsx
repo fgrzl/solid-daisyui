@@ -1,4 +1,4 @@
-import { JSX, createSignal, Show } from "solid-js";
+import { JSX, createSignal, Show, createMemo } from "solid-js";
 
 /**
  * Props for the Avatar component.
@@ -32,10 +32,20 @@ export interface AvatarProps {
 /**
  * Avatar component for displaying user profile pictures or placeholder initials.
  * Follows DaisyUI Avatar component patterns with support for sizes, presence indicators, masks, and rings.
+ * Implements WCAG 2.1 AA accessibility standards with proper ARIA attributes and semantic structure.
  */
 export default function Avatar(props: AvatarProps): JSX.Element {
   const [imageError, setImageError] = createSignal(false);
   let imgRef: HTMLImageElement | undefined;
+
+  // Reset error state when src changes
+  const currentSrc = () => props.src;
+  createMemo((prevSrc) => {
+    if (prevSrc !== undefined && prevSrc !== currentSrc()) {
+      setImageError(false);
+    }
+    return currentSrc();
+  });
 
   // Size mapping for DaisyUI classes
   const getSizeClasses = () => {
@@ -112,8 +122,32 @@ export default function Avatar(props: AvatarProps): JSX.Element {
     return "";
   };
 
+  // Generate accessibility label
+  const getAriaLabel = () => {
+    let label = "";
+    
+    if (props.placeholder) {
+      label = `Avatar with initials ${props.placeholder}`;
+    } else if (props.alt) {
+      label = props.alt;
+    } else if (props.fallback && (!props.src || imageError())) {
+      label = `Avatar with initials ${props.fallback}`;
+    } else {
+      label = "Avatar";
+    }
+
+    if (props.status) {
+      label += ` (${props.status})`;
+    }
+
+    return label;
+  };
+
   return (
     <div
+      role="img"
+      aria-label={getAriaLabel()}
+      tabindex="0"
       classList={{
         ...avatarClasses(),
         ...props.classList,
@@ -124,21 +158,22 @@ export default function Avatar(props: AvatarProps): JSX.Element {
           <img
             ref={imgRef}
             src={props.src}
-            alt={props.alt || "Avatar"}
+            alt=""
+            aria-hidden="true"
             onError={handleImageError}
           />
         </Show>
         <Show when={shouldShowPlaceholder()}>
-          <span>{getDisplayText()}</span>
+          <span aria-hidden="true">{getDisplayText()}</span>
         </Show>
       </div>
       
       {/* Presence indicators */}
       <Show when={props.status === "online"}>
-        <div class="online"></div>
+        <div class="online" aria-hidden="true"></div>
       </Show>
       <Show when={props.status === "offline"}>
-        <div class="offline"></div>
+        <div class="offline" aria-hidden="true"></div>
       </Show>
     </div>
   );
