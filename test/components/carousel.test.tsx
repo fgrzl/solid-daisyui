@@ -339,6 +339,200 @@ describe("Carousel Component", () => {
     });
   });
 
+  // Data-Driven Pattern with 'each' Prop Tests
+  describe("Data-Driven Pattern with 'each' Prop", () => {
+    const sampleData: Array<{ id: number; title: string; content: string }> = [
+      { id: 1, title: "Slide 1", content: "Content 1" },
+      { id: 2, title: "Slide 2", content: "Content 2" },
+      { id: 3, title: "Slide 3", content: "Content 3" },
+    ];
+
+    it("renders slides from data array using each prop", () => {
+      const { getByText, container } = render(() => (
+        <Carousel each={sampleData}>
+          {(item) => (
+            <div>
+              <h3>{item.title}</h3>
+              <p>{item.content}</p>
+            </div>
+          )}
+        </Carousel>
+      ));
+
+      expect(getByText("Slide 1")).toBeInTheDocument();
+      expect(getByText("Content 1")).toBeInTheDocument();
+      expect(getByText("Slide 2")).toBeInTheDocument();
+      expect(getByText("Content 2")).toBeInTheDocument();
+      expect(getByText("Slide 3")).toBeInTheDocument();
+      expect(getByText("Content 3")).toBeInTheDocument();
+
+      // Check carousel-item classes are applied
+      const items = container.querySelectorAll(".carousel-item");
+      expect(items).toHaveLength(3);
+    });
+
+    it("provides index parameter in render function", () => {
+      const { getByText } = render(() => (
+        <Carousel each={sampleData}>
+          {(item, index) => (
+            <div>
+              <span>Index: {index()}</span>
+              <span>{item.title}</span>
+            </div>
+          )}
+        </Carousel>
+      ));
+
+      expect(getByText("Index: 0")).toBeInTheDocument();
+      expect(getByText("Index: 1")).toBeInTheDocument();
+      expect(getByText("Index: 2")).toBeInTheDocument();
+    });
+
+    it("works with navigation when using each prop", () => {
+      const onChange = vi.fn();
+      const { getByLabelText } = render(() => (
+        <Carousel each={sampleData} showNavigation onChange={onChange}>
+          {(item) => <div>{item.title}</div>}
+        </Carousel>
+      ));
+
+      const nextButton = getByLabelText("Next slide");
+      fireEvent.click(nextButton);
+      expect(onChange).toHaveBeenCalledWith(1);
+    });
+
+    it("works with indicators when using each prop", () => {
+      const onChange = vi.fn();
+      const { container } = render(() => (
+        <Carousel each={sampleData} showIndicators onChange={onChange}>
+          {(item) => <div>{item.title}</div>}
+        </Carousel>
+      ));
+
+      const indicators = container.querySelectorAll(
+        "[role='button'][aria-label*='Go to slide']",
+      );
+      expect(indicators).toHaveLength(3);
+
+      fireEvent.click(indicators[2]);
+      expect(onChange).toHaveBeenCalledWith(2);
+    });
+
+    it("handles empty array gracefully with each prop", () => {
+      const { container } = render(() => (
+        <Carousel each={[] as Array<{ title: string }>}>
+          {(item) => <div>{item.title}</div>}
+        </Carousel>
+      ));
+
+      expect(container.firstChild).toHaveClass("carousel");
+      expect(container.querySelectorAll(".carousel-item")).toHaveLength(0);
+    });
+
+    it("works with DaisyUI classes when using each prop", () => {
+      const { container } = render(() => (
+        <Carousel each={sampleData} snap="center" vertical>
+          {(item) => <div>{item.title}</div>}
+        </Carousel>
+      ));
+
+      expect(container.firstChild).toHaveClass(
+        "carousel",
+        "carousel-center",
+        "carousel-vertical",
+      );
+    });
+
+    it("supports keyboard navigation with each prop", () => {
+      const onChange = vi.fn();
+      const { container } = render(() => (
+        <Carousel each={sampleData} onChange={onChange}>
+          {(item) => <div>{item.title}</div>}
+        </Carousel>
+      ));
+
+      const carousel = container.firstChild as HTMLElement;
+      fireEvent.keyDown(carousel, { key: "ArrowRight" });
+      expect(onChange).toHaveBeenCalledWith(1);
+    });
+
+    it("handles complex data structures with each prop", () => {
+      const complexData = [
+        { 
+          id: 1, 
+          image: { src: "image1.jpg", alt: "Image 1" },
+          caption: "First image"
+        },
+        { 
+          id: 2, 
+          image: { src: "image2.jpg", alt: "Image 2" },
+          caption: "Second image"
+        },
+      ];
+
+      const { getByText, getByAltText } = render(() => (
+        <Carousel each={complexData}>
+          {(item) => (
+            <div>
+              <img src={item.image.src} alt={item.image.alt} />
+              <p>{item.caption}</p>
+            </div>
+          )}
+        </Carousel>
+      ));
+
+      expect(getByAltText("Image 1")).toBeInTheDocument();
+      expect(getByText("First image")).toBeInTheDocument();
+      expect(getByAltText("Image 2")).toBeInTheDocument();
+      expect(getByText("Second image")).toBeInTheDocument();
+    });
+  });
+
+  // Backward Compatibility Tests
+  describe("Backward Compatibility", () => {
+    it("continues to work with traditional JSX children when each prop is not provided", () => {
+      const { getByText, container } = render(() => (
+        <Carousel>
+          <div>Traditional Slide 1</div>
+          <div>Traditional Slide 2</div>
+        </Carousel>
+      ));
+
+      expect(getByText("Traditional Slide 1")).toBeInTheDocument();
+      expect(getByText("Traditional Slide 2")).toBeInTheDocument();
+
+      const items = container.querySelectorAll(".carousel-item");
+      expect(items).toHaveLength(2);
+    });
+
+    it("works with navigation using traditional children", () => {
+      const onChange = vi.fn();
+      const { getByLabelText } = render(() => (
+        <Carousel showNavigation onChange={onChange}>
+          <div>Slide 1</div>
+          <div>Slide 2</div>
+        </Carousel>
+      ));
+
+      fireEvent.click(getByLabelText("Next slide"));
+      expect(onChange).toHaveBeenCalledWith(1);
+    });
+
+    it("prioritizes each prop when both each and children are provided", () => {
+      const data: Array<{ title: string }> = [{ title: "Data Slide" }];
+      const { getByText, container } = render(() => (
+        <Carousel each={data}>
+          {(item) => <div>{item.title}</div>}
+        </Carousel>
+      ));
+
+      expect(getByText("Data Slide")).toBeInTheDocument();
+      // Verify only the each prop content is rendered (1 carousel item)
+      const items = container.querySelectorAll(".carousel-item");
+      expect(items).toHaveLength(1);
+    });
+  });
+
   // Edge Cases and Error Handling Tests
   describe("Edge Cases and Error Handling", () => {
     it("handles empty children gracefully", () => {

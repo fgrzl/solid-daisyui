@@ -4,6 +4,8 @@
 A responsive, accessible carousel component for displaying a scrollable collection of slides. Built with SolidJS and styled with DaisyUI.
 
 ## Usage
+
+### Static Children (Traditional JSX)
 ```tsx
 <Carousel>
   <div>Slide 1</div>
@@ -12,10 +14,20 @@ A responsive, accessible carousel component for displaying a scrollable collecti
 </Carousel>
 ```
 
+### Data-Driven with 'each' Prop (Built-in Foreach)
+```tsx
+<Carousel each={imageArray}>
+  {(image, index) => (
+    <img src={image.src} alt={image.alt} />
+  )}
+</Carousel>
+```
+
 ## Props
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| children | JSX.Element | - | The slides to display in the carousel |
+| children | JSX.Element \| ((item: T, index: () => number) => JSX.Element) | - | The slides to display or render function when using 'each' |
+| each | T[] | - | Array of data items to render. When provided, children should be a render function |
 | class | string | - | Additional CSS classes to apply to the carousel container |
 | classList | Record<string, boolean> | - | Dynamic class list for conditional styling |
 | snap | "start" \| "center" \| "end" | - | DaisyUI snap alignment for carousel items |
@@ -41,6 +53,60 @@ A responsive, accessible carousel component for displaying a scrollable collecti
   <div>Slide 1</div>
   <div>Slide 2</div>
   <div>Slide 3</div>
+</Carousel>
+```
+
+### Data-Driven Image Carousel
+```tsx
+const images = [
+  { src: "image1.jpg", alt: "Beautiful sunset" },
+  { src: "image2.jpg", alt: "Mountain landscape" },
+  { src: "image3.jpg", alt: "Ocean waves" }
+];
+
+<Carousel each={images} showNavigation showIndicators>
+  {(image, index) => (
+    <img 
+      src={image.src} 
+      alt={image.alt}
+      class="w-full h-64 object-cover"
+    />
+  )}
+</Carousel>
+```
+
+### Product Carousel with Complex Data
+```tsx
+const products = [
+  { 
+    id: 1, 
+    name: "Product 1", 
+    price: 29.99, 
+    image: "product1.jpg",
+    featured: true 
+  },
+  { 
+    id: 2, 
+    name: "Product 2", 
+    price: 39.99, 
+    image: "product2.jpg",
+    featured: false 
+  }
+];
+
+<Carousel each={products} snap="center" showIndicators>
+  {(product, index) => (
+    <div class="card w-64 bg-base-100 shadow-xl">
+      <img src={product.image} alt={product.name} class="h-48 object-cover" />
+      <div class="card-body">
+        <h3 class="card-title">
+          {product.name}
+          {product.featured && <span class="badge badge-secondary">Featured</span>}
+        </h3>
+        <p class="text-lg font-bold">${product.price}</p>
+      </div>
+    </div>
+  )}
 </Carousel>
 ```
 
@@ -82,6 +148,21 @@ function ControlledCarousel() {
 }
 ```
 
+## Usage Patterns
+
+### When to Use Each Pattern
+
+**Static Children** - Use when:
+- You have a fixed set of slides
+- Each slide is unique with different content
+- You want simple, straightforward JSX
+
+**Data-Driven with 'each'** - Use when:
+- You have dynamic data arrays (images, products, etc.)
+- You want consistent rendering for each item
+- You need to handle varying array lengths
+- You want to leverage SolidJS's reactive `For` component
+
 ## DaisyUI Classes
 This component uses the following official DaisyUI classes:
 - `.carousel` - Base carousel container
@@ -98,3 +179,4 @@ This component uses the following official DaisyUI classes:
 - Supports both controlled and uncontrolled usage patterns
 - Handles edge cases like empty children and single slides gracefully
 - Built-in keyboard navigation follows standard accessibility patterns
+- The `each` prop provides a built-in foreach pattern using SolidJS's `For` component

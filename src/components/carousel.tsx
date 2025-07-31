@@ -3,7 +3,8 @@ import { JSX, createSignal, children, For, Show, createEffect } from "solid-js";
 /**
  * Props for the Carousel component.
  *
- * @property {JSX.Element} [children] - The slides to display in the carousel.
+ * @property {JSX.Element | ((item: T, index: () => number) => JSX.Element)} [children] - The slides to display in the carousel or render function when using 'each'.
+ * @property {T[]} [each] - Array of data items to render. When provided, children should be a render function.
  * @property {string} [class] - Additional CSS classes to apply to the carousel container.
  * @property {Record<string, boolean>} [classList] - Dynamic class list for conditional styling.
  * @property {"start" | "center" | "end"} [snap] - DaisyUI snap alignment for carousel items.
@@ -14,8 +15,9 @@ import { JSX, createSignal, children, For, Show, createEffect } from "solid-js";
  * @property {(index: number) => void} [onChange] - Callback fired when the current slide changes.
  * @property {string} [ariaLabel] - Custom aria-label for the carousel container.
  */
-export interface CarouselProps {
-  children?: JSX.Element;
+export interface CarouselProps<T = any> {
+  children?: JSX.Element | ((item: T, index: () => number) => JSX.Element);
+  each?: T[];
   class?: string;
   classList?: Record<string, boolean>;
   snap?: "start" | "center" | "end";
@@ -35,10 +37,27 @@ export interface CarouselProps {
  * Supports all official DaisyUI carousel classes and modifiers including
  * carousel-start, carousel-center, carousel-end, carousel-vertical, and carousel-horizontal.
  *
- * @param {CarouselProps} props - The properties to configure the Carousel component.
+ * **Usage Patterns:**
+ * 
+ * **Static Children** (traditional JSX children):
+ * ```tsx
+ * <Carousel>
+ *   <img src="image1.jpg" alt="Image 1" />
+ *   <img src="image2.jpg" alt="Image 2" />
+ * </Carousel>
+ * ```
+ * 
+ * **Data-Driven with 'each'** (built-in foreach):
+ * ```tsx
+ * <Carousel each={imageArray}>
+ *   {(image, index) => <img src={image.src} alt={image.alt} />}
+ * </Carousel>
+ * ```
+ *
+ * @param {CarouselProps<T>} props - The properties to configure the Carousel component.
  * @returns {JSX.Element} The rendered Carousel component.
  */
-export default function Carousel(props: CarouselProps): JSX.Element {
+export default function Carousel<T = any>(props: CarouselProps<T>): JSX.Element {
   // Initialize current slide index
   const [currentSlideIndex, setCurrentSlideIndex] = createSignal(
     props.currentSlide ?? 0,
@@ -46,7 +65,13 @@ export default function Carousel(props: CarouselProps): JSX.Element {
 
   // Resolve children to array for easier manipulation
   const slidesArray = () => {
-    const resolved = children(() => props.children);
+    // Handle data-driven pattern with 'each' prop
+    if (props.each && typeof props.children === 'function') {
+      return props.each.map((item, index) => (props.children as (item: T, index: () => number) => JSX.Element)(item, () => index));
+    }
+    
+    // Handle traditional JSX children pattern
+    const resolved = children(() => props.children as JSX.Element);
     const slides = resolved.toArray
       ? resolved.toArray()
       : Array.isArray(resolved())
@@ -181,13 +206,26 @@ export default function Carousel(props: CarouselProps): JSX.Element {
       tabIndex={0}
     >
       {/* Carousel items */}
-      <For each={slides}>
-        {(slide) => (
-          <div class="carousel-item" tabIndex={0}>
-            {slide}
-          </div>
-        )}
-      </For>
+      <Show 
+        when={props.each && typeof props.children === 'function'} 
+        fallback={
+          <For each={slides}>
+            {(slide) => (
+              <div class="carousel-item" tabIndex={0}>
+                {slide}
+              </div>
+            )}
+          </For>
+        }
+      >
+        <For each={props.each}>
+          {(item, index) => (
+            <div class="carousel-item" tabIndex={0}>
+              {(props.children as (item: T, index: () => number) => JSX.Element)(item, index)}
+            </div>
+          )}
+        </For>
+      </Show>
 
       {/* Navigation buttons */}
       <Show when={props.showNavigation && slides.length > 1}>
@@ -240,20 +278,40 @@ export default function Carousel(props: CarouselProps): JSX.Element {
       {/* Slide indicators */}
       <Show when={props.showIndicators && slides.length > 1}>
         <div class="carousel-indicators">
-          <For each={slides}>
-            {(_, index) => (
-              <button
-                type="button"
-                role="button"
-                aria-label={`Go to slide ${index() + 1}`}
-                aria-pressed={index() === currentIndex() ? "true" : "false"}
-                onClick={() => goToSlide(index())}
-                classList={{
-                  active: index() === currentIndex(),
-                }}
-              />
-            )}
-          </For>
+          <Show 
+            when={props.each && typeof props.children === 'function'} 
+            fallback={
+              <For each={slides}>
+                {(_, index) => (
+                  <button
+                    type="button"
+                    role="button"
+                    aria-label={`Go to slide ${index() + 1}`}
+                    aria-pressed={index() === currentIndex() ? "true" : "false"}
+                    onClick={() => goToSlide(index())}
+                    classList={{
+                      active: index() === currentIndex(),
+                    }}
+                  />
+                )}
+              </For>
+            }
+          >
+            <For each={props.each}>
+              {(_, index) => (
+                <button
+                  type="button"
+                  role="button"
+                  aria-label={`Go to slide ${index() + 1}`}
+                  aria-pressed={index() === currentIndex() ? "true" : "false"}
+                  onClick={() => goToSlide(index())}
+                  classList={{
+                    active: index() === currentIndex(),
+                  }}
+                />
+              )}
+            </For>
+          </Show>
         </div>
       </Show>
     </div>
