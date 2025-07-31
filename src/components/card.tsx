@@ -68,7 +68,12 @@ export default function Card(props: CardProps): JSX.Element {
   const handleKeyDown = (event: KeyboardEvent) => {
     if ((event.key === "Enter" || event.key === " ") && props.onClick) {
       event.preventDefault();
-      props.onClick(event);
+      // Create a synthetic MouseEvent for consistency with onClick handler
+      const syntheticEvent = new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true
+      });
+      props.onClick(syntheticEvent);
     }
   };
 

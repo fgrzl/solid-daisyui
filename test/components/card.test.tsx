@@ -121,7 +121,8 @@ describe("Card Component", () => {
       const { container } = render(() => (
         <Card ariaDescribedBy="description">Test Content</Card>
       ));
-      expect(container.firstChild).toHaveAttribute("role", "article");
+      // Article element has implicit role="article", no need for explicit role attribute
+      expect(container.firstChild?.nodeName).toBe("ARTICLE");
       expect(container.firstChild).toHaveAttribute("aria-describedby", "description");
     });
   });
