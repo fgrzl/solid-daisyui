@@ -1,4 +1,5 @@
-import { JSX } from "solid-js";
+import { JSX, createMemo } from "solid-js";
+import { A, useLocation } from "@solidjs/router";
 
 /**
  * Props for the CrumbLink component.
@@ -23,16 +24,28 @@ export interface CrumbLinkProps {
  * CrumbLink component for individual breadcrumb items.
  * 
  * Renders as a list item (`<li>`) containing the appropriate navigation element.
- * Supports links with href, buttons with onClick, or static text for current page.
+ * Automatically uses solid-router's A component when inside a router context,
+ * and falls back to regular anchor tags when no router is available.
+ * Supports buttons with onClick, or static text for current page.
  * 
  * Designed to be used within a Breadcrumbs component container.
- * Can work with solid-router's A component when href is provided,
- * or use standard HTML links and buttons for navigation.
+ * Provides seamless integration with solid-router while maintaining compatibility
+ * outside of router contexts (useful for testing and standalone usage).
  * 
  * @param {CrumbLinkProps} props - The crumb link component props
  * @returns {JSX.Element} JSX element representing a breadcrumb list item
  */
 export default function CrumbLink(props: CrumbLinkProps): JSX.Element {
+  // Check if we're inside a router context
+  const hasRouter = createMemo(() => {
+    try {
+      useLocation();
+      return true;
+    } catch {
+      return false;
+    }
+  });
+
   // Handle keyboard events for clickable items
   const handleKeyDown = (event: KeyboardEvent) => {
     if ((event.key === 'Enter' || event.key === ' ') && props.onClick) {
@@ -48,16 +61,31 @@ export default function CrumbLink(props: CrumbLinkProps): JSX.Element {
   const renderContent = () => {
     // Render as link if href is provided
     if (props.href) {
-      return (
-        <a 
-          href={props.href} 
-          class={props.class}
-          classList={props.classList}
-          {...commonProps}
-        >
-          {props.children}
-        </a>
-      );
+      // Use solid-router A component if router context is available
+      if (hasRouter()) {
+        return (
+          <A 
+            href={props.href} 
+            class={props.class}
+            classList={props.classList}
+            {...commonProps}
+          >
+            {props.children}
+          </A>
+        );
+      } else {
+        // Fall back to regular anchor tag
+        return (
+          <a 
+            href={props.href} 
+            class={props.class}
+            classList={props.classList}
+            {...commonProps}
+          >
+            {props.children}
+          </a>
+        );
+      }
     }
     
     // Render as button if onClick is provided
