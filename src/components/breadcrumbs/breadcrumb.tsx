@@ -2,7 +2,7 @@ import { JSX, createMemo } from "solid-js";
 import { A, useLocation } from "@solidjs/router";
 
 /**
- * Props for the CrumbLink component.
+ * Props for the Breadcrumb component.
  *
  * @property {JSX.Element} [children] - The content to display inside the breadcrumb link.
  * @property {string} [href] - The URL to link to when the breadcrumb item is clicked.
@@ -11,7 +11,7 @@ import { A, useLocation } from "@solidjs/router";
  * @property {string} [class] - Additional CSS classes to apply to the link element.
  * @property {Record<string, boolean>} [classList] - Dynamic class list for conditional styling.
  */
-export interface CrumbLinkProps {
+export interface BreadcrumbProps {
   children?: JSX.Element;
   href?: string;
   onClick?: () => void;
@@ -21,7 +21,7 @@ export interface CrumbLinkProps {
 }
 
 /**
- * CrumbLink component for individual breadcrumb items.
+ * Breadcrumb component for individual breadcrumb items.
  * 
  * Renders as a list item (`<li>`) containing the appropriate navigation element.
  * Automatically uses solid-router's A component when inside a router context,
@@ -32,10 +32,10 @@ export interface CrumbLinkProps {
  * Provides seamless integration with solid-router while maintaining compatibility
  * outside of router contexts (useful for testing and standalone usage).
  * 
- * @param {CrumbLinkProps} props - The crumb link component props
+ * @param {BreadcrumbProps} props - The breadcrumb component props
  * @returns {JSX.Element} JSX element representing a breadcrumb list item
  */
-export default function CrumbLink(props: CrumbLinkProps): JSX.Element {
+export default function Breadcrumb(props: BreadcrumbProps): JSX.Element {
   // Check if we're inside a router context
   const hasRouter = createMemo(() => {
     try {

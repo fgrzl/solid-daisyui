@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, fireEvent } from "@solidjs/testing-library";
-import Breadcrumbs from "@/components/breadcrumbs";
-import CrumbLink from "@/components/crumb-link";
+import Breadcrumbs from "@/components/breadcrumbs/breadcrumbs";
+import Breadcrumb from "@/components/breadcrumbs/breadcrumb";
 
 describe("Breadcrumbs Component", () => {
   // Basic Rendering Tests
@@ -50,13 +50,13 @@ describe("Breadcrumbs Component", () => {
   });
 
   // New Composable API Tests
-  describe("Composable API with CrumbLink", () => {
-    it("renders with CrumbLink children", () => {
+  describe("Composable API with Breadcrumb", () => {
+    it("renders with Breadcrumb children", () => {
       const { getByRole, getByText } = render(() => (
         <Breadcrumbs>
-          <CrumbLink href="/">Home</CrumbLink>
-          <CrumbLink href="/products">Products</CrumbLink>
-          <CrumbLink current>Current Page</CrumbLink>
+          <Breadcrumb href="/">Home</Breadcrumb>
+          <Breadcrumb href="/products">Products</Breadcrumb>
+          <Breadcrumb current>Current Page</Breadcrumb>
         </Breadcrumbs>
       ));
       
@@ -66,12 +66,12 @@ describe("Breadcrumbs Component", () => {
       expect(getByText("Current Page")).toBeInTheDocument();
     });
 
-    it("renders proper list structure with CrumbLink", () => {
+    it("renders proper list structure with Breadcrumb", () => {
       const { getAllByRole } = render(() => (
         <Breadcrumbs>
-          <CrumbLink href="/">Home</CrumbLink>
-          <CrumbLink href="/products">Products</CrumbLink>
-          <CrumbLink current>Current Page</CrumbLink>
+          <Breadcrumb href="/">Home</Breadcrumb>
+          <Breadcrumb href="/products">Products</Breadcrumb>
+          <Breadcrumb current>Current Page</Breadcrumb>
         </Breadcrumbs>
       ));
       
@@ -79,13 +79,13 @@ describe("Breadcrumbs Component", () => {
       expect(listItems).toHaveLength(3);
     });
 
-    it("supports mixed CrumbLink types", () => {
+    it("supports mixed Breadcrumb types", () => {
       const handleClick = vi.fn();
       const { getByRole } = render(() => (
         <Breadcrumbs>
-          <CrumbLink href="/">Home</CrumbLink>
-          <CrumbLink onClick={handleClick}>Products</CrumbLink>
-          <CrumbLink current>Current Page</CrumbLink>
+          <Breadcrumb href="/">Home</Breadcrumb>
+          <Breadcrumb onClick={handleClick}>Products</Breadcrumb>
+          <Breadcrumb current>Current Page</Breadcrumb>
         </Breadcrumbs>
       ));
       
@@ -93,11 +93,11 @@ describe("Breadcrumbs Component", () => {
       expect(getByRole("button", { name: "Products" })).toBeInTheDocument();
     });
 
-    it("does not render separators with CrumbLink children", () => {
+    it("does not render separators with Breadcrumb children", () => {
       const { container } = render(() => (
         <Breadcrumbs>
-          <CrumbLink href="/">Home</CrumbLink>
-          <CrumbLink href="/products">Products</CrumbLink>
+          <Breadcrumb href="/">Home</Breadcrumb>
+          <Breadcrumb href="/products">Products</Breadcrumb>
         </Breadcrumbs>
       ));
       
@@ -302,8 +302,8 @@ describe("Breadcrumbs Component", () => {
     it("renders children when no items provided", () => {
       const { getByText } = render(() => (
         <Breadcrumbs>
-          <CrumbLink href="/">Home</CrumbLink>
-          <CrumbLink>Current</CrumbLink>
+          <Breadcrumb href="/">Home</Breadcrumb>
+          <Breadcrumb>Current</Breadcrumb>
         </Breadcrumbs>
       ));
       
@@ -316,7 +316,7 @@ describe("Breadcrumbs Component", () => {
       
       const { getByText, queryByText } = render(() => (
         <Breadcrumbs items={items}>
-          <CrumbLink>Children Home</CrumbLink>
+          <Breadcrumb>Children Home</Breadcrumb>
         </Breadcrumbs>
       ));
       
@@ -374,12 +374,12 @@ describe("Breadcrumbs Component", () => {
       expect(list).toBeEmptyDOMElement();
     });
 
-    it("renders with mixed CrumbLink and custom elements", () => {
+    it("renders with mixed Breadcrumb and custom elements", () => {
       const { getByText, getByTestId } = render(() => (
         <Breadcrumbs>
-          <CrumbLink href="/">Home</CrumbLink>
+          <Breadcrumb href="/">Home</Breadcrumb>
           <li><span data-testid="custom">Custom Element</span></li>
-          <CrumbLink current>Current</CrumbLink>
+          <Breadcrumb current>Current</Breadcrumb>
         </Breadcrumbs>
       ));
       

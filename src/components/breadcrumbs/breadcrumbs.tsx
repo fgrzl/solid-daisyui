@@ -2,7 +2,7 @@ import { JSX, Show, For, createMemo } from "solid-js";
 
 /**
  * Props for individual breadcrumb items.
- * @deprecated Use CrumbLink component instead for better composability.
+ * @deprecated Use Breadcrumb component instead for better composability.
  *
  * @property {string} [label] - The text label to display for the breadcrumb item.
  * @property {string} [href] - The URL to link to when the breadcrumb item is clicked.
@@ -21,8 +21,8 @@ export interface BreadcrumbItem {
 /**
  * Props for the Breadcrumbs component.
  *
- * @property {BreadcrumbItem[]} [items] - Array of breadcrumb items to display. Deprecated: use CrumbLink children instead.
- * @property {JSX.Element} [children] - Breadcrumb content as CrumbLink components or custom JSX children.
+ * @property {BreadcrumbItem[]} [items] - Array of breadcrumb items to display. Deprecated: use Breadcrumb children instead.
+ * @property {JSX.Element} [children] - Breadcrumb content as Breadcrumb components or custom JSX children.
  * @property {string | JSX.Element} [separator] - Custom separator between breadcrumb items. Defaults to "/" character. Only used with items prop.
  * @property {string} [class] - Additional CSS classes to apply to the breadcrumbs container.
  * @property {Record<string, boolean>} [classList] - Dynamic class list for conditional styling.
@@ -44,12 +44,12 @@ export interface BreadcrumbsProps {
  * clickable items, and current page indicators. Implements WCAG 2.1 AA accessibility
  * standards with proper ARIA attributes and semantic HTML structure.
  * 
- * **Recommended Usage**: Use with CrumbLink children for better composability:
+ * **Recommended Usage**: Use with Breadcrumb children for better composability:
  * ```tsx
  * <Breadcrumbs>
- *   <CrumbLink href="/">Home</CrumbLink>
- *   <CrumbLink href="/products">Products</CrumbLink>
- *   <CrumbLink current>Current Page</CrumbLink>
+ *   <Breadcrumb href="/">Home</Breadcrumb>
+ *   <Breadcrumb href="/products">Products</Breadcrumb>
+ *   <Breadcrumb current>Current Page</Breadcrumb>
  * </Breadcrumbs>
  * ```
  * 

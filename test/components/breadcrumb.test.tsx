@@ -1,26 +1,26 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, fireEvent } from "@solidjs/testing-library";
-import CrumbLink from "@/components/crumb-link";
+import Breadcrumb from "@/components/breadcrumbs/breadcrumb";
 
-describe("CrumbLink Component", () => {
+describe("Breadcrumb Component", () => {
   // Basic Rendering Tests
   describe("Basic Rendering", () => {
     it("renders as list item", () => {
-      const { container } = render(() => <CrumbLink>Home</CrumbLink>);
+      const { container } = render(() => <Breadcrumb>Home</Breadcrumb>);
       const listItem = container.querySelector('li');
       expect(listItem).toBeInTheDocument();
     });
 
     it("renders children content", () => {
-      const { getByText } = render(() => <CrumbLink>Home</CrumbLink>);
+      const { getByText } = render(() => <Breadcrumb>Home</Breadcrumb>);
       expect(getByText("Home")).toBeInTheDocument();
     });
 
     it("renders with custom JSX children", () => {
       const { getByTestId } = render(() => (
-        <CrumbLink>
+        <Breadcrumb>
           <span data-testid="custom">Custom Content</span>
-        </CrumbLink>
+        </Breadcrumb>
       ));
       expect(getByTestId("custom")).toBeInTheDocument();
     });
@@ -30,7 +30,7 @@ describe("CrumbLink Component", () => {
   describe("Link Rendering", () => {
     it("renders as link when href is provided", () => {
       const { getByRole } = render(() => (
-        <CrumbLink href="/home">Home</CrumbLink>
+        <Breadcrumb href="/home">Home</Breadcrumb>
       ));
       const link = getByRole("link");
       expect(link).toHaveAttribute("href", "/home");
@@ -39,7 +39,7 @@ describe("CrumbLink Component", () => {
 
     it("applies custom classes to link", () => {
       const { getByRole } = render(() => (
-        <CrumbLink href="/home" class="custom-link">Home</CrumbLink>
+        <Breadcrumb href="/home" class="custom-link">Home</Breadcrumb>
       ));
       const link = getByRole("link");
       expect(link).toHaveClass("custom-link");
@@ -47,12 +47,12 @@ describe("CrumbLink Component", () => {
 
     it("applies classList to link", () => {
       const { getByRole } = render(() => (
-        <CrumbLink 
+        <Breadcrumb 
           href="/home" 
           classList={{ active: true, inactive: false }}
         >
           Home
-        </CrumbLink>
+        </Breadcrumb>
       ));
       const link = getByRole("link");
       expect(link).toHaveClass("active");
@@ -65,7 +65,7 @@ describe("CrumbLink Component", () => {
     it("renders as button when onClick is provided", () => {
       const handleClick = vi.fn();
       const { getByRole } = render(() => (
-        <CrumbLink onClick={handleClick}>Home</CrumbLink>
+        <Breadcrumb onClick={handleClick}>Home</Breadcrumb>
       ));
       const button = getByRole("button");
       expect(button).toHaveTextContent("Home");
@@ -74,7 +74,7 @@ describe("CrumbLink Component", () => {
     it("calls onClick handler when button is clicked", () => {
       const handleClick = vi.fn();
       const { getByRole } = render(() => (
-        <CrumbLink onClick={handleClick}>Home</CrumbLink>
+        <Breadcrumb onClick={handleClick}>Home</Breadcrumb>
       ));
       const button = getByRole("button");
       
@@ -85,7 +85,7 @@ describe("CrumbLink Component", () => {
     it("supports keyboard navigation for buttons", () => {
       const handleClick = vi.fn();
       const { getByRole } = render(() => (
-        <CrumbLink onClick={handleClick}>Home</CrumbLink>
+        <Breadcrumb onClick={handleClick}>Home</Breadcrumb>
       ));
       const button = getByRole("button");
       
@@ -101,7 +101,7 @@ describe("CrumbLink Component", () => {
     it("applies custom classes to button", () => {
       const handleClick = vi.fn();
       const { getByRole } = render(() => (
-        <CrumbLink onClick={handleClick} class="custom-button">Home</CrumbLink>
+        <Breadcrumb onClick={handleClick} class="custom-button">Home</Breadcrumb>
       ));
       const button = getByRole("button");
       expect(button).toHaveClass("custom-button");
@@ -111,14 +111,14 @@ describe("CrumbLink Component", () => {
   // Static Content Tests
   describe("Static Content", () => {
     it("renders as span when no href or onClick", () => {
-      const { getByText } = render(() => <CrumbLink>Current Page</CrumbLink>);
+      const { getByText } = render(() => <Breadcrumb>Current Page</Breadcrumb>);
       const span = getByText("Current Page");
       expect(span.tagName.toLowerCase()).toBe("span");
     });
 
     it("applies custom classes to span", () => {
       const { getByText } = render(() => (
-        <CrumbLink class="custom-span">Current Page</CrumbLink>
+        <Breadcrumb class="custom-span">Current Page</Breadcrumb>
       ));
       const span = getByText("Current Page");
       expect(span).toHaveClass("custom-span");
@@ -129,7 +129,7 @@ describe("CrumbLink Component", () => {
   describe("Accessibility", () => {
     it("marks current page with aria-current", () => {
       const { getByText } = render(() => (
-        <CrumbLink current>Current Page</CrumbLink>
+        <Breadcrumb current>Current Page</Breadcrumb>
       ));
       const element = getByText("Current Page");
       expect(element).toHaveAttribute("aria-current", "page");
@@ -137,7 +137,7 @@ describe("CrumbLink Component", () => {
 
     it("applies aria-current to links", () => {
       const { getByRole } = render(() => (
-        <CrumbLink href="/current" current>Current Page</CrumbLink>
+        <Breadcrumb href="/current" current>Current Page</Breadcrumb>
       ));
       const link = getByRole("link");
       expect(link).toHaveAttribute("aria-current", "page");
@@ -146,7 +146,7 @@ describe("CrumbLink Component", () => {
     it("applies aria-current to buttons", () => {
       const handleClick = vi.fn();
       const { getByRole } = render(() => (
-        <CrumbLink onClick={handleClick} current>Current Page</CrumbLink>
+        <Breadcrumb onClick={handleClick} current>Current Page</Breadcrumb>
       ));
       const button = getByRole("button");
       expect(button).toHaveAttribute("aria-current", "page");
@@ -154,7 +154,7 @@ describe("CrumbLink Component", () => {
 
     it("does not add aria-current when current is false", () => {
       const { getByText } = render(() => (
-        <CrumbLink current={false}>Regular Page</CrumbLink>
+        <Breadcrumb current={false}>Regular Page</Breadcrumb>
       ));
       const element = getByText("Regular Page");
       expect(element).not.toHaveAttribute("aria-current");
@@ -164,7 +164,7 @@ describe("CrumbLink Component", () => {
   // Edge Cases Tests
   describe("Edge Cases", () => {
     it("renders list item even with no content", () => {
-      const { container } = render(() => <CrumbLink />);
+      const { container } = render(() => <Breadcrumb />);
       const listItem = container.querySelector('li');
       expect(listItem).toBeInTheDocument();
     });
@@ -172,7 +172,7 @@ describe("CrumbLink Component", () => {
     it("prefers href over onClick when both provided", () => {
       const handleClick = vi.fn();
       const { getByRole, queryByRole } = render(() => (
-        <CrumbLink href="/home" onClick={handleClick}>Home</CrumbLink>
+        <Breadcrumb href="/home" onClick={handleClick}>Home</Breadcrumb>
       ));
       
       // Should render as link, not button
@@ -185,7 +185,7 @@ describe("CrumbLink Component", () => {
     });
 
     it("handles empty children gracefully", () => {
-      const { container } = render(() => <CrumbLink href="/home"></CrumbLink>);
+      const { container } = render(() => <Breadcrumb href="/home"></Breadcrumb>);
       const link = container.querySelector('a');
       expect(link).toBeInTheDocument();
       expect(link).toHaveAttribute("href", "/home");
@@ -199,7 +199,7 @@ describe("CrumbLink Component", () => {
       
       expect(() => {
         render(() => (
-          <CrumbLink
+          <Breadcrumb
             href="/home"
             onClick={handleClick}
             current={true}
@@ -207,7 +207,7 @@ describe("CrumbLink Component", () => {
             classList={{ active: true }}
           >
             Home
-          </CrumbLink>
+          </Breadcrumb>
         ));
       }).not.toThrow();
     });
