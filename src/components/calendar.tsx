@@ -139,37 +139,47 @@ export default function Calendar(props: CalendarProps): JSX.Element {
 
   /** Checks if a date is disabled based on constraints */
   const isDateDisabled = (date: Date): boolean => {
-    if (props.disabledDates?.some(disabled => isSameDay(disabled, date))) {
-      return true;
+    try {
+      if (props.disabledDates?.some(disabled => isSameDay(disabled, date))) {
+        return true;
+      }
+      
+      if (props.minDate && isBefore(date, props.minDate)) {
+        return true;
+      }
+      
+      if (props.maxDate && isAfter(date, props.maxDate)) {
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.warn("Error checking if date is disabled:", error);
+      return false;
     }
-    
-    if (props.minDate && isBefore(date, props.minDate)) {
-      return true;
-    }
-    
-    if (props.maxDate && isAfter(date, props.maxDate)) {
-      return true;
-    }
-    
-    return false;
   };
 
   /** Checks if a date is selected in any mode */
   const isDateSelected = (date: Date): boolean => {
-    if (props.selectedDate && isSameDay(date, props.selectedDate)) {
-      return true;
+    try {
+      if (props.selectedDate && isSameDay(date, props.selectedDate)) {
+        return true;
+      }
+      
+      if (props.multiple && selectedDates().some(selected => isSameDay(selected, date))) {
+        return true;
+      }
+      
+      if (props.range && props.selectedRange) {
+        const { start, end } = props.selectedRange;
+        return isWithinInterval(date, { start, end });
+      }
+      
+      return false;
+    } catch (error) {
+      console.warn("Error checking if date is selected:", error);
+      return false;
     }
-    
-    if (props.multiple && selectedDates().some(selected => isSameDay(selected, date))) {
-      return true;
-    }
-    
-    if (props.range && props.selectedRange) {
-      const { start, end } = props.selectedRange;
-      return isWithinInterval(date, { start, end });
-    }
-    
-    return false;
   };
 
   /** Checks if date is in the currently displayed month */
@@ -183,6 +193,9 @@ export default function Calendar(props: CalendarProps): JSX.Element {
   const [selectedDates, setSelectedDates] = createSignal<Date[]>(props.selectedDates || []);
   const [rangeStartDate, setRangeStartDate] = createSignal<Date | null>(null);
   const [focusedDateTimestamp, setFocusedDateTimestamp] = createSignal<number | null>(null);
+  
+  // Store element references for proper focus management
+  let dateElementRefs: Record<number, HTMLButtonElement> = {};
 
   // ===== REACTIVE EFFECTS =====
   
@@ -199,6 +212,33 @@ export default function Calendar(props: CalendarProps): JSX.Element {
     if (props.selectedDates) {
       setSelectedDates(props.selectedDates);
     }
+  });
+
+  // Handle reactive focus management
+  createEffect(() => {
+    const focusedTimestamp = focusedDateTimestamp();
+    if (focusedTimestamp && dateElementRefs[focusedTimestamp]) {
+      try {
+        dateElementRefs[focusedTimestamp].focus();
+      } catch (error) {
+        // Gracefully handle focus errors if element is not available
+        console.warn("Failed to focus calendar date:", error);
+      }
+    }
+  });
+
+  // Cleanup element references when calendar days change
+  createEffect(() => {
+    const days = calendarDays();
+    const validTimestamps = new Set(days.map(date => date.getTime()));
+    
+    // Remove references for dates no longer in view
+    Object.keys(dateElementRefs).forEach(timestampStr => {
+      const timestamp = parseInt(timestampStr, 10);
+      if (!validTimestamps.has(timestamp)) {
+        delete dateElementRefs[timestamp];
+      }
+    });
   });
 
   // ===== COMPUTED VALUES =====
@@ -255,12 +295,16 @@ export default function Calendar(props: CalendarProps): JSX.Element {
   const handleDateSelect = (date: Date): void => {
     if (isDateDisabled(date)) return;
     
-    if (props.range) {
-      handleRangeSelection(date);
-    } else if (props.multiple) {
-      handleMultipleSelection(date);
-    } else {
-      props.onDateSelect?.(date);
+    try {
+      if (props.range) {
+        handleRangeSelection(date);
+      } else if (props.multiple) {
+        handleMultipleSelection(date);
+      } else {
+        props.onDateSelect?.(date);
+      }
+    } catch (error) {
+      console.warn("Error handling date selection:", error);
     }
   };
 
@@ -312,7 +356,7 @@ export default function Calendar(props: CalendarProps): JSX.Element {
 
   // ===== KEYBOARD NAVIGATION =====
 
-  /** Navigate to a relative date and update focused element */
+  /** Navigate to a relative date and update focused element reactively */
   const navigateToDate = (currentDate: Date, dayOffset: number): void => {
     const newDate = addDays(currentDate, dayOffset);
     
@@ -321,18 +365,8 @@ export default function Calendar(props: CalendarProps): JSX.Element {
       setDisplayDate(startOfMonth(newDate));
     }
     
-    // Set the timestamp for the date to focus
+    // Set the timestamp for reactive focus management
     setFocusedDateTimestamp(newDate.getTime());
-    
-    // Focus the target element after DOM update
-    setTimeout(() => {
-      const targetElement = document.querySelector(
-        `[data-date="${newDate.getTime()}"]`
-      ) as HTMLButtonElement;
-      if (targetElement) {
-        targetElement.focus();
-      }
-    }, 0);
   };
 
   /** Handle keyboard navigation */
@@ -430,11 +464,8 @@ export default function Calendar(props: CalendarProps): JSX.Element {
                 type="button"
                 role="gridcell"
                 ref={(el) => {
-                  if (isFocused && el) {
-                    // Use requestAnimationFrame for proper timing
-                    requestAnimationFrame(() => {
-                      el.focus();
-                    });
+                  if (el) {
+                    dateElementRefs[timestamp] = el;
                   }
                 }}
                 tabIndex={isFocused ? 0 : -1}
