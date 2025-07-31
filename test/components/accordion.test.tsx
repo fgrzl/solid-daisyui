@@ -119,6 +119,22 @@ describe("Accordion Component", () => {
     expect(accordion).toHaveClass("custom-class");
   });
 
+  it("supports dynamic classList", () => {
+    const { container } = render(() => (
+      <Accordion 
+        title="Test" 
+        name="test-group" 
+        classList={{ "dynamic-class": true, "inactive-class": false }}
+      >
+        <div>Content</div>
+      </Accordion>
+    ));
+    
+    const accordion = container.firstChild;
+    expect(accordion).toHaveClass("dynamic-class");
+    expect(accordion).not.toHaveClass("inactive-class");
+  });
+
   it("supports keyboard navigation", () => {
     const { getByRole } = render(() => (
       <Accordion title="Test Title" name="test-group">
