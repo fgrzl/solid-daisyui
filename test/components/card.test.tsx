@@ -118,7 +118,7 @@ describe("Card Component", () => {
     });
 
     it("maintains article semantics when not clickable", () => {
-      const { container } = render(() => (
+      const { getByRole } = render(() => (
         <Card ariaDescribedBy="description">Test Content</Card>
       ));
       // Article element has implicit role="article", no need for explicit role attribute

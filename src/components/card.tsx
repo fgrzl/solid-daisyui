@@ -69,7 +69,27 @@ export default function Card(props: CardProps): JSX.Element {
     if ((event.key === "Enter" || event.key === " ") && props.onClick) {
       event.preventDefault();
       // Create a synthetic MouseEvent for consistency with onClick handler
-      props.onClick(event);
+      const syntheticEvent = {
+        ...event,
+        type: "click",
+        button: 0,
+        buttons: 1,
+        clientX: 0,
+        clientY: 0,
+        offsetX: 0,
+        offsetY: 0,
+        pageX: 0,
+        pageY: 0,
+        screenX: 0,
+        screenY: 0,
+        movementX: 0,
+        movementY: 0,
+        altKey: event.altKey,
+        ctrlKey: event.ctrlKey,
+        metaKey: event.metaKey,
+        shiftKey: event.shiftKey
+      } as unknown as MouseEvent;
+      props.onClick(syntheticEvent);
     }
   };
 
