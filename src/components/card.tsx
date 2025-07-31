@@ -2,6 +2,25 @@ import { JSX, Show, For } from "solid-js";
 
 /**
  * Props for the Card component.
+ *
+ * @property {JSX.Element} [children] - The content to display inside the card body.
+ * @property {string} [class] - Additional CSS classes to apply to the card.
+ * @property {Record<string, boolean>} [classList] - Dynamic class list for conditional styling.
+ * @property {string} [title] - The title text to display in the card header.
+ * @property {1 | 2 | 3 | 4 | 5 | 6} [titleLevel] - The heading level for the title (h1-h6). Defaults to h2.
+ * @property {string | JSX.Element} [body] - Additional body content to display below the title.
+ * @property {string} [imageSrc] - URL of the image to display in the card.
+ * @property {string} [imageAlt] - Alt text for the card image for accessibility.
+ * @property {"top" | "bottom"} [imagePosition] - Position of the image relative to card content. Defaults to top.
+ * @property {JSX.Element | JSX.Element[]} [actions] - Action buttons or elements to display in card actions area.
+ * @property {"start" | "center" | "end"} [actionsPosition] - Alignment of action buttons. Defaults to end.
+ * @property {boolean} [bordered] - If true, applies card-bordered styling with visible border.
+ * @property {boolean} [compact] - If true, applies card-compact styling with reduced padding.
+ * @property {boolean} [side] - If true, applies card-side styling for horizontal layout.
+ * @property {boolean} [glass] - If true, applies glass effect styling.
+ * @property {(event: MouseEvent) => void} [onClick] - Click event handler for interactive cards.
+ * @property {string} [ariaLabel] - Accessible label for the card when interactive.
+ * @property {string} [ariaDescribedBy] - ID of element that describes the card for screen readers.
  */
 export interface CardProps {
   children?: JSX.Element;
@@ -25,8 +44,14 @@ export interface CardProps {
 }
 
 /**
- * Card component for displaying content in a structured container.
- * Supports DaisyUI variants, images, actions, and accessibility features.
+ * Card component for displaying content in a structured, visually appealing container.
+ * 
+ * Supports all DaisyUI card variants including bordered, compact, side layout, and glass effects.
+ * Provides flexible image positioning, customizable action buttons, and proper accessibility features.
+ * Can be used as a static content container or interactive element with click handlers.
+ * 
+ * @param {CardProps} props - The properties to configure the Card component.
+ * @returns {JSX.Element} The rendered Card component.
  */
 export default function Card(props: CardProps): JSX.Element {
   // Build classes following DaisyUI patterns
@@ -47,13 +72,11 @@ export default function Card(props: CardProps): JSX.Element {
     }
   };
 
-  // Get actions position class
   const actionsPositionClass = () => {
     const position = props.actionsPosition || "end";
     return `justify-${position}`;
   };
 
-  // Render title with dynamic heading level
   const renderTitle = () => {
     if (!props.title) return null;
     
@@ -71,7 +94,6 @@ export default function Card(props: CardProps): JSX.Element {
     }
   };
 
-  // Render image if provided
   const renderImage = () => {
     if (!props.imageSrc) return null;
     
@@ -82,7 +104,6 @@ export default function Card(props: CardProps): JSX.Element {
     );
   };
 
-  // Render card body with content
   const renderBody = () => {
     const hasContent = props.children || props.body || props.title || props.actions;
     if (!hasContent) return null;
