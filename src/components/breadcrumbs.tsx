@@ -1,4 +1,4 @@
-import { JSX, Show, For } from "solid-js";
+import { JSX, Show, For, createMemo } from "solid-js";
 
 /**
  * Props for individual breadcrumb items.
@@ -50,8 +50,8 @@ export interface BreadcrumbsProps {
  * @returns {JSX.Element} JSX element representing the breadcrumbs navigation
  */
 export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
-  // Build classes following DaisyUI patterns
-  const classes = () => {
+  // Memoize classes calculation for better performance
+  const classes = createMemo(() => {
     const baseClasses: Record<string, boolean> = {
       breadcrumbs: true,
     };
@@ -62,7 +62,18 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
     }
 
     return baseClasses;
-  };
+  });
+
+  // Memoize separator to avoid recreating on each render
+  const separator = createMemo(() => {
+    if (typeof props.separator === "string") {
+      return props.separator;
+    }
+    if (props.separator) {
+      return props.separator;
+    }
+    return "/";
+  });
 
   // Handle keyboard events for clickable items
   const handleKeyDown = (event: KeyboardEvent, onClick?: () => void) => {
@@ -79,17 +90,13 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
       return item.element;
     }
 
-    // Determine the item content based on props
-    const itemProps: any = {};
-    
-    if (item.current) {
-      itemProps["aria-current"] = "page";
-    }
+    // Common props for aria-current
+    const commonProps = item.current ? { "aria-current": "page" as const } : {};
 
     // Render as link if href is provided
     if (item.href) {
       return (
-        <a href={item.href} {...itemProps}>
+        <a href={item.href} {...commonProps}>
           {item.label || ""}
         </a>
       );
@@ -102,7 +109,7 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
           type="button"
           onClick={item.onClick}
           onKeyDown={(e) => handleKeyDown(e, item.onClick)}
-          {...itemProps}
+          {...commonProps}
         >
           {item.label || ""}
         </button>
@@ -111,21 +118,10 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
     
     // Render as span for current/static items
     return (
-      <span {...itemProps}>
+      <span {...commonProps}>
         {item.label || ""}
       </span>
     );
-  };
-
-  // Render separator between items
-  const renderSeparator = () => {
-    if (typeof props.separator === "string") {
-      return props.separator;
-    }
-    if (props.separator) {
-      return props.separator;
-    }
-    return "/";
   };
 
   return (
@@ -144,7 +140,7 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
               <li>
                 {renderItem(item)}
                 <Show when={index() < (props.items?.length || 0) - 1}>
-                  <span aria-hidden="true">{renderSeparator()}</span>
+                  <span aria-hidden="true">{separator()}</span>
                 </Show>
               </li>
             )}
