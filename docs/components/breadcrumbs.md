@@ -4,9 +4,50 @@
 
 The Breadcrumbs component provides hierarchical navigation paths that allow users to understand their current location within a website or application. It follows DaisyUI design standards and implements WCAG 2.1 AA accessibility guidelines.
 
+The component now supports two approaches:
+- **Recommended**: Composable structure using `CrumbLink` components for better flexibility
+- **Legacy**: Items array for backward compatibility
+
 ## Usage Examples
 
-### Basic Usage with Items
+### Recommended: Composable Structure with CrumbLink
+
+```tsx
+import { Breadcrumbs, CrumbLink } from "solid-daisyui";
+
+<Breadcrumbs>
+  <CrumbLink href="/">Home</CrumbLink>
+  <CrumbLink href="/products">Products</CrumbLink>
+  <CrumbLink href="/products/electronics">Electronics</CrumbLink>
+  <CrumbLink current>Current Page</CrumbLink>
+</Breadcrumbs>
+```
+
+### With Click Handlers
+
+```tsx
+<Breadcrumbs>
+  <CrumbLink onClick={() => navigate("/")}>Home</CrumbLink>
+  <CrumbLink onClick={() => navigate("/products")}>Products</CrumbLink>
+  <CrumbLink current>Current Page</CrumbLink>
+</Breadcrumbs>
+```
+
+### With Solid Router (Future Enhancement)
+
+When using with solid-router, you can pass the A component as children:
+
+```tsx
+import { A } from "@solidjs/router";
+
+<Breadcrumbs>
+  <CrumbLink><A href="/">Home</A></CrumbLink>
+  <CrumbLink><A href="/products">Products</A></CrumbLink>
+  <CrumbLink current>Current Page</CrumbLink>
+</Breadcrumbs>
+```
+
+### Legacy: Items Array (Deprecated)
 
 ```tsx
 import { Breadcrumbs } from "solid-daisyui";
@@ -21,7 +62,7 @@ const items = [
 <Breadcrumbs items={items} />
 ```
 
-### Custom Separator
+### Legacy: Custom Separator
 
 ```tsx
 <Breadcrumbs 
@@ -30,7 +71,7 @@ const items = [
 />
 ```
 
-### With Click Handlers
+### Legacy: With Click Handlers
 
 ```tsx
 const items = [
@@ -42,7 +83,7 @@ const items = [
 <Breadcrumbs items={items} />
 ```
 
-### Using Children (Manual Layout)
+### Legacy: Using Children (Manual Layout)
 
 ```tsx
 <Breadcrumbs>
@@ -52,7 +93,7 @@ const items = [
 </Breadcrumbs>
 ```
 
-### Custom Separator Element
+### Legacy: Custom Separator Element
 
 ```tsx
 const CustomSeparator = () => <span class="text-primary">→</span>;
@@ -65,16 +106,29 @@ const CustomSeparator = () => <span class="text-primary">→</span>;
 
 ## Props
 
+### Breadcrumbs Props
+
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| items | `BreadcrumbItem[]` | `undefined` | Array of breadcrumb items to display |
-| children | `JSX.Element` | `undefined` | Custom breadcrumb content. Items prop takes precedence |
-| separator | `string \| JSX.Element` | `"/"` | Custom separator between breadcrumb items |
+| items | `BreadcrumbItem[]` | `undefined` | **Deprecated**: Array of breadcrumb items to display. Use CrumbLink children instead |
+| children | `JSX.Element` | `undefined` | Breadcrumb content as CrumbLink components or custom JSX |
+| separator | `string \| JSX.Element` | `"/"` | Custom separator between breadcrumb items (only used with items prop) |
 | class | `string` | `undefined` | Additional CSS classes to apply |
 | classList | `Record<string, boolean>` | `undefined` | Dynamic class list for conditional styling |
 | ariaLabel | `string` | `"Breadcrumb"` | Custom aria-label for navigation element |
 
-### BreadcrumbItem Interface
+### CrumbLink Props
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| children | `JSX.Element` | `undefined` | Content to display inside the breadcrumb link |
+| href | `string` | `undefined` | URL to link to (renders as anchor) |
+| onClick | `() => void` | `undefined` | Click handler (renders as button) |
+| current | `boolean` | `false` | Marks item as current page (adds aria-current) |
+| class | `string` | `undefined` | Additional CSS classes to apply to the link element |
+| classList | `Record<string, boolean>` | `undefined` | Dynamic class list for conditional styling |
+
+### BreadcrumbItem Interface (Legacy)
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
@@ -86,22 +140,70 @@ const CustomSeparator = () => <span class="text-primary">→</span>;
 
 ## Accessibility Features
 
-- Uses semantic `<nav>` and `<ol>` elements
+- Uses semantic `<div role="navigation">` and `<ul>` elements following DaisyUI structure
 - Includes proper ARIA attributes (`role="navigation"`, `aria-label`)
 - Current page marked with `aria-current="page"`
-- Keyboard navigation support for interactive items
+- Keyboard navigation support for interactive items (Enter/Space keys)
 - Screen reader compatible with descriptive labeling
+- Separators hidden from assistive technology (legacy items mode only)
 
 ## DaisyUI Classes
 
 The component uses the following DaisyUI classes:
 - `breadcrumbs` - Base breadcrumbs styling
 
+## Component Structure
+
+### Recommended: Composable Structure
+```html
+<div class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+  <ul>
+    <li><a href="/">Home</a></li>
+    <li><a href="/products">Products</a></li>
+    <li><span aria-current="page">Current Page</span></li>
+  </ul>
+</div>
+```
+
+### Legacy: Items Structure
+```html
+<div class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+  <ul>
+    <li><a href="/">Home</a><span aria-hidden="true">/</span></li>
+    <li><a href="/products">Products</a><span aria-hidden="true">/</span></li>
+    <li><span aria-current="page">Current Page</span></li>
+  </ul>
+</div>
+```
+
+## Migration Guide
+
+To migrate from the legacy items approach to the new composable structure:
+
+### Before (Legacy)
+```tsx
+<Breadcrumbs items={[
+  { label: "Home", href: "/" },
+  { label: "Products", href: "/products" },
+  { label: "Current Page", current: true }
+]} />
+```
+
+### After (Recommended)
+```tsx
+<Breadcrumbs>
+  <CrumbLink href="/">Home</CrumbLink>
+  <CrumbLink href="/products">Products</CrumbLink>
+  <CrumbLink current>Current Page</CrumbLink>
+</Breadcrumbs>
+```
+
 ## Notes
 
+- **Recommended**: Use CrumbLink children for better composability and router integration
+- **Legacy**: Items prop is deprecated but still supported for backward compatibility
 - When both `items` and `children` are provided, `items` takes precedence
-- Items without `href` or `onClick` are rendered as static spans
-- Items with `href` are rendered as anchor links
-- Items with `onClick` are rendered as buttons with keyboard support
-- Custom separators are hidden from screen readers with `aria-hidden="true"`
-- Empty items arrays or missing items render an empty list
+- CrumbLink components automatically render appropriate elements (links, buttons, or spans)
+- CrumbLink supports keyboard navigation for interactive elements
+- Custom separators are only supported in legacy items mode
+- The new structure is more flexible and allows for future router integration

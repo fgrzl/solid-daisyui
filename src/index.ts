@@ -14,6 +14,7 @@ export * from "./components/chat-bubble";
 export * from "./components/checkbox";
 export * from "./components/collapse";
 export * from "./components/countdown";
+export * from "./components/crumb-link";
 export * from "./components/diff";
 export * from "./components/divider";
 export * from "./components/dock";

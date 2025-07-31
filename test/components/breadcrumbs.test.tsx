@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, fireEvent } from "@solidjs/testing-library";
 import Breadcrumbs from "@/components/breadcrumbs";
+import CrumbLink from "@/components/crumb-link";
 
 describe("Breadcrumbs Component", () => {
   // Basic Rendering Tests
@@ -20,8 +21,8 @@ describe("Breadcrumbs Component", () => {
       const items = [{ label: "Home", href: "/" }];
       const { container } = render(() => <Breadcrumbs items={items} />);
       
-      const nav = container.querySelector('nav');
-      expect(nav).toHaveClass("breadcrumbs");
+      const container_div = container.querySelector('div[role="navigation"]');
+      expect(container_div).toHaveClass("breadcrumbs");
     });
 
     it("renders breadcrumb items as list", () => {
@@ -30,8 +31,9 @@ describe("Breadcrumbs Component", () => {
         { label: "Products", href: "/products" }
       ];
       
-      const { getByRole } = render(() => <Breadcrumbs items={items} />);
-      expect(getByRole("list")).toBeInTheDocument();
+      const { container } = render(() => <Breadcrumbs items={items} />);
+      const list = container.querySelector('ul');
+      expect(list).toBeInTheDocument();
     });
 
     it("renders correct number of breadcrumb items", () => {
@@ -47,14 +49,72 @@ describe("Breadcrumbs Component", () => {
     });
   });
 
+  // New Composable API Tests
+  describe("Composable API with CrumbLink", () => {
+    it("renders with CrumbLink children", () => {
+      const { getByRole, getByText } = render(() => (
+        <Breadcrumbs>
+          <CrumbLink href="/">Home</CrumbLink>
+          <CrumbLink href="/products">Products</CrumbLink>
+          <CrumbLink current>Current Page</CrumbLink>
+        </Breadcrumbs>
+      ));
+      
+      expect(getByRole("navigation")).toBeInTheDocument();
+      expect(getByText("Home")).toBeInTheDocument();
+      expect(getByText("Products")).toBeInTheDocument();
+      expect(getByText("Current Page")).toBeInTheDocument();
+    });
+
+    it("renders proper list structure with CrumbLink", () => {
+      const { getAllByRole } = render(() => (
+        <Breadcrumbs>
+          <CrumbLink href="/">Home</CrumbLink>
+          <CrumbLink href="/products">Products</CrumbLink>
+          <CrumbLink current>Current Page</CrumbLink>
+        </Breadcrumbs>
+      ));
+      
+      const listItems = getAllByRole("listitem");
+      expect(listItems).toHaveLength(3);
+    });
+
+    it("supports mixed CrumbLink types", () => {
+      const handleClick = vi.fn();
+      const { getByRole } = render(() => (
+        <Breadcrumbs>
+          <CrumbLink href="/">Home</CrumbLink>
+          <CrumbLink onClick={handleClick}>Products</CrumbLink>
+          <CrumbLink current>Current Page</CrumbLink>
+        </Breadcrumbs>
+      ));
+      
+      expect(getByRole("link", { name: "Home" })).toBeInTheDocument();
+      expect(getByRole("button", { name: "Products" })).toBeInTheDocument();
+    });
+
+    it("does not render separators with CrumbLink children", () => {
+      const { container } = render(() => (
+        <Breadcrumbs>
+          <CrumbLink href="/">Home</CrumbLink>
+          <CrumbLink href="/products">Products</CrumbLink>
+        </Breadcrumbs>
+      ));
+      
+      // Should not have separators when using children
+      const separators = container.querySelectorAll('span[aria-hidden="true"]');
+      expect(separators).toHaveLength(0);
+    });
+  });
+
   // DaisyUI Classes Tests
   describe("DaisyUI Classes", () => {
-    it("applies breadcrumbs class to navigation element", () => {
+    it("applies breadcrumbs class to container element", () => {
       const items = [{ label: "Home" }];
       const { container } = render(() => <Breadcrumbs items={items} />);
       
-      const nav = container.querySelector('nav');
-      expect(nav).toHaveClass("breadcrumbs");
+      const container_div = container.querySelector('div[role="navigation"]');
+      expect(container_div).toHaveClass("breadcrumbs");
     });
 
     it("applies custom class when provided", () => {
@@ -63,8 +123,8 @@ describe("Breadcrumbs Component", () => {
         <Breadcrumbs items={items} class="custom-breadcrumbs" />
       ));
       
-      const nav = container.querySelector('nav');
-      expect(nav).toHaveClass("breadcrumbs", "custom-breadcrumbs");
+      const container_div = container.querySelector('div[role="navigation"]');
+      expect(container_div).toHaveClass("breadcrumbs", "custom-breadcrumbs");
     });
 
     it("applies classList when provided", () => {
@@ -76,14 +136,14 @@ describe("Breadcrumbs Component", () => {
         />
       ));
       
-      const nav = container.querySelector('nav');
-      expect(nav).toHaveClass("breadcrumbs", "active");
-      expect(nav).not.toHaveClass("inactive");
+      const container_div = container.querySelector('div[role="navigation"]');
+      expect(container_div).toHaveClass("breadcrumbs", "active");
+      expect(container_div).not.toHaveClass("inactive");
     });
   });
 
-  // Breadcrumb Items Tests
-  describe("Breadcrumb Items", () => {
+  // Legacy Breadcrumb Items Tests (for backward compatibility)
+  describe("Legacy Breadcrumb Items (items prop)", () => {
     it("renders link items with href", () => {
       const items = [
         { label: "Home", href: "/" },
@@ -135,8 +195,8 @@ describe("Breadcrumbs Component", () => {
     });
   });
 
-  // Separators Tests
-  describe("Separators", () => {
+  // Legacy Separators Tests (items prop only)
+  describe("Legacy Separators (items prop only)", () => {
     it("renders default separators between items", () => {
       const items = [
         { label: "Home", href: "/" },
@@ -242,8 +302,8 @@ describe("Breadcrumbs Component", () => {
     it("renders children when no items provided", () => {
       const { getByText } = render(() => (
         <Breadcrumbs>
-          <li><a href="/">Home</a></li>
-          <li>Current</li>
+          <CrumbLink href="/">Home</CrumbLink>
+          <CrumbLink>Current</CrumbLink>
         </Breadcrumbs>
       ));
       
@@ -251,25 +311,37 @@ describe("Breadcrumbs Component", () => {
       expect(getByText("Current")).toBeInTheDocument();
     });
 
-    it("prioritizes items prop over children", () => {
+    it("prioritizes items prop over children for backward compatibility", () => {
       const items = [{ label: "Items Home" }];
       
       const { getByText, queryByText } = render(() => (
         <Breadcrumbs items={items}>
-          <li>Children Home</li>
+          <CrumbLink>Children Home</CrumbLink>
         </Breadcrumbs>
       ));
       
       expect(getByText("Items Home")).toBeInTheDocument();
       expect(queryByText("Children Home")).not.toBeInTheDocument();
     });
+
+    it("renders custom JSX children when no items", () => {
+      const { getByText } = render(() => (
+        <Breadcrumbs>
+          <li><a href="/">Custom Home</a></li>
+          <li>Custom Current</li>
+        </Breadcrumbs>
+      ));
+      
+      expect(getByText("Custom Home")).toBeInTheDocument();
+      expect(getByText("Custom Current")).toBeInTheDocument();
+    });
   });
 
   // Edge Cases Tests
   describe("Edge Cases", () => {
     it("renders empty list when no items or children", () => {
-      const { getByRole } = render(() => <Breadcrumbs />);
-      const list = getByRole("list");
+      const { container } = render(() => <Breadcrumbs />);
+      const list = container.querySelector('ul');
       expect(list).toBeEmptyDOMElement();
     });
 
@@ -297,9 +369,23 @@ describe("Breadcrumbs Component", () => {
     });
 
     it("handles empty items array", () => {
-      const { getByRole } = render(() => <Breadcrumbs items={[]} />);
-      const list = getByRole("list");
+      const { container } = render(() => <Breadcrumbs items={[]} />);
+      const list = container.querySelector('ul');
       expect(list).toBeEmptyDOMElement();
+    });
+
+    it("renders with mixed CrumbLink and custom elements", () => {
+      const { getByText, getByTestId } = render(() => (
+        <Breadcrumbs>
+          <CrumbLink href="/">Home</CrumbLink>
+          <li><span data-testid="custom">Custom Element</span></li>
+          <CrumbLink current>Current</CrumbLink>
+        </Breadcrumbs>
+      ));
+      
+      expect(getByText("Home")).toBeInTheDocument();
+      expect(getByTestId("custom")).toBeInTheDocument();
+      expect(getByText("Current")).toBeInTheDocument();
     });
   });
 
