@@ -23,9 +23,9 @@ describe("Calendar Component", () => {
 
     it("renders current month by default", () => {
       const { container } = render(() => <Calendar />);
-      const monthYear = new Date().toLocaleDateString("en-US", { 
-        month: "long", 
-        year: "numeric" 
+      const monthYear = new Date().toLocaleDateString("en-US", {
+        month: "long",
+        year: "numeric",
       });
       expect(container).toHaveTextContent(monthYear);
     });
