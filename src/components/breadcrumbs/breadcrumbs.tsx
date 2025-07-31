@@ -95,7 +95,7 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
 
     // Handle keyboard events for clickable items
     const handleKeyDown = (event: KeyboardEvent, onClick?: () => void) => {
-      if ((event.key === 'Enter' || event.key === ' ') && onClick) {
+      if (onClick && (event.key === 'Enter' || event.key === ' ')) {
         event.preventDefault();
         onClick();
       }
