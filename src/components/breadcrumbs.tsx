@@ -1,4 +1,4 @@
-import { JSX, Show, For, createMemo, Children } from "solid-js";
+import { JSX, Show, For, createMemo } from "solid-js";
 
 /**
  * Props for individual breadcrumb items.
