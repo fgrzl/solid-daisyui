@@ -134,22 +134,41 @@ export default function Card(props: CardProps): JSX.Element {
   };
 
   return (
-    <article
-      classList={{ ...classes(), ...props.classList }}
-      role={props.onClick ? "button" : "article"}
-      tabIndex={props.onClick ? 0 : undefined}
-      onClick={props.onClick}
-      onKeyDown={props.onClick ? handleKeyDown : undefined}
-      aria-label={props.ariaLabel}
-      aria-describedby={props.ariaDescribedBy}
+    <Show
+      when={props.onClick}
+      fallback={
+        <article
+          classList={{ ...classes(), ...props.classList }}
+          aria-label={props.ariaLabel}
+          aria-describedby={props.ariaDescribedBy}
+        >
+          <Show when={props.imageSrc && props.imagePosition !== "bottom"}>
+            {renderImage()}
+          </Show>
+          {renderBody()}
+          <Show when={props.imageSrc && props.imagePosition === "bottom"}>
+            {renderImage()}
+          </Show>
+        </article>
+      }
     >
-      <Show when={props.imageSrc && props.imagePosition !== "bottom"}>
-        {renderImage()}
-      </Show>
-      {renderBody()}
-      <Show when={props.imageSrc && props.imagePosition === "bottom"}>
-        {renderImage()}
-      </Show>
-    </article>
+      <div
+        classList={{ ...classes(), ...props.classList }}
+        role="button"
+        tabIndex={0}
+        onClick={props.onClick}
+        onKeyDown={handleKeyDown}
+        aria-label={props.ariaLabel}
+        aria-describedby={props.ariaDescribedBy}
+      >
+        <Show when={props.imageSrc && props.imagePosition !== "bottom"}>
+          {renderImage()}
+        </Show>
+        {renderBody()}
+        <Show when={props.imageSrc && props.imagePosition === "bottom"}>
+          {renderImage()}
+        </Show>
+      </div>
+    </Show>
   );
 }
