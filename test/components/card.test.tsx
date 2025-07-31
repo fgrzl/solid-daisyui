@@ -122,8 +122,8 @@ describe("Card Component", () => {
         <Card ariaDescribedBy="description">Test Content</Card>
       ));
       // Article element has implicit role="article", no need for explicit role attribute
-      expect(container.firstChild?.nodeName).toBe("ARTICLE");
-      expect(container.firstChild).toHaveAttribute("aria-describedby", "description");
+      expect(getByRole("article")).toBeInTheDocument();
+      expect(getByRole("article")).toHaveAttribute("aria-describedby", "description");
     });
   });
 
