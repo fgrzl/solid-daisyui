@@ -5,21 +5,21 @@
 The Breadcrumbs component provides hierarchical navigation paths that allow users to understand their current location within a website or application. It follows DaisyUI design standards and implements WCAG 2.1 AA accessibility guidelines.
 
 The component now supports two approaches:
-- **Recommended**: Composable structure using `CrumbLink` components for better flexibility
+- **Recommended**: Composable structure using `Breadcrumb` components for better flexibility
 - **Legacy**: Items array for backward compatibility
 
 ## Usage Examples
 
-### Recommended: Composable Structure with CrumbLink
+### Recommended: Composable Structure with Breadcrumb
 
 ```tsx
-import { Breadcrumbs, CrumbLink } from "solid-daisyui";
+import { Breadcrumbs, Breadcrumb } from "solid-daisyui";
 
 <Breadcrumbs>
-  <CrumbLink href="/">Home</CrumbLink>
-  <CrumbLink href="/products">Products</CrumbLink>
-  <CrumbLink href="/products/electronics">Electronics</CrumbLink>
-  <CrumbLink current>Current Page</CrumbLink>
+  <Breadcrumb href="/">Home</Breadcrumb>
+  <Breadcrumb href="/products">Products</Breadcrumb>
+  <Breadcrumb href="/products/electronics">Electronics</Breadcrumb>
+  <Breadcrumb current>Current Page</Breadcrumb>
 </Breadcrumbs>
 ```
 
@@ -27,9 +27,9 @@ import { Breadcrumbs, CrumbLink } from "solid-daisyui";
 
 ```tsx
 <Breadcrumbs>
-  <CrumbLink onClick={() => navigate("/")}>Home</CrumbLink>
-  <CrumbLink onClick={() => navigate("/products")}>Products</CrumbLink>
-  <CrumbLink current>Current Page</CrumbLink>
+  <Breadcrumb onClick={() => navigate("/")}>Home</Breadcrumb>
+  <Breadcrumb onClick={() => navigate("/products")}>Products</Breadcrumb>
+  <Breadcrumb current>Current Page</Breadcrumb>
 </Breadcrumbs>
 ```
 
@@ -41,9 +41,9 @@ When using with solid-router, you can pass the A component as children:
 import { A } from "@solidjs/router";
 
 <Breadcrumbs>
-  <CrumbLink><A href="/">Home</A></CrumbLink>
-  <CrumbLink><A href="/products">Products</A></CrumbLink>
-  <CrumbLink current>Current Page</CrumbLink>
+  <Breadcrumb><A href="/">Home</A></Breadcrumb>
+  <Breadcrumb><A href="/products">Products</A></Breadcrumb>
+  <Breadcrumb current>Current Page</Breadcrumb>
 </Breadcrumbs>
 ```
 
@@ -110,14 +110,14 @@ const CustomSeparator = () => <span class="text-primary">→</span>;
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| items | `BreadcrumbItem[]` | `undefined` | **Deprecated**: Array of breadcrumb items to display. Use CrumbLink children instead |
-| children | `JSX.Element` | `undefined` | Breadcrumb content as CrumbLink components or custom JSX |
+| items | `BreadcrumbItem[]` | `undefined` | **Deprecated**: Array of breadcrumb items to display. Use Breadcrumb children instead |
+| children | `JSX.Element` | `undefined` | Breadcrumb content as Breadcrumb components or custom JSX |
 | separator | `string \| JSX.Element` | `"/"` | Custom separator between breadcrumb items (only used with items prop) |
 | class | `string` | `undefined` | Additional CSS classes to apply |
 | classList | `Record<string, boolean>` | `undefined` | Dynamic class list for conditional styling |
 | ariaLabel | `string` | `"Breadcrumb"` | Custom aria-label for navigation element |
 
-### CrumbLink Props
+### Breadcrumb Props
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
@@ -192,18 +192,18 @@ To migrate from the legacy items approach to the new composable structure:
 ### After (Recommended)
 ```tsx
 <Breadcrumbs>
-  <CrumbLink href="/">Home</CrumbLink>
-  <CrumbLink href="/products">Products</CrumbLink>
-  <CrumbLink current>Current Page</CrumbLink>
+  <Breadcrumb href="/">Home</Breadcrumb>
+  <Breadcrumb href="/products">Products</Breadcrumb>
+  <Breadcrumb current>Current Page</Breadcrumb>
 </Breadcrumbs>
 ```
 
 ## Notes
 
-- **Recommended**: Use CrumbLink children for better composability and router integration
+- **Recommended**: Use Breadcrumb children for better composability and router integration
 - **Legacy**: Items prop is deprecated but still supported for backward compatibility
 - When both `items` and `children` are provided, `items` takes precedence
-- CrumbLink components automatically render appropriate elements (links, buttons, or spans)
-- CrumbLink supports keyboard navigation for interactive elements
+- Breadcrumb components automatically render appropriate elements (links, buttons, or spans)
+- Breadcrumb supports keyboard navigation for interactive elements
 - Custom separators are only supported in legacy items mode
 - The new structure is more flexible and allows for future router integration
