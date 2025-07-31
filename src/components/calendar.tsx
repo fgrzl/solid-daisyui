@@ -63,10 +63,33 @@ export interface CalendarProps {
  * Supports single date selection, multiple date selection, and date range selection modes.
  * Includes keyboard navigation, screen reader support, and full WCAG 2.1 AA compliance.
  * 
+ * @example
+ * ```tsx
+ * // Basic calendar
+ * <Calendar />
+ * 
+ * // Calendar with date selection
+ * <Calendar 
+ *   selectedDate={new Date()} 
+ *   onDateSelect={(date) => console.log(date)} 
+ * />
+ * 
+ * // Calendar with range selection
+ * <Calendar 
+ *   range 
+ *   onRangeSelect={(range) => console.log(range.start, range.end)} 
+ * />
+ * 
+ * // Calendar with DaisyUI variants
+ * <Calendar size="lg" variant="bordered" />
+ * ```
+ * 
  * @param {CalendarProps} props - The properties to configure the Calendar component.
  * @returns {JSX.Element} The rendered Calendar component.
  */
 export default function Calendar(props: CalendarProps): JSX.Element {
+  // ===== STATE MANAGEMENT =====
+  
   // Initialize current date, handle invalid dates gracefully
   const getValidDate = (date?: Date) => {
     if (!date || isNaN(date.getTime())) {
@@ -85,6 +108,8 @@ export default function Calendar(props: CalendarProps): JSX.Element {
       setDisplayDate(getValidDate(props.currentDate));
     }
   });
+
+  // ===== COMPUTED VALUES =====
 
   // Week day names based on weekStartsOn
   const weekDays = createMemo(() => {
@@ -131,6 +156,32 @@ export default function Calendar(props: CalendarProps): JSX.Element {
     
     return days;
   });
+
+  // Build dynamic classes
+  const classes = createMemo(() => {
+    const baseClasses: Record<string, boolean> = {
+      calendar: true,
+    };
+
+    // Add size classes
+    if (props.size) {
+      baseClasses[`calendar-${props.size}`] = true;
+    }
+
+    // Add variant classes  
+    if (props.variant) {
+      baseClasses[`calendar-${props.variant}`] = true;
+    }
+
+    // Add custom class
+    if (props.class) {
+      baseClasses[props.class] = true;
+    }
+
+    return baseClasses;
+  });
+
+  // ===== DATE UTILITY FUNCTIONS =====
 
   // Check if a date is disabled
   const isDateDisabled = (date: Date): boolean => {
@@ -183,6 +234,26 @@ export default function Calendar(props: CalendarProps): JSX.Element {
     return false;
   };
 
+  // Format date for accessibility
+  const formatDateForAccessibility = (date: Date): string => {
+    if (props.dateFormat) {
+      // Simple format replacement (could be enhanced)
+      return props.dateFormat
+        .replace("MM", String(date.getMonth() + 1).padStart(2, "0"))
+        .replace("dd", String(date.getDate()).padStart(2, "0"))
+        .replace("yyyy", String(date.getFullYear()));
+    }
+    
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric", 
+      month: "long",
+      day: "numeric"
+    });
+  };
+
+  // ===== EVENT HANDLERS =====
+
   // Handle date selection
   const handleDateSelect = (date: Date) => {
     if (isDateDisabled(date)) return;
@@ -230,6 +301,8 @@ export default function Calendar(props: CalendarProps): JSX.Element {
     props.onDateSelect?.(date);
   };
 
+  // ===== NAVIGATION HANDLERS =====
+
   // Navigate to previous month
   const navigatePrevMonth = () => {
     const current = displayDate();
@@ -245,6 +318,8 @@ export default function Calendar(props: CalendarProps): JSX.Element {
     setDisplayDate(newDate);
     props.onMonthChange?.(newDate);
   };
+
+  // ===== KEYBOARD NAVIGATION =====
 
   // Handle keyboard navigation
   const handleKeyDown = (event: KeyboardEvent, date: Date) => {
@@ -296,47 +371,7 @@ export default function Calendar(props: CalendarProps): JSX.Element {
     }, 0);
   };
 
-  // Build dynamic classes
-  const classes = createMemo(() => {
-    const baseClasses: Record<string, boolean> = {
-      calendar: true,
-    };
-
-    // Add size classes
-    if (props.size) {
-      baseClasses[`calendar-${props.size}`] = true;
-    }
-
-    // Add variant classes  
-    if (props.variant) {
-      baseClasses[`calendar-${props.variant}`] = true;
-    }
-
-    // Add custom class
-    if (props.class) {
-      baseClasses[props.class] = true;
-    }
-
-    return baseClasses;
-  });
-
-  // Format date for accessibility
-  const formatDateForAccessibility = (date: Date): string => {
-    if (props.dateFormat) {
-      // Simple format replacement (could be enhanced)
-      return props.dateFormat
-        .replace("MM", String(date.getMonth() + 1).padStart(2, "0"))
-        .replace("dd", String(date.getDate()).padStart(2, "0"))
-        .replace("yyyy", String(date.getFullYear()));
-    }
-    
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric", 
-      month: "long",
-      day: "numeric"
-    });
-  };
+  // ===== RENDER =====
 
   return (
     <div
