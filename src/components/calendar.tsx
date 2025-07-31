@@ -496,7 +496,7 @@ export default function Calendar(props: CalendarProps): JSX.Element {
         aria-label="Selected date announcements"
       >
         <Show when={props.selectedDate && isValid(props.selectedDate)}>
-          Selected date: {format(props.selectedDate, "MMMM do, yyyy")}
+          Selected date: {format(props.selectedDate!, "MMMM do, yyyy")}
         </Show>
       </div>
     </div>
