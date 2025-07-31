@@ -105,7 +105,7 @@ export default function Card(props: CardProps): JSX.Element {
   };
 
   const renderBody = () => {
-    const hasContent = props.children || props.body || props.title || props.actions;
+    const hasContent = props.children || props.body || props.title;
     if (!hasContent) return null;
 
     return (
