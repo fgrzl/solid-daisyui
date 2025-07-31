@@ -3,7 +3,7 @@ import { JSX, createSignal, children, For, Show, createEffect } from "solid-js";
 /**
  * Props for the Carousel component.
  *
- * @property {JSX.Element | ((item: T, index: () => number) => JSX.Element)} [children] - The slides to display in the carousel or render function when using 'each'.
+ * @property {JSX.Element | ((item: T, index: () => number) => JSX.Element)} [children] - The slides to display in the carousel. For best results, use CarouselItem components as children, though any JSX elements are supported.
  * @property {T[]} [each] - Array of data items to render. When provided, children should be a render function.
  * @property {string} [class] - Additional CSS classes to apply to the carousel container.
  * @property {Record<string, boolean>} [classList] - Dynamic class list for conditional styling.
@@ -39,18 +39,34 @@ export interface CarouselProps<T = any> {
  *
  * **Usage Patterns:**
  * 
- * **Static Children** (traditional JSX children):
+ * **Recommended: CarouselItem Children** (best developer experience and composability):
+ * ```tsx
+ * <Carousel>
+ *   <CarouselItem>
+ *     <img src="image1.jpg" alt="Image 1" />
+ *   </CarouselItem>
+ *   <CarouselItem>
+ *     <img src="image2.jpg" alt="Image 2" />
+ *   </CarouselItem>
+ * </Carousel>
+ * ```
+ * 
+ * **Data-Driven with 'each'** (built-in foreach with CarouselItem):
+ * ```tsx
+ * <Carousel each={imageArray}>
+ *   {(image, index) => (
+ *     <CarouselItem>
+ *       <img src={image.src} alt={image.alt} />
+ *     </CarouselItem>
+ *   )}
+ * </Carousel>
+ * ```
+ * 
+ * **Legacy: Direct JSX Children** (backward compatibility, automatically wrapped):
  * ```tsx
  * <Carousel>
  *   <img src="image1.jpg" alt="Image 1" />
  *   <img src="image2.jpg" alt="Image 2" />
- * </Carousel>
- * ```
- * 
- * **Data-Driven with 'each'** (built-in foreach):
- * ```tsx
- * <Carousel each={imageArray}>
- *   {(image, index) => <img src={image.src} alt={image.alt} />}
  * </Carousel>
  * ```
  *
@@ -210,20 +226,15 @@ export default function Carousel<T = any>(props: CarouselProps<T>): JSX.Element 
         when={props.each && typeof props.children === 'function'} 
         fallback={
           <For each={slides}>
-            {(slide) => (
-              <div class="carousel-item" tabIndex={0}>
-                {slide}
-              </div>
-            )}
+            {(slide) => slide}
           </For>
         }
       >
         <For each={props.each}>
-          {(item, index) => (
-            <div class="carousel-item" tabIndex={0}>
-              {(props.children as (item: T, index: () => number) => JSX.Element)(item, index)}
-            </div>
-          )}
+          {(item, index) => {
+            const renderedItem = (props.children as (item: T, index: () => number) => JSX.Element)(item, index);
+            return renderedItem;
+          }}
         </For>
       </Show>
 

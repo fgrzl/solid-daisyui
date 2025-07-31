@@ -5,12 +5,20 @@ A responsive, accessible carousel component for displaying a scrollable collecti
 
 ## Usage
 
-### Static Children (Traditional JSX)
+### Recommended: CarouselItem Children (Best Developer Experience)
 ```tsx
+import { Carousel, CarouselItem } from '@/components';
+
 <Carousel>
-  <div>Slide 1</div>
-  <div>Slide 2</div>
-  <div>Slide 3</div>
+  <CarouselItem>
+    <img src="image1.jpg" alt="Image 1" />
+  </CarouselItem>
+  <CarouselItem>
+    <img src="image2.jpg" alt="Image 2" />
+  </CarouselItem>
+  <CarouselItem>
+    <img src="image3.jpg" alt="Image 3" />
+  </CarouselItem>
 </Carousel>
 ```
 
@@ -18,15 +26,28 @@ A responsive, accessible carousel component for displaying a scrollable collecti
 ```tsx
 <Carousel each={imageArray}>
   {(image, index) => (
-    <img src={image.src} alt={image.alt} />
+    <CarouselItem>
+      <img src={image.src} alt={image.alt} />
+    </CarouselItem>
   )}
 </Carousel>
 ```
 
-## Props
+### Legacy: Direct JSX Children (Backward Compatibility)
+```tsx
+<Carousel>
+  <div class="carousel-item">Slide 1</div>
+  <div class="carousel-item">Slide 2</div>
+  <div class="carousel-item">Slide 3</div>
+</Carousel>
+```
+
+## Components
+
+### Carousel Props
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| children | JSX.Element \| ((item: T, index: () => number) => JSX.Element) | - | The slides to display or render function when using 'each' |
+| children | JSX.Element \| ((item: T, index: () => number) => JSX.Element) | - | The slides to display. For best results, use CarouselItem components as children |
 | each | T[] | - | Array of data items to render. When provided, children should be a render function |
 | class | string | - | Additional CSS classes to apply to the carousel container |
 | classList | Record<string, boolean> | - | Dynamic class list for conditional styling |
@@ -38,21 +59,48 @@ A responsive, accessible carousel component for displaying a scrollable collecti
 | onChange | (index: number) => void | - | Callback fired when the current slide changes |
 | ariaLabel | string | "Carousel" | Custom aria-label for the carousel container |
 
+### CarouselItem Props
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| children | JSX.Element | - | The content to display inside the carousel item |
+| class | string | - | Additional CSS classes to apply to the carousel item |
+| classList | Record<string, boolean> | - | Dynamic class list for conditional styling |
+| id | string | - | Optional ID for the carousel item (useful for scroll-to functionality) |
+
 ## Accessibility
 - Supports full keyboard navigation with arrow keys, Home, and End
 - Includes proper ARIA attributes (role="region", aria-label, aria-pressed)
 - Compatible with screen readers
 - Navigation buttons are properly labeled and disabled when appropriate
 - Carousel items have appropriate tab order
+- Each CarouselItem is automatically focusable
 
 ## Examples
 
-### Basic Carousel
+### Basic Carousel with CarouselItem
 ```tsx
 <Carousel>
-  <div>Slide 1</div>
-  <div>Slide 2</div>
-  <div>Slide 3</div>
+  <CarouselItem>
+    <div class="hero min-h-32 bg-base-200">
+      <div class="hero-content text-center">
+        <h1 class="text-5xl font-bold">Slide 1</h1>
+      </div>
+    </div>
+  </CarouselItem>
+  <CarouselItem>
+    <div class="hero min-h-32 bg-primary text-primary-content">
+      <div class="hero-content text-center">
+        <h1 class="text-5xl font-bold">Slide 2</h1>
+      </div>
+    </div>
+  </CarouselItem>
+  <CarouselItem>
+    <div class="hero min-h-32 bg-secondary text-secondary-content">
+      <div class="hero-content text-center">
+        <h1 class="text-5xl font-bold">Slide 3</h1>
+      </div>
+    </div>
+  </CarouselItem>
 </Carousel>
 ```
 
@@ -66,11 +114,13 @@ const images = [
 
 <Carousel each={images} showNavigation showIndicators>
   {(image, index) => (
-    <img 
-      src={image.src} 
-      alt={image.alt}
-      class="w-full h-64 object-cover"
-    />
+    <CarouselItem class="w-full">
+      <img 
+        src={image.src} 
+        alt={image.alt}
+        class="w-full h-64 object-cover"
+      />
+    </CarouselItem>
   )}
 </Carousel>
 ```
@@ -96,16 +146,20 @@ const products = [
 
 <Carousel each={products} snap="center" showIndicators>
   {(product, index) => (
-    <div class="card w-64 bg-base-100 shadow-xl">
-      <img src={product.image} alt={product.name} class="h-48 object-cover" />
-      <div class="card-body">
-        <h3 class="card-title">
-          {product.name}
-          {product.featured && <span class="badge badge-secondary">Featured</span>}
-        </h3>
-        <p class="text-lg font-bold">${product.price}</p>
+    <CarouselItem class="w-64">
+      <div class="card bg-base-100 shadow-xl">
+        <figure>
+          <img src={product.image} alt={product.name} class="h-48 w-full object-cover" />
+        </figure>
+        <div class="card-body">
+          <h3 class="card-title">
+            {product.name}
+            {product.featured && <div class="badge badge-secondary">Featured</div>}
+          </h3>
+          <p class="text-lg font-bold">${product.price}</p>
+        </div>
       </div>
-    </div>
+    </CarouselItem>
   )}
 </Carousel>
 ```
@@ -113,18 +167,42 @@ const products = [
 ### Vertical Carousel with Navigation
 ```tsx
 <Carousel vertical showNavigation>
-  <img src="image1.jpg" alt="Image 1" />
-  <img src="image2.jpg" alt="Image 2" />
-  <img src="image3.jpg" alt="Image 3" />
+  <CarouselItem>
+    <img src="image1.jpg" alt="Image 1" class="h-48 w-full object-cover" />
+  </CarouselItem>
+  <CarouselItem>
+    <img src="image2.jpg" alt="Image 2" class="h-48 w-full object-cover" />
+  </CarouselItem>
+  <CarouselItem>
+    <img src="image3.jpg" alt="Image 3" class="h-48 w-full object-cover" />
+  </CarouselItem>
 </Carousel>
 ```
 
-### Carousel with Indicators and Centered Snap
+### Carousel with Custom Styled Items
 ```tsx
 <Carousel snap="center" showIndicators>
-  <div className="w-64 h-48 bg-primary">Card 1</div>
-  <div className="w-64 h-48 bg-secondary">Card 2</div>
-  <div className="w-64 h-48 bg-accent">Card 3</div>
+  <CarouselItem class="w-96 h-64">
+    <div class="hero min-h-full bg-primary text-primary-content">
+      <div class="hero-content text-center">
+        <h1 class="text-3xl font-bold">Wide Card 1</h1>
+      </div>
+    </div>
+  </CarouselItem>
+  <CarouselItem class="w-64 h-64">
+    <div class="hero min-h-full bg-secondary text-secondary-content">
+      <div class="hero-content text-center">
+        <h1 class="text-3xl font-bold">Card 2</h1>
+      </div>
+    </div>
+  </CarouselItem>
+  <CarouselItem class="w-80 h-64">
+    <div class="hero min-h-full bg-accent text-accent-content">
+      <div class="hero-content text-center">
+        <h1 class="text-3xl font-bold">Medium Card 3</h1>
+      </div>
+    </div>
+  </CarouselItem>
 </Carousel>
 ```
 
@@ -140,9 +218,27 @@ function ControlledCarousel() {
       showNavigation 
       showIndicators
     >
-      <div>Slide 1</div>
-      <div>Slide 2</div>
-      <div>Slide 3</div>
+      <CarouselItem>
+        <div class="hero min-h-32 bg-base-200">
+          <div class="hero-content">
+            <h1 class="text-3xl">Slide 1</h1>
+          </div>
+        </div>
+      </CarouselItem>
+      <CarouselItem>
+        <div class="hero min-h-32 bg-primary text-primary-content">
+          <div class="hero-content">
+            <h1 class="text-3xl">Slide 2</h1>
+          </div>
+        </div>
+      </CarouselItem>
+      <CarouselItem>
+        <div class="hero min-h-32 bg-secondary text-secondary-content">
+          <div class="hero-content">
+            <h1 class="text-3xl">Slide 3</h1>
+          </div>
+        </div>
+      </CarouselItem>
     </Carousel>
   );
 }
@@ -152,10 +248,11 @@ function ControlledCarousel() {
 
 ### When to Use Each Pattern
 
-**Static Children** - Use when:
-- You have a fixed set of slides
-- Each slide is unique with different content
-- You want simple, straightforward JSX
+**CarouselItem Children (Recommended)** - Use when:
+- You want the best developer experience and TypeScript support
+- You need consistent styling and structure for all slides
+- You want proper accessibility features built-in
+- You need to apply custom classes or IDs to individual slides
 
 **Data-Driven with 'each'** - Use when:
 - You have dynamic data arrays (images, products, etc.)
@@ -163,10 +260,29 @@ function ControlledCarousel() {
 - You need to handle varying array lengths
 - You want to leverage SolidJS's reactive `For` component
 
+**Direct JSX Children (Legacy)** - Use when:
+- Migrating from existing carousel implementations
+- You need complete control over the slide structure
+- Working with third-party components that provide their own carousel-item structure
+
+## Benefits of CarouselItem
+
+### Better Developer Experience
+- **Consistent Structure**: All slides have the same base styling and behavior
+- **TypeScript Support**: Better autocomplete and type checking
+- **Composability**: Can be easily styled and customized per slide
+- **Accessibility**: Built-in focus management and ARIA attributes
+
+### Enhanced Functionality
+- **Custom Classes**: Apply different widths, heights, and styles per slide
+- **IDs for Navigation**: Useful for programmatic scrolling or deep linking
+- **Consistent Spacing**: Proper DaisyUI carousel-item implementation
+- **Responsive Design**: Works seamlessly with Tailwind CSS utilities
+
 ## DaisyUI Classes
 This component uses the following official DaisyUI classes:
 - `.carousel` - Base carousel container
-- `.carousel-item` - Individual slide container
+- `.carousel-item` - Individual slide container (applied automatically by CarouselItem)
 - `.carousel-vertical` - Vertical orientation
 - `.carousel-horizontal` - Horizontal orientation (default)
 - `.carousel-start` - Start snap alignment
@@ -174,9 +290,11 @@ This component uses the following official DaisyUI classes:
 - `.carousel-end` - End snap alignment
 
 ## Notes
+- **CarouselItem is the recommended approach** for new implementations
 - The carousel is fully responsive and works with any slide content
 - Navigation controls are optional and only show when enabled
 - Supports both controlled and uncontrolled usage patterns
 - Handles edge cases like empty children and single slides gracefully
 - Built-in keyboard navigation follows standard accessibility patterns
 - The `each` prop provides a built-in foreach pattern using SolidJS's `For` component
+- Legacy direct JSX children are still supported for backward compatibility
