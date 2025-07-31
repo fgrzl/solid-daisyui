@@ -52,6 +52,7 @@
     "solid-js": "^1.9.7"
   },
   "peerDependencies": {
+    "@solidjs/router": "^0.15.3",
     "daisyui": "^5.0.50",
     "solid-js": "^1.9.7"
   },

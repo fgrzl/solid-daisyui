@@ -11,4 +11,10 @@ export default defineConfig({
       "@": path.resolve(__dirname, "src"),
     },
   },
+  optimizeDeps: {
+    include: ["@solidjs/router"],
+  },
+  ssr: {
+    noExternal: ["@solidjs/router"],
+  },
 });
