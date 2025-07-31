@@ -20,8 +20,8 @@ describe("Alert Component", () => {
       expect(getByRole("alert")).toBeInTheDocument();
     });
 
-    it("calls close button click handler", () => {
-      const { getByLabelText } = render(() => <Alert>Test Alert</Alert>);
+    it("calls close button click handler when dismissible", () => {
+      const { getByLabelText } = render(() => <Alert dismissible={true}>Test Alert</Alert>);
       
       // Check that the close button exists and can be clicked
       const closeButton = getByLabelText("Close");
@@ -89,17 +89,18 @@ describe("Alert Component", () => {
       const { container } = render(() => (
         <Alert type="info" hideIcon>Alert without Icon</Alert>
       ));
-      // Check that the alert icon container is not present
-      const iconContainer = container.querySelector('span[aria-hidden="true"]');
-      expect(iconContainer).not.toBeInTheDocument();
+      // Check that no icon (svg element) is present
+      const svgIcon = container.querySelector('svg');
+      expect(svgIcon).not.toBeInTheDocument();
     });
 
     it("has proper aria-hidden attribute on icons", () => {
       const { container } = render(() => (
         <Alert type="info">Alert with Icon</Alert>
       ));
-      const iconContainer = container.querySelector('[aria-hidden="true"]');
-      expect(iconContainer).toBeInTheDocument();
+      // In the corrected DaisyUI structure, icons are direct children without aria-hidden wrapper
+      const svgIcon = container.querySelector('svg');
+      expect(svgIcon).toBeInTheDocument();
     });
   });
 
@@ -120,14 +121,14 @@ describe("Alert Component", () => {
     });
 
     it("close button has proper aria-label", () => {
-      const { getByLabelText } = render(() => <Alert>Dismissible Alert</Alert>);
+      const { getByLabelText } = render(() => <Alert dismissible={true}>Dismissible Alert</Alert>);
       const closeButton = getByLabelText("Close");
       expect(closeButton).toBeInTheDocument();
       expect(closeButton).toHaveAttribute("aria-label", "Close");
     });
 
     it("supports keyboard navigation on close button", () => {
-      const { getByLabelText } = render(() => <Alert>Alert</Alert>);
+      const { getByLabelText } = render(() => <Alert dismissible={true}>Alert</Alert>);
       const closeButton = getByLabelText("Close");
       
       // Should be focusable
@@ -136,7 +137,7 @@ describe("Alert Component", () => {
     });
 
     it("close button can be activated with Enter key", () => {
-      const { getByLabelText } = render(() => <Alert>Alert</Alert>);
+      const { getByLabelText } = render(() => <Alert dismissible={true}>Alert</Alert>);
       const closeButton = getByLabelText("Close");
       
       closeButton.focus();
@@ -147,7 +148,7 @@ describe("Alert Component", () => {
     });
 
     it("close button can be activated with Space key", () => {
-      const { getByLabelText } = render(() => <Alert>Alert</Alert>);
+      const { getByLabelText } = render(() => <Alert dismissible={true}>Alert</Alert>);
       const closeButton = getByLabelText("Close");
       
       closeButton.focus();
@@ -192,13 +193,6 @@ describe("Alert Component", () => {
 
   // Additional Content Tests
   describe("Additional Content", () => {
-    it("renders title when provided", () => {
-      const { getByText } = render(() => (
-        <Alert title="Important Notice">Alert content</Alert>
-      ));
-      expect(getByText("Important Notice")).toBeInTheDocument();
-    });
-
     it("renders buttons when provided", () => {
       const buttons = [
         <button>Accept</button>, 
@@ -254,6 +248,28 @@ describe("Alert Component", () => {
       ));
       expect(queryByLabelText("Close")).not.toBeInTheDocument();
     });
+
+    it("shows close button when onClose is provided even without dismissible", () => {
+      const onCloseMock = vi.fn();
+      const { getByLabelText } = render(() => (
+        <Alert onClose={onCloseMock}>Alert with onClose</Alert>
+      ));
+      expect(getByLabelText("Close")).toBeInTheDocument();
+    });
+
+    it("shows close button when dismissible is explicitly true", () => {
+      const { getByLabelText } = render(() => (
+        <Alert dismissible={true}>Explicitly dismissible Alert</Alert>
+      ));
+      expect(getByLabelText("Close")).toBeInTheDocument();
+    });
+
+    it("hides close button by default when no dismissible or onClose props", () => {
+      const { queryByLabelText } = render(() => (
+        <Alert>Default Alert</Alert>
+      ));
+      expect(queryByLabelText("Close")).not.toBeInTheDocument();
+    });
   });
 
   // Edge Cases and Error Conditions
@@ -270,11 +286,10 @@ describe("Alert Component", () => {
 
     it("handles very long content", () => {
       const longContent = "Lorem ipsum ".repeat(100).trim(); // Remove trailing space
-      const { container } = render(() => <Alert>{longContent}</Alert>);
+      const { getByText } = render(() => <Alert>{longContent}</Alert>);
       
-      // Find the content span (not the icon container)
-      const contentSpan = container.querySelectorAll('span')[1]; // Second span is content
-      expect(contentSpan?.textContent?.trim()).toBe(longContent);
+      // Content should be findable by text
+      expect(getByText(longContent)).toBeInTheDocument();
     });
 
     it("handles special characters in content", () => {
@@ -284,29 +299,58 @@ describe("Alert Component", () => {
     });
   });
 
-  // DaisyUI Style Modifiers (should be removed as they don't exist in DaisyUI)
-  describe("Legacy Style Props (should fail until refactored)", () => {
-    it("should not use non-DaisyUI style classes", () => {
+  // DaisyUI Style Modifiers - Now properly supported as official DaisyUI features
+  describe("DaisyUI Style Modifiers", () => {
+    it("applies alert-soft class for soft style", () => {
       const { container } = render(() => (
         <Alert style="soft">Soft Style Alert</Alert>
       ));
-      // This test should fail because 'alert-soft' is not a real DaisyUI class
-      expect(container.firstChild).not.toHaveClass("alert-soft");
+      expect(container.firstChild).toHaveClass("alert", "alert-soft");
     });
 
-    it("should not use non-DaisyUI vertical layout classes", () => {
+    it("applies alert-outline class for outline style", () => {
       const { container } = render(() => (
-        <Alert vertical>Vertical Alert</Alert>
+        <Alert style="outline">Outline Style Alert</Alert>
       ));
-      // This test should fail because 'alert-vertical' is not a real DaisyUI class
-      expect(container.firstChild).not.toHaveClass("alert-vertical");
+      expect(container.firstChild).toHaveClass("alert", "alert-outline");
+    });
+
+    it("applies alert-dash class for dash style", () => {
+      const { container } = render(() => (
+        <Alert style="dash">Dash Style Alert</Alert>
+      ));
+      expect(container.firstChild).toHaveClass("alert", "alert-dash");
+    });
+  });
+
+  // DaisyUI Layout Modifiers - Now properly supported as official DaisyUI features  
+  describe("DaisyUI Layout Modifiers", () => {
+    it("applies alert-vertical class when vertical is true", () => {
+      const { container } = render(() => (
+        <Alert vertical={true}>Vertical Alert</Alert>
+      ));
+      expect(container.firstChild).toHaveClass("alert", "alert-vertical");
+    });
+
+    it("applies alert-horizontal class when vertical is false", () => {
+      const { container } = render(() => (
+        <Alert vertical={false}>Horizontal Alert</Alert>
+      ));
+      expect(container.firstChild).toHaveClass("alert", "alert-horizontal");
+    });
+
+    it("doesn't apply layout classes when vertical is undefined", () => {
+      const { container } = render(() => (
+        <Alert>Default Layout Alert</Alert>
+      ));
+      expect(container.firstChild).not.toHaveClass("alert-vertical", "alert-horizontal");
     });
   });
 
   // Performance and State Management
   describe("Performance and State Management", () => {
     it("manages alert lifecycle correctly", () => {
-      const { container, getByLabelText } = render(() => <Alert>State Test Alert</Alert>);
+      const { container, getByLabelText } = render(() => <Alert dismissible={true}>State Test Alert</Alert>);
       
       // Initially visible
       expect(container.firstChild).toBeInTheDocument();

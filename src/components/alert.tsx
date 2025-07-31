@@ -9,12 +9,11 @@ import { JSX, createSignal } from "solid-js";
  * @property {'info' | 'success' | 'warning' | 'error'} [type] - The type of alert, which determines its styling using official DaisyUI classes.
  * @property {JSX.Element} [icon] - An optional icon to display in the alert.
  * @property {boolean} [hideIcon] - If true, hides the icon in the alert.
- * @property {string} [title] - An optional title for the alert.
- * @property {JSX.Element[]} [buttons] - Optional buttons to display in the alert.
- * @property {boolean} [dismissible] - If false, hides the close button. Defaults to true.
- * @property {() => boolean | void} [onClose] - Callback fired when the close button is clicked. If returns false, prevents default close behavior.
- * @property {'soft' | 'outline' | 'dash'} [style] - @deprecated Legacy style prop - use DaisyUI classes directly instead.
- * @property {boolean} [vertical] - @deprecated Legacy vertical prop - use DaisyUI flexbox classes directly instead.
+ * @property {'soft' | 'outline' | 'dash'} [style] - Official DaisyUI style variants (alert-soft, alert-outline, alert-dash).
+ * @property {boolean} [vertical] - If true, applies alert-vertical layout. If false, applies alert-horizontal layout.
+ * @property {JSX.Element[]} [buttons] - Optional action buttons to display in the alert.
+ * @property {boolean} [dismissible] - **Custom Extension**: If false, hides the close button. Defaults to true. Not part of standard DaisyUI.
+ * @property {() => boolean | void} [onClose] - **Custom Extension**: Callback fired when the close button is clicked. Not part of standard DaisyUI.
  */
 export interface AlertProps {
   children?: JSX.Element;
@@ -23,21 +22,23 @@ export interface AlertProps {
   type?: "info" | "success" | "warning" | "error";
   icon?: JSX.Element;
   hideIcon?: boolean;
-  title?: string;
-  buttons?: JSX.Element[];
-  dismissible?: boolean;
-  onClose?: () => boolean | void;
-  // Deprecated props for backward compatibility
   style?: "soft" | "outline" | "dash";
   vertical?: boolean;
+  buttons?: JSX.Element[];
+  // Custom extensions (not part of standard DaisyUI)
+  dismissible?: boolean;
+  onClose?: () => boolean | void;
 }
 
 /**
  * Alert component for displaying styled message boxes with optional content and icons.
  * Follows official DaisyUI Alert component patterns for consistent styling and behavior.
  * 
- * Supports accessibility features including proper ARIA attributes, keyboard navigation,
- * and screen reader compatibility. Implements WCAG 2.1 AA compliance standards.
+ * Supports all official DaisyUI alert features including style variants (outline, soft, dash),
+ * layout options (vertical, horizontal), and accessibility features.
+ * 
+ * **Custom Extensions**: Includes optional dismissible functionality with close button
+ * and onClose callback - these are not part of standard DaisyUI but provided as useful extensions.
  *
  * @param {AlertProps} props - The properties to configure the Alert component.
  * @returns {JSX.Element} The rendered Alert component.
@@ -124,6 +125,16 @@ export default function Alert(props: AlertProps): JSX.Element | null {
       baseClasses[`alert-${props.type}`] = true;
     }
 
+    // Add official DaisyUI style modifiers
+    if (props.style) {
+      baseClasses[`alert-${props.style}`] = true;
+    }
+
+    // Add official DaisyUI layout modifiers
+    if (props.vertical !== undefined) {
+      baseClasses[props.vertical ? "alert-vertical" : "alert-horizontal"] = true;
+    }
+
     // Add custom class if provided
     if (props.class) {
       baseClasses[props.class] = true;
@@ -162,8 +173,8 @@ export default function Alert(props: AlertProps): JSX.Element | null {
     return null;
   }
 
-  // Determine if should show close button
-  const showCloseButton = props.dismissible !== false;
+  // Determine if should show close button (custom extension)
+  const showCloseButton = props.dismissible !== false && (props.onClose || props.dismissible === true);
 
   return (
     <div
@@ -174,29 +185,22 @@ export default function Alert(props: AlertProps): JSX.Element | null {
         ...props.classList,
       }}
     >
-      {/* Title */}
-      {props.title && <h3>{props.title}</h3>}
-      
-      {/* Icon */}
+      {/* Icon - First child in DaisyUI grid structure */}
       {!props.hideIcon && (props.icon || defaultIcons[props.type || "info"]) && (
-        <span aria-hidden="true">
-          {props.icon || defaultIcons[props.type || "info"]}
-        </span>
+        props.icon || defaultIcons[props.type || "info"]
       )}
       
-      {/* Main content */}
+      {/* Main content - Second child in DaisyUI grid structure */}
       <span>{props.children}</span>
       
-      {/* Action buttons */}
+      {/* Action buttons - Additional children in DaisyUI grid structure */}
       {props.buttons && props.buttons.length > 0 && (
         <div>
-          {props.buttons.map((button) => (
-            <span>{button}</span>
-          ))}
+          {props.buttons.map((button) => button)}
         </div>
       )}
       
-      {/* Close button */}
+      {/* Close button - Custom extension, not part of standard DaisyUI */}
       {showCloseButton && (
         <button
           type="button"
