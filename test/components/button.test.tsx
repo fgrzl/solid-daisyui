@@ -73,6 +73,7 @@ describe("Button Component", () => {
     expect(button).toHaveClass("loading");
     expect(button).toBeDisabled();
     expect(button).toHaveAttribute("aria-disabled", "true");
+    expect(button).toHaveAttribute("aria-busy", "true");
   });
 
   it("renders loading spinner when loading", () => {
@@ -210,5 +211,41 @@ describe("Button Component", () => {
       <Button tabIndex={5}>Custom Tab</Button>
     ));
     expect(getByRole("button")).toHaveAttribute("tabindex", "5");
+  });
+
+  it("handles keyboard navigation", () => {
+    let enterPressed = false;
+    
+    const handleClick = (event: MouseEvent) => {
+      // This simulates how browsers handle keyboard events that trigger clicks
+      if ((event as any).detail === 0) {
+        // detail === 0 indicates keyboard activation
+        enterPressed = true;
+      }
+    };
+
+    const { getByRole } = render(() => (
+      <Button onClick={handleClick}>Keyboard Button</Button>
+    ));
+
+    const button = getByRole("button");
+    
+    // Simulate keyboard activation by firing a click event with detail: 0
+    fireEvent.click(button, { detail: 0 });
+    expect(enterPressed).toBe(true);
+  });
+
+  it("renders without children", () => {
+    const { getByRole } = render(() => <Button />);
+    const button = getByRole("button");
+    expect(button).toBeInTheDocument();
+    expect(button).toHaveClass("btn");
+  });
+
+  it("handles null children gracefully", () => {
+    const { getByRole } = render(() => <Button>{null}</Button>);
+    const button = getByRole("button");
+    expect(button).toBeInTheDocument();
+    expect(button).toHaveClass("btn");
   });
 });
