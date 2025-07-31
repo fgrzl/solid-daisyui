@@ -6,7 +6,7 @@ import { JSX, createSignal, Show, For } from "solid-js";
  * @property {JSX.Element} [children] - The main content to display inside the card body.
  * @property {string} [class] - Additional CSS classes to apply to the card.
  * @property {Record<string, boolean>} [classList] - Dynamic class list for conditional styling.
- * @property {string} [title] - The title to display in the card header.
+ * @property {string} [title] - The title to display in the card header using official DaisyUI card-title class.
  * @property {1 | 2 | 3 | 4 | 5 | 6} [titleLevel] - Heading level for the title (defaults to 2).
  * @property {string | JSX.Element} [body] - Optional body content (alternative to children).
  * @property {string} [imageSrc] - Image source URL for the card image.
@@ -14,11 +14,11 @@ import { JSX, createSignal, Show, For } from "solid-js";
  * @property {"top" | "bottom"} [imagePosition] - Position of the image (defaults to "top").
  * @property {JSX.Element | JSX.Element[]} [actions] - Action buttons or elements to display in card-actions.
  * @property {"start" | "center" | "end"} [actionsPosition] - Alignment of actions (defaults to "end").
- * @property {boolean} [bordered] - Whether to apply card-bordered class.
- * @property {boolean} [compact] - Whether to apply card-compact class.
+ * @property {boolean} [bordered] - Whether to apply card-bordered class for border styling.
+ * @property {boolean} [compact] - Whether to apply card-compact class for reduced padding.
  * @property {boolean} [side] - Whether to apply card-side class for horizontal layout.
- * @property {boolean} [glass] - Whether to apply glass effect class.
- * @property {(event: MouseEvent) => void} [onClick] - Click event handler. Makes the card clickable.
+ * @property {boolean} [glass] - Whether to apply glass effect class for glassmorphism styling.
+ * @property {(event: MouseEvent) => void} [onClick] - Click event handler. Makes the card clickable with proper ARIA attributes.
  * @property {string} [ariaLabel] - ARIA label for accessibility when clickable.
  * @property {string} [ariaDescribedBy] - ARIA described-by for additional context.
  */
@@ -45,121 +45,83 @@ export interface CardProps {
 
 /**
  * Card component for displaying content in a structured, styled container.
- * Follows DaisyUI Card component patterns with support for images, titles, actions, and various layouts.
- * Implements WCAG 2.1 AA accessibility standards with proper ARIA attributes and semantic structure.
+ * Follows official DaisyUI Card component patterns with support for images, titles, actions, and various layouts.
  * 
- * Supports all official DaisyUI card features including bordered, compact, side, and glass variants.
- * Provides optional clickable functionality with proper keyboard navigation support.
+ * Implements WCAG 2.1 AA accessibility standards with proper ARIA attributes, semantic structure,
+ * and keyboard navigation support for interactive cards.
+ * 
+ * Supports all official DaisyUI card features including:
+ * - Style variants: bordered, compact, side, glass
+ * - Image positioning: top, bottom with figure wrapper
+ * - Action alignment: start, center, end with card-actions
+ * - Interactive behavior: click handling with keyboard support
+ * - Accessibility: proper roles, ARIA attributes, focus management
  *
  * @param {CardProps} props - The properties to configure the Card component.
- * @returns {JSX.Element} The rendered Card component.
+ * @returns {JSX.Element} The rendered Card component with proper semantic structure.
  */
 export default function Card(props: CardProps): JSX.Element {
   const [imageLoaded, setImageLoaded] = createSignal(true);
 
   // Build classes following DaisyUI patterns
-  const classes = () => {
-    const baseClasses: Record<string, boolean> = {
-      card: true,
-    };
-
-    // Add official DaisyUI variant classes
-    if (props.bordered) {
-      baseClasses["card-bordered"] = true;
-    }
-    if (props.compact) {
-      baseClasses["card-compact"] = true;
-    }
-    if (props.side) {
-      baseClasses["card-side"] = true;
-    }
-    if (props.glass) {
-      baseClasses["glass"] = true;
-    }
-
-    // Add custom class if provided
-    if (props.class) {
-      baseClasses[props.class] = true;
-    }
-
-    return baseClasses;
-  };
-
-  // Handle click event with proper keyboard support
-  const handleClick = (event: MouseEvent) => {
-    if (props.onClick) {
-      props.onClick(event);
-    }
-  };
-
-  // Handle keyboard events for clickable cards
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      if (props.onClick) {
-        // Create a synthetic MouseEvent for keyboard activation
-        const syntheticEvent = new MouseEvent("click", {
-          bubbles: true,
-          cancelable: true,
-        });
-        props.onClick(syntheticEvent);
-      }
-    }
-  };
-
-  // Handle image load error
-  const handleImageError = () => {
-    setImageLoaded(false);
-  };
+  const classes = () => ({
+    card: true,
+    "card-bordered": !!props.bordered,
+    "card-compact": !!props.compact,
+    "card-side": !!props.side,
+    glass: !!props.glass,
+    ...(props.class ? { [props.class]: true } : {}),
+  });
 
   // Determine if card is clickable
   const isClickable = () => !!props.onClick;
 
-  // Get actions position class
-  const actionsPositionClass = () => {
-    switch (props.actionsPosition) {
-      case "start":
-        return "justify-start";
-      case "center":
-        return "justify-center";
-      case "end":
-      default:
-        return "justify-end";
+  // Handle click events
+  const handleClick = (event: MouseEvent) => {
+    props.onClick?.(event);
+  };
+
+  // Handle keyboard events for clickable cards
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if ((event.key === "Enter" || event.key === " ") && props.onClick) {
+      event.preventDefault();
+      // Create synthetic MouseEvent for keyboard activation
+      const syntheticEvent = new MouseEvent("click", {
+        bubbles: true,
+        cancelable: true,
+      });
+      props.onClick(syntheticEvent);
     }
   };
 
-  // Render title with appropriate heading level
+  // Handle image load error
+  const handleImageError = () => setImageLoaded(false);
+
+  // Get actions position class
+  const actionsPositionClass = () => {
+    const position = props.actionsPosition || "end";
+    return `justify-${position === "end" ? "end" : position === "start" ? "start" : "center"}`;
+  };
+
+  // Render title with dynamic heading level - using switch for better performance
   const renderTitle = () => {
     if (!props.title) return null;
     
     const level = props.titleLevel || 2;
+    const titleProps = { class: "card-title", children: props.title };
     
-    // Use conditional rendering for heading levels
-    return (
-      <>
-        <Show when={level === 1}>
-          <h1 class="card-title">{props.title}</h1>
-        </Show>
-        <Show when={level === 2}>
-          <h2 class="card-title">{props.title}</h2>
-        </Show>
-        <Show when={level === 3}>
-          <h3 class="card-title">{props.title}</h3>
-        </Show>
-        <Show when={level === 4}>
-          <h4 class="card-title">{props.title}</h4>
-        </Show>
-        <Show when={level === 5}>
-          <h5 class="card-title">{props.title}</h5>
-        </Show>
-        <Show when={level === 6}>
-          <h6 class="card-title">{props.title}</h6>
-        </Show>
-      </>
-    );
+    switch (level) {
+      case 1: return <h1 {...titleProps} />;
+      case 2: return <h2 {...titleProps} />;
+      case 3: return <h3 {...titleProps} />;
+      case 4: return <h4 {...titleProps} />;
+      case 5: return <h5 {...titleProps} />;
+      case 6: return <h6 {...titleProps} />;
+      default: return <h2 {...titleProps} />;
+    }
   };
 
-  // Render image if provided
+  // Render image if provided and loaded
   const renderImage = () => {
     if (!props.imageSrc) return null;
     
@@ -176,7 +138,7 @@ export default function Card(props: CardProps): JSX.Element {
     );
   };
 
-  // Render card body
+  // Render card body with content
   const renderBody = () => {
     const hasContent = props.children || props.body || props.title || props.actions;
     if (!hasContent) return null;
@@ -206,26 +168,20 @@ export default function Card(props: CardProps): JSX.Element {
     );
   };
 
-  // Determine container element and its properties
+  // Build container props based on clickable state
   const containerProps = () => {
-    const baseProps: any = {
-      classList: {
-        ...classes(),
-        ...props.classList,
-      },
+    const baseProps: Record<string, any> = {
+      classList: { ...classes(), ...props.classList },
+      role: isClickable() ? "button" : "article",
     };
 
     if (isClickable()) {
-      baseProps.role = "button";
-      baseProps.tabIndex = 0;
-      baseProps.onClick = handleClick;
-      baseProps.onKeyDown = handleKeyDown;
-      
-      if (props.ariaLabel) {
-        baseProps["aria-label"] = props.ariaLabel;
-      }
-    } else {
-      baseProps.role = "article";
+      Object.assign(baseProps, {
+        tabIndex: 0,
+        onClick: handleClick,
+        onKeyDown: handleKeyDown,
+        ...(props.ariaLabel && { "aria-label": props.ariaLabel }),
+      });
     }
 
     if (props.ariaDescribedBy) {

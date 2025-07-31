@@ -182,8 +182,8 @@ describe("Card Component", () => {
 
     it("renders multiple action elements", () => {
       const actions = [
-        <button key="1">Button 1</button>,
-        <button key="2">Button 2</button>,
+        <button>Button 1</button>,
+        <button>Button 2</button>,
       ];
       const { getByText } = render(() => (
         <Card actions={actions}>Test Content</Card>
