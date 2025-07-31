@@ -1,5 +1,4 @@
-import { JSX, createMemo } from "solid-js";
-// Removed direct import of A and useLocation from @solidjs/router
+import { JSX } from "solid-js";
 
 /**
  * Props for the Breadcrumb component.
@@ -36,15 +35,6 @@ export interface BreadcrumbProps {
  * @returns {JSX.Element} JSX element representing a breadcrumb list item
  */
 export default function Breadcrumb(props: BreadcrumbProps): JSX.Element {
-  // Check if we're inside a router context
-  const hasRouter = createMemo(() => {
-    try {
-      useLocation();
-      return true;
-    } catch {
-      return false;
-    }
-  });
 
   // Handle keyboard events for clickable items
   const handleKeyDown = (event: KeyboardEvent) => {
@@ -62,31 +52,17 @@ export default function Breadcrumb(props: BreadcrumbProps): JSX.Element {
   const renderContent = () => {
     // Render as link if href is provided
     if (props.href) {
-      // Use solid-router A component if router context is available
-      if (hasRouter()) {
-        return (
-          <A 
-            href={props.href} 
-            class={props.class}
-            classList={props.classList}
-            {...commonProps}
-          >
-            {props.children}
-          </A>
-        );
-      } else {
-        // Fall back to regular anchor tag
-        return (
-          <a 
-            href={props.href} 
-            class={props.class}
-            classList={props.classList}
-            {...commonProps}
-          >
-            {props.children}
-          </a>
-        );
-      }
+      // Use regular anchor tag since router is peer dependency
+      return (
+        <a 
+          href={props.href} 
+          class={props.class}
+          classList={props.classList}
+          {...commonProps}
+        >
+          {props.children}
+        </a>
+      );
     }
     
     // Render as button if onClick is provided
