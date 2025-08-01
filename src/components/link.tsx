@@ -66,7 +66,7 @@ function getRouterA(): any {
  * @property {number} [tabIndex] - Tab order for keyboard navigation. Defaults to 0.
  * @property {string} [aria-label] - Accessible label for screen readers.
  * @property {string} [aria-describedby] - ID of element that describes the link.
- * @property {(event: MouseEvent) => void} [onClick] - Click event handler.
+ * @property {(event: MouseEvent | KeyboardEvent) => void} [onClick] - Click event handler that accepts both mouse and keyboard events.
  */
 export interface LinkProps {
   children?: JSX.Element;
@@ -82,7 +82,7 @@ export interface LinkProps {
   tabIndex?: number;
   "aria-label"?: string;
   "aria-describedby"?: string;
-  onClick?: (event: MouseEvent) => void;
+  onClick?: (event: MouseEvent | KeyboardEvent) => void;
 }
 
 /**
@@ -164,12 +164,8 @@ export default function Link(props: LinkProps): JSX.Element {
 
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
-      // Create a synthetic mouse event for onClick handler
-      const syntheticEvent = new MouseEvent('click', {
-        bubbles: true,
-        cancelable: true,
-      });
-      props.onClick?.(syntheticEvent);
+      // Call onClick handler directly with the keyboard event
+      props.onClick?.(event);
     }
   };
 
