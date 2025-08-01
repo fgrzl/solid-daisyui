@@ -6,6 +6,7 @@ export * from "./components/alert";
 export * from "./components/avatar";
 export * from "./components/badge";
 export * from "./components/breadcrumbs";
+export * from "./components/checkbox";
 export * from "./components/diff";
 export * from "./components/divider";
 export * from "./components/dock";
