@@ -83,10 +83,40 @@ const classes = () => ({
 ### Component Implementation Guidelines
 
 #### 1. **File Structure**
+
+**Single Component:**
 ```
 src/components/component-name.tsx
 test/components/component-name.test.tsx
 docs/components/component-name.md
+```
+
+**Multi-Component (when a component exports multiple related components):**
+```
+src/components/component-name/
+├── component-name.tsx
+├── sub-component.tsx
+├── index.ts
+test/components/component-name.test.tsx (includes all tests for the component family)
+docs/components/component-name.md (includes full docs for all components)
+```
+
+**Example: Carousel with CarouselItem**
+```
+src/components/carousel/
+├── carousel.tsx
+├── carousel-item.tsx
+├── index.ts
+test/components/carousel.test.tsx
+docs/components/carousel.md
+```
+
+The `index.ts` file should export all components and types:
+```tsx
+export { default as Carousel } from "./carousel";
+export { default as CarouselItem } from "./carousel-item";
+export type { CarouselProps } from "./carousel";
+export type { CarouselItemProps } from "./carousel-item";
 ```
 
 #### 2. **Required Exports**
