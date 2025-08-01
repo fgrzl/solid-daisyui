@@ -9,7 +9,7 @@ import { JSX, createSignal, createMemo, createUniqueId, mergeProps, splitProps }
  * @property {"text" | "password" | "email" | "number" | "search" | "tel" | "url" | "date" | "datetime-local" | "month" | "time" | "week"} [type] - The type of input. Defaults to "text".
  * @property {"xs" | "sm" | "md" | "lg"} [size] - The size of the input using official DaisyUI classes (input-xs, input-sm, input-md, input-lg).
  * @property {"primary" | "secondary" | "accent" | "info" | "success" | "warning" | "error"} [variant] - The color variant using official DaisyUI classes (input-primary, input-secondary, etc.).
- * @property {boolean} [bordered] - Whether to apply the input-bordered class for bordered styling.
+ * @property {boolean} [bordered] - Whether to apply the input-bordered class for bordered styling. Defaults to true.
  * @property {boolean} [ghost] - Whether to apply the input-ghost class for ghost styling.
  * @property {boolean} [disabled] - Whether the input is disabled.
  * @property {boolean} [required] - Whether the input is required.
@@ -85,7 +85,7 @@ export interface InputProps {
  * @returns {JSX.Element} The rendered Input component.
  */
 export default function Input(props: InputProps): JSX.Element {
-  const merged = mergeProps({ type: "text" }, props);
+  const merged = mergeProps({ type: "text", bordered: true }, props);
   
   // Generate unique ID for hint message association
   const hintId = createUniqueId();

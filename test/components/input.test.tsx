@@ -9,7 +9,7 @@ describe("Input Component", () => {
       const { container } = render(() => <Input />);
       const input = container.querySelector("input");
       expect(input).toBeInTheDocument();
-      expect(input).toHaveClass("input");
+      expect(input).toHaveClass("input", "input-bordered");
     });
 
     it("renders with value prop", () => {
@@ -102,7 +102,7 @@ describe("Input Component", () => {
     it("does not apply size class when size is not specified", () => {
       const { container } = render(() => <Input />);
       const input = container.querySelector("input");
-      expect(input).toHaveClass("input");
+      expect(input).toHaveClass("input", "input-bordered");
       expect(input).not.toHaveClass("input-xs", "input-sm", "input-md", "input-lg");
     });
   });
@@ -154,7 +154,7 @@ describe("Input Component", () => {
     it("does not apply variant class when variant is not specified", () => {
       const { container } = render(() => <Input />);
       const input = container.querySelector("input");
-      expect(input).toHaveClass("input");
+      expect(input).toHaveClass("input", "input-bordered");
       expect(input).not.toHaveClass(
         "input-primary",
         "input-secondary", 
@@ -180,6 +180,12 @@ describe("Input Component", () => {
       const input = container.querySelector("input");
       expect(input).toHaveClass("input");
       expect(input).not.toHaveClass("input-bordered");
+    });
+
+    it("can explicitly enable bordered styling", () => {
+      const { container } = render(() => <Input bordered={true} />);
+      const input = container.querySelector("input");
+      expect(input).toHaveClass("input", "input-bordered");
     });
 
     it("applies input-ghost class when ghost is true", () => {

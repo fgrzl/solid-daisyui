@@ -18,7 +18,13 @@ The Input component provides a comprehensive text input solution following offic
 ```tsx
 import { Input } from "solid-daisyui";
 
+// Basic input with default border
 <Input placeholder="Enter text..." />
+
+// Without border  
+<Input placeholder="Enter text..." bordered={false} />
+
+// Different input types
 <Input type="password" placeholder="Password" />
 <Input type="email" placeholder="Email address" />
 ```
@@ -60,9 +66,17 @@ const [value, setValue] = createSignal("");
 
 ### DaisyUI State Modifiers
 ```tsx
-<Input bordered placeholder="Bordered input" />
-<Input ghost placeholder="Ghost input" />
-<Input bordered ghost placeholder="Combined modifiers" />
+// Bordered (default)
+<Input placeholder="Bordered input (default)" />
+
+// Without border
+<Input placeholder="No border" bordered={false} />
+
+// Ghost style
+<Input placeholder="Ghost input" ghost />
+
+// Combine modifiers
+<Input placeholder="Ghost input" ghost bordered={false} />
 ```
 
 ### Input Types
@@ -131,7 +145,7 @@ const [value, setValue] = createSignal("");
 | `type` | `"text" \| "password" \| "email" \| "number" \| "search" \| "tel" \| "url" \| "date" \| "datetime-local" \| "month" \| "time" \| "week"` | `"text"` | HTML input type |
 | `size` | `"xs" \| "sm" \| "md" \| "lg"` | `undefined` | DaisyUI size variant |
 | `variant` | `"primary" \| "secondary" \| "accent" \| "info" \| "success" \| "warning" \| "error"` | `undefined` | DaisyUI color variant |
-| `bordered` | `boolean` | `false` | Apply input-bordered class |
+| `bordered` | `boolean` | `true` | Apply input-bordered class |
 | `ghost` | `boolean` | `false` | Apply input-ghost class |
 | `disabled` | `boolean` | `false` | Whether input is disabled |
 | `required` | `boolean` | `false` | Whether input is required |
