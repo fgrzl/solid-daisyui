@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { render } from "@solidjs/testing-library";
-import Hero from "@/components/hero";
+import Hero from "@/components/hero/hero";
+import HeroContent from "@/components/hero/hero-content";
+import HeroOverlay from "@/components/hero/hero-overlay";
 
 describe("Hero Component", () => {
   // Basic rendering tests
@@ -333,6 +335,333 @@ describe("Hero Component", () => {
       
       expect(getByText("Box Office News!")).toBeInTheDocument();
       expect(getByText("Provident cupiditate voluptatem.")).toBeInTheDocument();
+    });
+  });
+});
+
+describe("HeroContent Component", () => {
+  describe("Basic Rendering", () => {
+    it("renders with default hero-content class", () => {
+      const { container } = render(() => <HeroContent />);
+      const contentElement = container.firstChild as HTMLElement;
+      
+      expect(contentElement).toBeInTheDocument();
+      expect(contentElement).toHaveClass("hero-content");
+      expect(contentElement.tagName).toBe("DIV");
+    });
+
+    it("renders children content", () => {
+      const { getByText } = render(() => (
+        <HeroContent>
+          <div>Content inside hero</div>
+        </HeroContent>
+      ));
+      
+      expect(getByText("Content inside hero")).toBeInTheDocument();
+    });
+
+    it("applies custom class prop", () => {
+      const { container } = render(() => (
+        <HeroContent class="custom-hero-class" />
+      ));
+      const contentElement = container.firstChild as HTMLElement;
+      
+      expect(contentElement).toHaveClass("hero-content");
+      expect(contentElement).toHaveClass("custom-hero-class");
+    });
+
+    it("applies dynamic classList prop", () => {
+      const { container } = render(() => (
+        <HeroContent classList={{ "dynamic-class": true, "false-class": false }} />
+      ));
+      const contentElement = container.firstChild as HTMLElement;
+      
+      expect(contentElement).toHaveClass("dynamic-class");
+      expect(contentElement).not.toHaveClass("false-class");
+    });
+  });
+
+  describe("Alignment Options", () => {
+    it("applies text-center by default", () => {
+      const { container } = render(() => <HeroContent />);
+      const contentElement = container.firstChild as HTMLElement;
+      
+      expect(contentElement).toHaveClass("text-center");
+    });
+
+    it("applies text-left when align is start", () => {
+      const { container } = render(() => <HeroContent align="start" />);
+      const contentElement = container.firstChild as HTMLElement;
+      
+      expect(contentElement).toHaveClass("text-left");
+      expect(contentElement).not.toHaveClass("text-center");
+    });
+
+    it("applies text-right when align is end", () => {
+      const { container } = render(() => <HeroContent align="end" />);
+      const contentElement = container.firstChild as HTMLElement;
+      
+      expect(contentElement).toHaveClass("text-right");
+      expect(contentElement).not.toHaveClass("text-center");
+    });
+
+    it("applies items-center by default for vertical alignment", () => {
+      const { container } = render(() => <HeroContent />);
+      const contentElement = container.firstChild as HTMLElement;
+      
+      expect(contentElement).toHaveClass("items-center");
+    });
+
+    it("applies items-start when verticalAlign is top", () => {
+      const { container } = render(() => <HeroContent verticalAlign="top" />);
+      const contentElement = container.firstChild as HTMLElement;
+      
+      expect(contentElement).toHaveClass("items-start");
+      expect(contentElement).not.toHaveClass("items-center");
+    });
+
+    it("applies items-end when verticalAlign is bottom", () => {
+      const { container } = render(() => <HeroContent verticalAlign="bottom" />);
+      const contentElement = container.firstChild as HTMLElement;
+      
+      expect(contentElement).toHaveClass("items-end");
+      expect(contentElement).not.toHaveClass("items-center");
+    });
+  });
+
+  describe("Combined Usage", () => {
+    it("works well inside Hero component", () => {
+      const { getByText, container } = render(() => (
+        <Hero>
+          <HeroContent>
+            <h1>Hero Title</h1>
+          </HeroContent>
+        </Hero>
+      ));
+      
+      expect(getByText("Hero Title")).toBeInTheDocument();
+      const heroElement = container.querySelector(".hero");
+      const contentElement = container.querySelector(".hero-content");
+      
+      expect(heroElement).toBeInTheDocument();
+      expect(contentElement).toBeInTheDocument();
+      expect(heroElement?.contains(contentElement)).toBe(true);
+    });
+  });
+});
+
+describe("HeroOverlay Component", () => {
+  describe("Basic Rendering", () => {
+    it("renders with default hero-overlay class", () => {
+      const { container } = render(() => <HeroOverlay />);
+      const overlayElement = container.firstChild as HTMLElement;
+      
+      expect(overlayElement).toBeInTheDocument();
+      expect(overlayElement).toHaveClass("hero-overlay");
+      expect(overlayElement.tagName).toBe("DIV");
+    });
+
+    it("applies default background color and opacity", () => {
+      const { container } = render(() => <HeroOverlay />);
+      const overlayElement = container.firstChild as HTMLElement;
+      
+      expect(overlayElement).toHaveClass("bg-black");
+      expect(overlayElement).toHaveClass("bg-opacity-60");
+    });
+
+    it("applies custom class prop", () => {
+      const { container } = render(() => (
+        <HeroOverlay class="custom-overlay-class" />
+      ));
+      const overlayElement = container.firstChild as HTMLElement;
+      
+      expect(overlayElement).toHaveClass("hero-overlay");
+      expect(overlayElement).toHaveClass("custom-overlay-class");
+    });
+
+    it("applies dynamic classList prop", () => {
+      const { container } = render(() => (
+        <HeroOverlay classList={{ "dynamic-class": true, "false-class": false }} />
+      ));
+      const overlayElement = container.firstChild as HTMLElement;
+      
+      expect(overlayElement).toHaveClass("dynamic-class");
+      expect(overlayElement).not.toHaveClass("false-class");
+    });
+  });
+
+  describe("Customization Options", () => {
+    it("applies custom opacity value", () => {
+      const { container } = render(() => <HeroOverlay opacity={40} />);
+      const overlayElement = container.firstChild as HTMLElement;
+      
+      expect(overlayElement).toHaveClass("bg-opacity-40");
+      expect(overlayElement).not.toHaveClass("bg-opacity-60");
+    });
+
+    it("applies custom color class", () => {
+      const { container } = render(() => <HeroOverlay color="bg-neutral" />);
+      const overlayElement = container.firstChild as HTMLElement;
+      
+      expect(overlayElement).toHaveClass("bg-neutral");
+      expect(overlayElement).not.toHaveClass("bg-black");
+    });
+
+    it("applies both custom color and opacity", () => {
+      const { container } = render(() => (
+        <HeroOverlay color="bg-primary" opacity={30} />
+      ));
+      const overlayElement = container.firstChild as HTMLElement;
+      
+      expect(overlayElement).toHaveClass("bg-primary");
+      expect(overlayElement).toHaveClass("bg-opacity-30");
+    });
+
+    it("handles edge case of 0 opacity", () => {
+      const { container } = render(() => <HeroOverlay opacity={0} />);
+      const overlayElement = container.firstChild as HTMLElement;
+      
+      expect(overlayElement).toHaveClass("bg-opacity-0");
+    });
+
+    it("handles edge case of 100 opacity", () => {
+      const { container } = render(() => <HeroOverlay opacity={100} />);
+      const overlayElement = container.firstChild as HTMLElement;
+      
+      expect(overlayElement).toHaveClass("bg-opacity-100");
+    });
+  });
+
+  describe("Combined Usage", () => {
+    it("works well inside Hero component", () => {
+      const { container } = render(() => (
+        <Hero backgroundImage="/test-bg.jpg">
+          <HeroOverlay />
+          <HeroContent>
+            <h1>Hero with Overlay</h1>
+          </HeroContent>
+        </Hero>
+      ));
+      
+      const heroElement = container.querySelector(".hero");
+      const overlayElement = container.querySelector(".hero-overlay");
+      const contentElement = container.querySelector(".hero-content");
+      
+      expect(heroElement).toBeInTheDocument();
+      expect(overlayElement).toBeInTheDocument();
+      expect(contentElement).toBeInTheDocument();
+      expect(heroElement?.contains(overlayElement)).toBe(true);
+      expect(heroElement?.contains(contentElement)).toBe(true);
+    });
+
+    it("multiple overlays can be used for layering effects", () => {
+      const { container } = render(() => (
+        <Hero>
+          <HeroOverlay color="bg-black" opacity={20} />
+          <HeroOverlay color="bg-primary" opacity={10} />
+          <HeroContent>
+            <h1>Layered Overlays</h1>
+          </HeroContent>
+        </Hero>
+      ));
+      
+      const overlayElements = container.querySelectorAll(".hero-overlay");
+      expect(overlayElements).toHaveLength(2);
+      
+      expect(overlayElements[0]).toHaveClass("bg-black", "bg-opacity-20");
+      expect(overlayElements[1]).toHaveClass("bg-primary", "bg-opacity-10");
+    });
+  });
+});
+
+describe("Hero Component Integration with Child Components", () => {
+  describe("Component Composition", () => {
+    it("works with HeroContent and HeroOverlay together", () => {
+      const { getByText, container } = render(() => (
+        <Hero backgroundImage="/hero-bg.jpg">
+          <HeroOverlay opacity={50} />
+          <HeroContent align="center">
+            <div>
+              <h1>Welcome</h1>
+              <p>Hero section with custom components</p>
+            </div>
+          </HeroContent>
+        </Hero>
+      ));
+      
+      expect(getByText("Welcome")).toBeInTheDocument();
+      expect(getByText("Hero section with custom components")).toBeInTheDocument();
+      
+      const heroElement = container.querySelector(".hero");
+      const overlayElement = container.querySelector(".hero-overlay");
+      const contentElement = container.querySelector(".hero-content");
+      
+      expect(heroElement).toBeInTheDocument();
+      expect(overlayElement).toBeInTheDocument();
+      expect(contentElement).toBeInTheDocument();
+      
+      // Verify proper nesting
+      expect(heroElement?.contains(overlayElement)).toBe(true);
+      expect(heroElement?.contains(contentElement)).toBe(true);
+      
+      // Verify overlay customization
+      expect(overlayElement).toHaveClass("bg-opacity-50");
+      
+      // Verify content element exists and has proper structure
+      expect(contentElement).toHaveClass("hero-content");
+    });
+
+    it("maintains backward compatibility with legacy overlay prop", () => {
+      const { container } = render(() => (
+        <Hero overlay backgroundImage="/bg.jpg">
+          <div>Legacy Content</div>
+        </Hero>
+      ));
+      
+      const heroElement = container.querySelector(".hero");
+      const overlayElement = container.querySelector(".hero-overlay");
+      const contentElement = container.querySelector(".hero-content");
+      
+      expect(heroElement).toBeInTheDocument();
+      expect(overlayElement).toBeInTheDocument();
+      expect(contentElement).toBeInTheDocument();
+      
+      // Legacy overlay should have default values
+      expect(overlayElement).toHaveClass("bg-opacity-60");
+    });
+
+    it("supports complex nested content in HeroContent", () => {
+      const { getByText, getByRole } = render(() => (
+        <Hero>
+          <HeroContent>
+            <div class="max-w-md">
+              <h1 class="mb-5 text-5xl font-bold">Hello there</h1>
+              <p class="mb-5">Provident cupiditate voluptatem.</p>
+              <button class="btn btn-primary">Get Started</button>
+            </div>
+          </HeroContent>
+        </Hero>
+      ));
+      
+      expect(getByText("Hello there")).toBeInTheDocument();
+      expect(getByText("Provident cupiditate voluptatem.")).toBeInTheDocument();
+      expect(getByRole("button", { name: "Get Started" })).toBeInTheDocument();
+    });
+
+    it("supports multiple HeroContent sections", () => {
+      const { getByText } = render(() => (
+        <Hero>
+          <HeroContent align="start">
+            <h1>Left Content</h1>
+          </HeroContent>
+          <HeroContent align="end">
+            <h1>Right Content</h1>
+          </HeroContent>
+        </Hero>
+      ));
+      
+      expect(getByText("Left Content")).toBeInTheDocument();
+      expect(getByText("Right Content")).toBeInTheDocument();
     });
   });
 });
