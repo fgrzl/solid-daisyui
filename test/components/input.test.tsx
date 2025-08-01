@@ -1,6 +1,6 @@
 import { fireEvent, render } from "@solidjs/testing-library";
 import { describe, it, expect, vi } from "vitest";
-import { Input } from "@/components/input";
+import Input from "@/components/input";
 
 describe("Input Component", () => {
   // Basic Rendering Tests
@@ -361,6 +361,150 @@ describe("Input Component", () => {
       expect(input).toHaveAttribute("autocomplete", "username");
       expect(input).toHaveAttribute("maxlength", "50");
       expect(input).toHaveAttribute("minlength", "3");
+    });
+  });
+
+  // Validation Integration Tests
+  describe("Validation Integration", () => {
+    it("renders input without wrapper when no validation props are provided", () => {
+      const { container } = render(() => <Input placeholder="Simple input" />);
+      const formControl = container.querySelector(".form-control");
+      const input = container.querySelector("input");
+      
+      expect(formControl).toBeNull();
+      expect(input).toBeInTheDocument();
+    });
+
+    it("wraps input in form-control when hint is provided", () => {
+      const { container } = render(() => <Input hint="This is a hint" />);
+      const formControl = container.querySelector(".form-control");
+      const input = container.querySelector("input");
+      const hintElement = container.querySelector(".label-text-alt");
+      
+      expect(formControl).toBeInTheDocument();
+      expect(input).toBeInTheDocument();
+      expect(hintElement).toBeInTheDocument();
+      expect(hintElement).toHaveTextContent("This is a hint");
+    });
+
+    it("wraps input in form-control when label is provided", () => {
+      const { container } = render(() => <Input label="Username" />);
+      const formControl = container.querySelector(".form-control");
+      const labelElement = container.querySelector(".label-text");
+      
+      expect(formControl).toBeInTheDocument();
+      expect(labelElement).toBeInTheDocument();
+      expect(labelElement).toHaveTextContent("Username");
+    });
+
+    it("wraps input in form-control when altLabel is provided", () => {
+      const { container } = render(() => <Input altLabel="Required" />);
+      const formControl = container.querySelector(".form-control");
+      const altLabelElement = container.querySelector(".label-text-alt");
+      
+      expect(formControl).toBeInTheDocument();
+      expect(altLabelElement).toBeInTheDocument();
+      expect(altLabelElement).toHaveTextContent("Required");
+    });
+
+    it("applies state styling to input variant", () => {
+      const { container } = render(() => <Input state="error" />);
+      const input = container.querySelector("input");
+      
+      expect(input).toHaveClass("input-error");
+      expect(input).toHaveAttribute("aria-invalid", "true");
+    });
+
+    it("prioritizes state over variant prop", () => {
+      const { container } = render(() => <Input variant="primary" state="error" />);
+      const input = container.querySelector("input");
+      
+      expect(input).toHaveClass("input-error");
+      expect(input).not.toHaveClass("input-primary");
+    });
+
+    it("sets proper aria-describedby when hint is provided", () => {
+      const { container } = render(() => <Input hint="Error message" />);
+      const input = container.querySelector("input");
+      const hintElement = container.querySelector(".label-text-alt");
+      
+      expect(input).toHaveAttribute("aria-describedby");
+      expect(hintElement).toHaveAttribute("id");
+      
+      const ariaDescribedBy = input?.getAttribute("aria-describedby");
+      const hintId = hintElement?.getAttribute("id");
+      expect(ariaDescribedBy).toBe(hintId);
+    });
+
+    it("combines existing aria-describedby with hint ID", () => {
+      const { container } = render(() => 
+        <Input aria-describedby="existing-id" hint="Error message" />
+      );
+      const input = container.querySelector("input");
+      const hintElement = container.querySelector(".label-text-alt");
+      
+      const ariaDescribedBy = input?.getAttribute("aria-describedby");
+      const hintId = hintElement?.getAttribute("id");
+      expect(ariaDescribedBy).toBe(`existing-id ${hintId}`);
+    });
+
+    it("supports JSX content in hint", () => {
+      const { container } = render(() => 
+        <Input hint={<span>Error with <strong>emphasis</strong></span>} />
+      );
+      const hintElement = container.querySelector(".label-text-alt");
+      const strongElement = container.querySelector("strong");
+      
+      expect(hintElement).toBeInTheDocument();
+      expect(strongElement).toBeInTheDocument();
+      expect(strongElement).toHaveTextContent("emphasis");
+    });
+
+    it("supports JSX content in labels", () => {
+      const { container } = render(() => 
+        <Input 
+          label={<span>Username <strong>*</strong></span>}
+          altLabel={<em>Required</em>}
+        />
+      );
+      const labelStrong = container.querySelector(".label-text strong");
+      const altLabelEm = container.querySelector(".label-text-alt em");
+      
+      expect(labelStrong).toBeInTheDocument();
+      expect(labelStrong).toHaveTextContent("*");
+      expect(altLabelEm).toBeInTheDocument();
+      expect(altLabelEm).toHaveTextContent("Required");
+    });
+
+    it("renders complete validation layout with all props", () => {
+      const { container } = render(() => 
+        <Input 
+          label="Email Address"
+          altLabel="Required"
+          hint="Please enter a valid email address"
+          state="error"
+          type="email"
+          placeholder="user@example.com"
+        />
+      );
+      
+      const formControl = container.querySelector(".form-control");
+      const topLabel = container.querySelector(".label:first-child");
+      const bottomLabel = container.querySelector(".label:last-child");
+      const labelText = container.querySelector(".label-text");
+      const topAltText = container.querySelector(".label:first-child .label-text-alt");
+      const bottomAltText = container.querySelector(".label:last-child .label-text-alt");
+      const input = container.querySelector("input");
+      
+      expect(formControl).toBeInTheDocument();
+      expect(topLabel).toBeInTheDocument();
+      expect(bottomLabel).toBeInTheDocument();
+      expect(labelText).toHaveTextContent("Email Address");
+      expect(topAltText).toHaveTextContent("Required");
+      expect(bottomAltText).toHaveTextContent("Please enter a valid email address");
+      expect(input).toHaveClass("input-error");
+      expect(input).toHaveAttribute("type", "email");
+      expect(input).toHaveAttribute("aria-invalid", "true");
     });
   });
 });
