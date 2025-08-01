@@ -470,6 +470,7 @@ export default function Calendar(props: CalendarProps): JSX.Element {
                 }}
                 tabIndex={isFocused ? 0 : -1}
                 data-date={timestamp}
+                data-testid={`calendar-day-${format(date, DAY_NUMBER_FORMAT)}`}
                 disabled={isDisabled}
                 aria-label={formatDateForAccessibility(date)}
                 aria-selected={isSelected}

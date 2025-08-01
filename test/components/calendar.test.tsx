@@ -274,12 +274,13 @@ describe("Calendar Component", () => {
     it("handles min and max date restrictions", () => {
       const minDate = new Date(2024, 0, 10);
       const maxDate = new Date(2024, 0, 20);
-      const { getByText } = render(() => 
-        <Calendar minDate={minDate} maxDate={maxDate} />
+      const currentDate = new Date(2024, 0, 15); // January 15, 2024
+      const { getByTestId } = render(() => 
+        <Calendar minDate={minDate} maxDate={maxDate} currentDate={currentDate} />
       );
       
-      const beforeMin = getByText("5");
-      const afterMax = getByText("25");
+      const beforeMin = getByTestId("calendar-day-5");
+      const afterMax = getByTestId("calendar-day-25");
       
       expect(beforeMin).toHaveAttribute("disabled");
       expect(afterMax).toHaveAttribute("disabled");
