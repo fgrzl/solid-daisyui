@@ -21,7 +21,14 @@ export interface ChatBubbleProps {
   class?: string;
   classList?: Record<string, boolean>;
   side?: "start" | "end";
-  color?: "primary" | "secondary" | "accent" | "info" | "success" | "warning" | "error";
+  color?:
+    | "primary"
+    | "secondary"
+    | "accent"
+    | "info"
+    | "success"
+    | "warning"
+    | "error";
   size?: "xs" | "sm" | "md" | "lg";
   avatar?: string;
   avatarAlt?: string;
@@ -58,20 +65,17 @@ export default function ChatBubble(props: ChatBubbleProps): JSX.Element {
     if (props.avatarElement) {
       return <div class="chat-image avatar">{props.avatarElement}</div>;
     }
-    
+
     if (props.avatar) {
       return (
         <div class="chat-image avatar">
           <div class="w-10 rounded-full">
-            <img 
-              src={props.avatar} 
-              alt={props.avatarAlt || "User avatar"} 
-            />
+            <img src={props.avatar} alt={props.avatarAlt || "User avatar"} />
           </div>
         </div>
       );
     }
-    
+
     return null;
   };
 
@@ -84,26 +88,19 @@ export default function ChatBubble(props: ChatBubbleProps): JSX.Element {
       }}
     >
       {renderAvatar()}
-      
+
       {props.header && (
         <div class="chat-header">
           {props.header}
           {props.time && <time class="text-xs opacity-50">{props.time}</time>}
         </div>
       )}
-      
-      <div 
-        class="chat-bubble"
-        classList={bubbleClasses()}
-      >
+
+      <div class="chat-bubble" classList={bubbleClasses()}>
         {props.children}
       </div>
-      
-      {props.footer && (
-        <div class="chat-footer opacity-50">
-          {props.footer}
-        </div>
-      )}
+
+      {props.footer && <div class="chat-footer opacity-50">{props.footer}</div>}
     </div>
   );
 }

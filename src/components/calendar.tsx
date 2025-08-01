@@ -1,4 +1,11 @@
-import { JSX, createSignal, createEffect, createMemo, For, Show } from "solid-js";
+import {
+  JSX,
+  createSignal,
+  createEffect,
+  createMemo,
+  For,
+  Show,
+} from "solid-js";
 import {
   format,
   startOfMonth,
@@ -81,44 +88,44 @@ export interface CalendarProps {
 /**
  * Calendar component for date selection with full DaisyUI styling support.
  * Follows DaisyUI Calendar patterns with comprehensive accessibility features.
- * 
+ *
  * Uses date-fns for robust date handling, timezone safety, and internationalization support.
  * Implements reactive SolidJS patterns for optimal performance and proper state management.
- * 
+ *
  * Supports single date selection, multiple date selection, and date range selection modes.
  * Includes keyboard navigation, screen reader support, and full WCAG 2.1 AA compliance.
- * 
+ *
  * @example
  * ```tsx
  * // Basic calendar
  * <Calendar />
- * 
+ *
  * // Calendar with date selection
- * <Calendar 
- *   selectedDate={new Date()} 
- *   onDateSelect={(date) => console.log(date)} 
+ * <Calendar
+ *   selectedDate={new Date()}
+ *   onDateSelect={(date) => console.log(date)}
  * />
- * 
+ *
  * // Calendar with range selection
- * <Calendar 
- *   range 
- *   onRangeSelect={(range) => console.log(range.start, range.end)} 
+ * <Calendar
+ *   range
+ *   onRangeSelect={(range) => console.log(range.start, range.end)}
  * />
- * 
+ *
  * // Calendar with DaisyUI variants and custom date format
- * <Calendar 
- *   size="lg" 
- *   variant="bordered" 
+ * <Calendar
+ *   size="lg"
+ *   variant="bordered"
  *   dateFormat="MMMM do, yyyy"
  * />
  * ```
- * 
+ *
  * @param {CalendarProps} props - The properties to configure the Calendar component.
  * @returns {JSX.Element} The rendered Calendar component.
  */
 export default function Calendar(props: CalendarProps): JSX.Element {
   // ===== UTILITY FUNCTIONS =====
-  
+
   /** Validates and returns a safe date, defaulting to current date if invalid */
   const getValidDate = (date?: Date): Date => {
     return date && isValid(date) ? date : new Date();
@@ -129,7 +136,7 @@ export default function Calendar(props: CalendarProps): JSX.Element {
     if (!props.dateFormat) {
       return format(date, DEFAULT_DATE_FORMAT);
     }
-    
+
     try {
       return format(date, props.dateFormat);
     } catch {
@@ -140,18 +147,18 @@ export default function Calendar(props: CalendarProps): JSX.Element {
   /** Checks if a date is disabled based on constraints */
   const isDateDisabled = (date: Date): boolean => {
     try {
-      if (props.disabledDates?.some(disabled => isSameDay(disabled, date))) {
+      if (props.disabledDates?.some((disabled) => isSameDay(disabled, date))) {
         return true;
       }
-      
+
       if (props.minDate && isBefore(date, props.minDate)) {
         return true;
       }
-      
+
       if (props.maxDate && isAfter(date, props.maxDate)) {
         return true;
       }
-      
+
       return false;
     } catch (error) {
       console.warn("Error checking if date is disabled:", error);
@@ -165,16 +172,19 @@ export default function Calendar(props: CalendarProps): JSX.Element {
       if (props.selectedDate && isSameDay(date, props.selectedDate)) {
         return true;
       }
-      
-      if (props.multiple && selectedDates().some(selected => isSameDay(selected, date))) {
+
+      if (
+        props.multiple &&
+        selectedDates().some((selected) => isSameDay(selected, date))
+      ) {
         return true;
       }
-      
+
       if (props.range && props.selectedRange) {
         const { start, end } = props.selectedRange;
         return isWithinInterval(date, { start, end });
       }
-      
+
       return false;
     } catch (error) {
       console.warn("Error checking if date is selected:", error);
@@ -189,16 +199,22 @@ export default function Calendar(props: CalendarProps): JSX.Element {
 
   // ===== STATE MANAGEMENT =====
 
-  const [displayDate, setDisplayDate] = createSignal(getValidDate(props.currentDate));
-  const [selectedDates, setSelectedDates] = createSignal<Date[]>(props.selectedDates || []);
+  const [displayDate, setDisplayDate] = createSignal(
+    getValidDate(props.currentDate),
+  );
+  const [selectedDates, setSelectedDates] = createSignal<Date[]>(
+    props.selectedDates || [],
+  );
   const [rangeStartDate, setRangeStartDate] = createSignal<Date | null>(null);
-  const [focusedDateTimestamp, setFocusedDateTimestamp] = createSignal<number | null>(null);
-  
+  const [focusedDateTimestamp, setFocusedDateTimestamp] = createSignal<
+    number | null
+  >(null);
+
   // Store element references for proper focus management
   let dateElementRefs: Record<number, HTMLButtonElement> = {};
 
   // ===== REACTIVE EFFECTS =====
-  
+
   // Update display date when currentDate prop changes
   createEffect(() => {
     const current = props.currentDate;
@@ -230,10 +246,10 @@ export default function Calendar(props: CalendarProps): JSX.Element {
   // Cleanup element references when calendar days change
   createEffect(() => {
     const days = calendarDays();
-    const validTimestamps = new Set(days.map(date => date.getTime()));
-    
+    const validTimestamps = new Set(days.map((date) => date.getTime()));
+
     // Remove references for dates no longer in view
-    Object.keys(dateElementRefs).forEach(timestampStr => {
+    Object.keys(dateElementRefs).forEach((timestampStr) => {
       const timestamp = parseInt(timestampStr, 10);
       if (!validTimestamps.has(timestamp)) {
         delete dateElementRefs[timestamp];
@@ -247,7 +263,10 @@ export default function Calendar(props: CalendarProps): JSX.Element {
   const weekDays = createMemo(() => {
     const baseWeekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const startDay = props.weekStartsOn || 0;
-    return [...baseWeekDays.slice(startDay), ...baseWeekDays.slice(0, startDay)];
+    return [
+      ...baseWeekDays.slice(startDay),
+      ...baseWeekDays.slice(0, startDay),
+    ];
   });
 
   // Get month display string
@@ -259,9 +278,13 @@ export default function Calendar(props: CalendarProps): JSX.Element {
   const calendarDays = createMemo(() => {
     const monthStart = startOfMonth(displayDate());
     const monthEnd = endOfMonth(displayDate());
-    const calendarStart = startOfWeek(monthStart, { weekStartsOn: props.weekStartsOn || 0 });
-    const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: props.weekStartsOn || 0 });
-    
+    const calendarStart = startOfWeek(monthStart, {
+      weekStartsOn: props.weekStartsOn || 0,
+    });
+    const calendarEnd = endOfWeek(monthEnd, {
+      weekStartsOn: props.weekStartsOn || 0,
+    });
+
     return eachDayOfInterval({ start: calendarStart, end: calendarEnd });
   });
 
@@ -276,7 +299,7 @@ export default function Calendar(props: CalendarProps): JSX.Element {
       baseClasses[`calendar-${props.size}`] = true;
     }
 
-    // Add variant classes  
+    // Add variant classes
     if (props.variant) {
       baseClasses[`calendar-${props.variant}`] = true;
     }
@@ -294,7 +317,7 @@ export default function Calendar(props: CalendarProps): JSX.Element {
   /** Handles date selection based on current mode */
   const handleDateSelect = (date: Date): void => {
     if (isDateDisabled(date)) return;
-    
+
     try {
       if (props.range) {
         handleRangeSelection(date);
@@ -311,14 +334,13 @@ export default function Calendar(props: CalendarProps): JSX.Element {
   /** Handles range selection logic */
   const handleRangeSelection = (date: Date): void => {
     const start = rangeStartDate();
-    
+
     if (!start) {
       setRangeStartDate(date);
     } else {
-      const range = start <= date 
-        ? { start, end: date }
-        : { start: date, end: start };
-      
+      const range =
+        start <= date ? { start, end: date } : { start: date, end: start };
+
       props.onRangeSelect?.(range);
       setRangeStartDate(null);
     }
@@ -327,12 +349,12 @@ export default function Calendar(props: CalendarProps): JSX.Element {
   /** Handles multiple selection logic */
   const handleMultipleSelection = (date: Date): void => {
     const current = selectedDates();
-    const exists = current.some(selected => isSameDay(selected, date));
-    
+    const exists = current.some((selected) => isSameDay(selected, date));
+
     const newSelection = exists
-      ? current.filter(selected => !isSameDay(selected, date))
+      ? current.filter((selected) => !isSameDay(selected, date))
       : [...current, date];
-    
+
     setSelectedDates(newSelection);
     props.onMultipleSelect?.(newSelection);
     props.onDateSelect?.(date);
@@ -359,12 +381,12 @@ export default function Calendar(props: CalendarProps): JSX.Element {
   /** Navigate to a relative date and update focused element reactively */
   const navigateToDate = (currentDate: Date, dayOffset: number): void => {
     const newDate = addDays(currentDate, dayOffset);
-    
+
     // If we're going to a different month, update display
     if (!isSameMonth(newDate, currentDate)) {
       setDisplayDate(startOfMonth(newDate));
     }
-    
+
     // Set the timestamp for reactive focus management
     setFocusedDateTimestamp(newDate.getTime());
   };
@@ -377,22 +399,22 @@ export default function Calendar(props: CalendarProps): JSX.Element {
         event.preventDefault();
         handleDateSelect(date);
         break;
-        
+
       case "ArrowRight":
         event.preventDefault();
         navigateToDate(date, 1);
         break;
-        
+
       case "ArrowLeft":
         event.preventDefault();
         navigateToDate(date, -1);
         break;
-        
+
       case "ArrowDown":
         event.preventDefault();
         navigateToDate(date, DAYS_IN_WEEK);
         break;
-        
+
       case "ArrowUp":
         event.preventDefault();
         navigateToDate(date, -DAYS_IN_WEEK);
@@ -419,21 +441,41 @@ export default function Calendar(props: CalendarProps): JSX.Element {
           onClick={navigatePrevMonth}
           class="btn btn-circle btn-ghost btn-sm"
         >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
         </button>
-        
+
         <h2 class="calendar-title">{monthYearString()}</h2>
-        
+
         <button
           type="button"
           aria-label="Next month"
           onClick={navigateNextMonth}
           class="btn btn-circle btn-ghost btn-sm"
         >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5l7 7-7 7"
+            />
           </svg>
         </button>
       </div>
@@ -458,7 +500,7 @@ export default function Calendar(props: CalendarProps): JSX.Element {
             const inCurrentMonth = isInCurrentMonth(date);
             const timestamp = date.getTime();
             const isFocused = focusedDateTimestamp() === timestamp;
-            
+
             return (
               <button
                 type="button"
@@ -491,9 +533,9 @@ export default function Calendar(props: CalendarProps): JSX.Element {
       </div>
 
       {/* Screen Reader Announcements */}
-      <div 
-        class="sr-only" 
-        aria-live="polite" 
+      <div
+        class="sr-only"
+        aria-live="polite"
         aria-label="Selected date announcements"
       >
         <Show when={props.selectedDate && isValid(props.selectedDate)}>

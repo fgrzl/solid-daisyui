@@ -7,7 +7,7 @@ describe("Breadcrumb Component", () => {
   describe("Basic Rendering", () => {
     it("renders as list item", () => {
       const { container } = render(() => <Breadcrumb>Home</Breadcrumb>);
-      const listItem = container.querySelector('li');
+      const listItem = container.querySelector("li");
       expect(listItem).toBeInTheDocument();
     });
 
@@ -39,7 +39,9 @@ describe("Breadcrumb Component", () => {
 
     it("applies custom classes to link", () => {
       const { getByRole } = render(() => (
-        <Breadcrumb href="/home" class="custom-link">Home</Breadcrumb>
+        <Breadcrumb href="/home" class="custom-link">
+          Home
+        </Breadcrumb>
       ));
       const link = getByRole("link");
       expect(link).toHaveClass("custom-link");
@@ -47,10 +49,7 @@ describe("Breadcrumb Component", () => {
 
     it("applies classList to link", () => {
       const { getByRole } = render(() => (
-        <Breadcrumb 
-          href="/home" 
-          classList={{ active: true, inactive: false }}
-        >
+        <Breadcrumb href="/home" classList={{ active: true, inactive: false }}>
           Home
         </Breadcrumb>
       ));
@@ -77,7 +76,7 @@ describe("Breadcrumb Component", () => {
         <Breadcrumb onClick={handleClick}>Home</Breadcrumb>
       ));
       const button = getByRole("button");
-      
+
       fireEvent.click(button);
       expect(handleClick).toHaveBeenCalledTimes(1);
     });
@@ -88,11 +87,11 @@ describe("Breadcrumb Component", () => {
         <Breadcrumb onClick={handleClick}>Home</Breadcrumb>
       ));
       const button = getByRole("button");
-      
+
       // Test Enter key
       fireEvent.keyDown(button, { key: "Enter" });
       expect(handleClick).toHaveBeenCalledTimes(1);
-      
+
       // Test Space key
       fireEvent.keyDown(button, { key: " " });
       expect(handleClick).toHaveBeenCalledTimes(2);
@@ -101,7 +100,9 @@ describe("Breadcrumb Component", () => {
     it("applies custom classes to button", () => {
       const handleClick = vi.fn();
       const { getByRole } = render(() => (
-        <Breadcrumb onClick={handleClick} class="custom-button">Home</Breadcrumb>
+        <Breadcrumb onClick={handleClick} class="custom-button">
+          Home
+        </Breadcrumb>
       ));
       const button = getByRole("button");
       expect(button).toHaveClass("custom-button");
@@ -137,7 +138,9 @@ describe("Breadcrumb Component", () => {
 
     it("applies aria-current to links", () => {
       const { getByRole } = render(() => (
-        <Breadcrumb href="/current" current>Current Page</Breadcrumb>
+        <Breadcrumb href="/current" current>
+          Current Page
+        </Breadcrumb>
       ));
       const link = getByRole("link");
       expect(link).toHaveAttribute("aria-current", "page");
@@ -146,7 +149,9 @@ describe("Breadcrumb Component", () => {
     it("applies aria-current to buttons", () => {
       const handleClick = vi.fn();
       const { getByRole } = render(() => (
-        <Breadcrumb onClick={handleClick} current>Current Page</Breadcrumb>
+        <Breadcrumb onClick={handleClick} current>
+          Current Page
+        </Breadcrumb>
       ));
       const button = getByRole("button");
       expect(button).toHaveAttribute("aria-current", "page");
@@ -165,28 +170,32 @@ describe("Breadcrumb Component", () => {
   describe("Edge Cases", () => {
     it("renders list item even with no content", () => {
       const { container } = render(() => <Breadcrumb />);
-      const listItem = container.querySelector('li');
+      const listItem = container.querySelector("li");
       expect(listItem).toBeInTheDocument();
     });
 
     it("prefers href over onClick when both provided", () => {
       const handleClick = vi.fn();
       const { getByRole, queryByRole } = render(() => (
-        <Breadcrumb href="/home" onClick={handleClick}>Home</Breadcrumb>
+        <Breadcrumb href="/home" onClick={handleClick}>
+          Home
+        </Breadcrumb>
       ));
-      
+
       // Should render as link, not button
       expect(getByRole("link")).toBeInTheDocument();
       expect(queryByRole("button")).not.toBeInTheDocument();
-      
+
       // onClick should not be called when link is clicked
       fireEvent.click(getByRole("link"));
       expect(handleClick).not.toHaveBeenCalled();
     });
 
     it("handles empty children gracefully", () => {
-      const { container } = render(() => <Breadcrumb href="/home"></Breadcrumb>);
-      const link = container.querySelector('a');
+      const { container } = render(() => (
+        <Breadcrumb href="/home"></Breadcrumb>
+      ));
+      const link = container.querySelector("a");
       expect(link).toBeInTheDocument();
       expect(link).toHaveAttribute("href", "/home");
     });
@@ -196,7 +205,7 @@ describe("Breadcrumb Component", () => {
   describe("Props Validation", () => {
     it("accepts all valid props without errors", () => {
       const handleClick = vi.fn();
-      
+
       expect(() => {
         render(() => (
           <Breadcrumb

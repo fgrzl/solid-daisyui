@@ -17,15 +17,15 @@ export interface CarouselItemProps {
 
 /**
  * CarouselItem component for individual carousel slides.
- * 
+ *
  * This component represents a single slide within a Carousel component.
  * It automatically applies the required DaisyUI `carousel-item` class and
  * supports all standard DaisyUI carousel item modifiers.
- * 
+ *
  * Designed to be used within a Carousel component container for optimal
  * performance and accessibility. Each CarouselItem is automatically
  * focusable and participates in keyboard navigation.
- * 
+ *
  * **Usage:**
  * ```tsx
  * <Carousel>
@@ -37,7 +37,7 @@ export interface CarouselItemProps {
  *   </CarouselItem>
  * </Carousel>
  * ```
- * 
+ *
  * @param {CarouselItemProps} props - The carousel item component props
  * @returns {JSX.Element} JSX element representing a carousel item
  */

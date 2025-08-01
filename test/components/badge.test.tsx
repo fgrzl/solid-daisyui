@@ -17,12 +17,16 @@ describe("Badge Component", () => {
 
   // Variant tests - DaisyUI color variants
   it("applies primary variant", () => {
-    const { container } = render(() => <Badge variant="primary">Primary</Badge>);
+    const { container } = render(() => (
+      <Badge variant="primary">Primary</Badge>
+    ));
     expect(container.firstChild).toHaveClass("badge-primary");
   });
 
   it("applies secondary variant", () => {
-    const { container } = render(() => <Badge variant="secondary">Secondary</Badge>);
+    const { container } = render(() => (
+      <Badge variant="secondary">Secondary</Badge>
+    ));
     expect(container.firstChild).toHaveClass("badge-secondary");
   });
 
@@ -37,12 +41,16 @@ describe("Badge Component", () => {
   });
 
   it("applies success variant", () => {
-    const { container } = render(() => <Badge variant="success">Success</Badge>);
+    const { container } = render(() => (
+      <Badge variant="success">Success</Badge>
+    ));
     expect(container.firstChild).toHaveClass("badge-success");
   });
 
   it("applies warning variant", () => {
-    const { container } = render(() => <Badge variant="warning">Warning</Badge>);
+    const { container } = render(() => (
+      <Badge variant="warning">Warning</Badge>
+    ));
     expect(container.firstChild).toHaveClass("badge-warning");
   });
 
@@ -57,7 +65,9 @@ describe("Badge Component", () => {
   });
 
   it("applies neutral variant", () => {
-    const { container } = render(() => <Badge variant="neutral">Neutral</Badge>);
+    const { container } = render(() => (
+      <Badge variant="neutral">Neutral</Badge>
+    ));
     expect(container.firstChild).toHaveClass("badge-neutral");
   });
 
@@ -89,13 +99,19 @@ describe("Badge Component", () => {
   });
 
   it("combines variant with outline", () => {
-    const { container } = render(() => <Badge variant="primary" outline>Primary Outline</Badge>);
+    const { container } = render(() => (
+      <Badge variant="primary" outline>
+        Primary Outline
+      </Badge>
+    ));
     expect(container.firstChild).toHaveClass("badge-primary", "badge-outline");
   });
 
   // Custom classes tests
   it("applies custom class prop", () => {
-    const { container } = render(() => <Badge class="custom-class">Custom</Badge>);
+    const { container } = render(() => (
+      <Badge class="custom-class">Custom</Badge>
+    ));
     expect(container.firstChild).toHaveClass("custom-class");
   });
 
@@ -111,10 +127,10 @@ describe("Badge Component", () => {
 
   it("combines all class sources", () => {
     const { container } = render(() => (
-      <Badge 
-        variant="primary" 
-        size="lg" 
-        outline 
+      <Badge
+        variant="primary"
+        size="lg"
+        outline
         class="custom-class"
         classList={{ "dynamic-class": true }}
       >
@@ -123,11 +139,11 @@ describe("Badge Component", () => {
     ));
     expect(container.firstChild).toHaveClass(
       "badge",
-      "badge-primary", 
+      "badge-primary",
       "badge-lg",
       "badge-outline",
       "custom-class",
-      "dynamic-class"
+      "dynamic-class",
     );
   });
 
@@ -138,20 +154,32 @@ describe("Badge Component", () => {
   });
 
   it("supports aria-label for accessibility", () => {
-    const { container } = render(() => <Badge aria-label="3 new messages">3</Badge>);
-    expect(container.firstChild).toHaveAttribute("aria-label", "3 new messages");
+    const { container } = render(() => (
+      <Badge aria-label="3 new messages">3</Badge>
+    ));
+    expect(container.firstChild).toHaveAttribute(
+      "aria-label",
+      "3 new messages",
+    );
   });
 
   it("supports aria-describedby", () => {
-    const { container } = render(() => <Badge aria-describedby="description">Badge</Badge>);
-    expect(container.firstChild).toHaveAttribute("aria-describedby", "description");
+    const { container } = render(() => (
+      <Badge aria-describedby="description">Badge</Badge>
+    ));
+    expect(container.firstChild).toHaveAttribute(
+      "aria-describedby",
+      "description",
+    );
   });
 
   // Event handling tests
   it("handles click events", () => {
     const onClick = vi.fn();
-    const { container } = render(() => <Badge onClick={onClick}>Clickable</Badge>);
-    
+    const { container } = render(() => (
+      <Badge onClick={onClick}>Clickable</Badge>
+    ));
+
     fireEvent.click(container.firstChild!);
     expect(onClick).toHaveBeenCalled();
   });
@@ -159,13 +187,13 @@ describe("Badge Component", () => {
   it("prevents event bubbling when specified", () => {
     const parentClick = vi.fn();
     const badgeClick = vi.fn((e) => e.stopPropagation());
-    
+
     const { container } = render(() => (
       <div onClick={parentClick}>
         <Badge onClick={badgeClick}>Stop Propagation</Badge>
       </div>
     ));
-    
+
     fireEvent.click(container.querySelector(".badge")!);
     expect(badgeClick).toHaveBeenCalled();
     expect(parentClick).not.toHaveBeenCalled();
@@ -179,13 +207,17 @@ describe("Badge Component", () => {
   });
 
   it("handles undefined variant gracefully", () => {
-    const { container } = render(() => <Badge variant={undefined as any}>No Variant</Badge>);
+    const { container } = render(() => (
+      <Badge variant={undefined as any}>No Variant</Badge>
+    ));
     expect(container.firstChild).toHaveClass("badge");
     expect(container.firstChild).not.toHaveClass("badge-undefined");
   });
 
   it("handles undefined size gracefully", () => {
-    const { container } = render(() => <Badge size={undefined as any}>No Size</Badge>);
+    const { container } = render(() => (
+      <Badge size={undefined as any}>No Size</Badge>
+    ));
     expect(container.firstChild).toHaveClass("badge");
     expect(container.firstChild).not.toHaveClass("badge-undefined");
   });
@@ -224,10 +256,17 @@ describe("Badge Component", () => {
     ));
 
     const badge = container.firstChild;
-    expect(badge).toHaveClass("badge", "badge-warning", "badge-lg", "badge-outline", "custom", "active");
+    expect(badge).toHaveClass(
+      "badge",
+      "badge-warning",
+      "badge-lg",
+      "badge-outline",
+      "custom",
+      "active",
+    );
     expect(badge).toHaveAttribute("aria-label", "Warning badge");
     expect(badge).toHaveAttribute("role", "status");
-    
+
     fireEvent.click(badge!);
     expect(onClick).toHaveBeenCalled();
   });

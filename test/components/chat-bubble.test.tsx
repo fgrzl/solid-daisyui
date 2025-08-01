@@ -4,16 +4,12 @@ import ChatBubble from "@/components/chat-bubble";
 
 describe("ChatBubble Component", () => {
   it("renders with basic message content", () => {
-    const { getByText } = render(() => (
-      <ChatBubble>Hello, World!</ChatBubble>
-    ));
+    const { getByText } = render(() => <ChatBubble>Hello, World!</ChatBubble>);
     expect(getByText("Hello, World!")).toBeInTheDocument();
   });
 
   it("applies default side class (start)", () => {
-    const { container } = render(() => (
-      <ChatBubble>Test message</ChatBubble>
-    ));
+    const { container } = render(() => <ChatBubble>Test message</ChatBubble>);
     expect(container.querySelector(".chat")).toHaveClass("chat-start");
   });
 
@@ -35,17 +31,29 @@ describe("ChatBubble Component", () => {
     const { container } = render(() => (
       <ChatBubble color="primary">Test message</ChatBubble>
     ));
-    expect(container.querySelector(".chat-bubble")).toHaveClass("chat-bubble-primary");
+    expect(container.querySelector(".chat-bubble")).toHaveClass(
+      "chat-bubble-primary",
+    );
   });
 
   it("applies all color variants correctly", () => {
-    const colors = ["primary", "secondary", "accent", "info", "success", "warning", "error"] as const;
-    
-    colors.forEach(color => {
+    const colors = [
+      "primary",
+      "secondary",
+      "accent",
+      "info",
+      "success",
+      "warning",
+      "error",
+    ] as const;
+
+    colors.forEach((color) => {
       const { container } = render(() => (
         <ChatBubble color={color}>Test message</ChatBubble>
       ));
-      expect(container.querySelector(".chat-bubble")).toHaveClass(`chat-bubble-${color}`);
+      expect(container.querySelector(".chat-bubble")).toHaveClass(
+        `chat-bubble-${color}`,
+      );
     });
   });
 
@@ -53,33 +61,44 @@ describe("ChatBubble Component", () => {
     const { container: containerXs } = render(() => (
       <ChatBubble size="xs">Test message</ChatBubble>
     ));
-    expect(containerXs.querySelector(".chat-bubble")).toHaveClass("chat-bubble-xs");
+    expect(containerXs.querySelector(".chat-bubble")).toHaveClass(
+      "chat-bubble-xs",
+    );
 
     const { container: containerSm } = render(() => (
       <ChatBubble size="sm">Test message</ChatBubble>
     ));
-    expect(containerSm.querySelector(".chat-bubble")).toHaveClass("chat-bubble-sm");
+    expect(containerSm.querySelector(".chat-bubble")).toHaveClass(
+      "chat-bubble-sm",
+    );
 
     const { container: containerLg } = render(() => (
       <ChatBubble size="lg">Test message</ChatBubble>
     ));
-    expect(containerLg.querySelector(".chat-bubble")).toHaveClass("chat-bubble-lg");
+    expect(containerLg.querySelector(".chat-bubble")).toHaveClass(
+      "chat-bubble-lg",
+    );
   });
 
   it("does not apply size class for default md size", () => {
     const { container } = render(() => (
       <ChatBubble size="md">Test message</ChatBubble>
     ));
-    expect(container.querySelector(".chat-bubble")).not.toHaveClass("chat-bubble-md");
+    expect(container.querySelector(".chat-bubble")).not.toHaveClass(
+      "chat-bubble-md",
+    );
   });
 
   it("renders avatar from URL", () => {
     const { container } = render(() => (
-      <ChatBubble avatar="https://example.com/avatar.jpg" avatarAlt="User Avatar">
+      <ChatBubble
+        avatar="https://example.com/avatar.jpg"
+        avatarAlt="User Avatar"
+      >
         Test message
       </ChatBubble>
     ));
-    
+
     const avatar = container.querySelector("img");
     expect(avatar).toBeInTheDocument();
     expect(avatar).toHaveAttribute("src", "https://example.com/avatar.jpg");
@@ -92,46 +111,46 @@ describe("ChatBubble Component", () => {
         Test message
       </ChatBubble>
     ));
-    
+
     const avatar = container.querySelector("img");
     expect(avatar).toHaveAttribute("alt", "User avatar");
   });
 
   it("renders custom avatar element", () => {
-    const CustomAvatar = () => <div data-testid="custom-avatar">Custom Avatar</div>;
-    
+    const CustomAvatar = () => (
+      <div data-testid="custom-avatar">Custom Avatar</div>
+    );
+
     const { getByTestId } = render(() => (
-      <ChatBubble avatarElement={<CustomAvatar />}>
-        Test message
-      </ChatBubble>
+      <ChatBubble avatarElement={<CustomAvatar />}>Test message</ChatBubble>
     ));
-    
+
     expect(getByTestId("custom-avatar")).toBeInTheDocument();
   });
 
   it("prioritizes avatarElement over avatar URL", () => {
-    const CustomAvatar = () => <div data-testid="custom-avatar">Custom Avatar</div>;
-    
+    const CustomAvatar = () => (
+      <div data-testid="custom-avatar">Custom Avatar</div>
+    );
+
     const { getByTestId, container } = render(() => (
-      <ChatBubble 
+      <ChatBubble
         avatar="https://example.com/avatar.jpg"
         avatarElement={<CustomAvatar />}
       >
         Test message
       </ChatBubble>
     ));
-    
+
     expect(getByTestId("custom-avatar")).toBeInTheDocument();
     expect(container.querySelector("img")).not.toBeInTheDocument();
   });
 
   it("renders header content", () => {
     const { getByText } = render(() => (
-      <ChatBubble header="John Doe">
-        Test message
-      </ChatBubble>
+      <ChatBubble header="John Doe">Test message</ChatBubble>
     ));
-    
+
     expect(getByText("John Doe")).toBeInTheDocument();
   });
 
@@ -141,7 +160,7 @@ describe("ChatBubble Component", () => {
         Test message
       </ChatBubble>
     ));
-    
+
     expect(getByTestId("header")).toBeInTheDocument();
   });
 
@@ -151,30 +170,28 @@ describe("ChatBubble Component", () => {
         Test message
       </ChatBubble>
     ));
-    
+
     expect(getByText("12:45")).toBeInTheDocument();
   });
 
   it("renders JSX time content", () => {
     const { getByTestId } = render(() => (
-      <ChatBubble 
-        header="John Doe" 
+      <ChatBubble
+        header="John Doe"
         time={<span data-testid="time">2 minutes ago</span>}
       >
         Test message
       </ChatBubble>
     ));
-    
+
     expect(getByTestId("time")).toBeInTheDocument();
   });
 
   it("renders footer content", () => {
     const { getByText } = render(() => (
-      <ChatBubble footer="Delivered">
-        Test message
-      </ChatBubble>
+      <ChatBubble footer="Delivered">Test message</ChatBubble>
     ));
-    
+
     expect(getByText("Delivered")).toBeInTheDocument();
   });
 
@@ -184,27 +201,27 @@ describe("ChatBubble Component", () => {
         Test message
       </ChatBubble>
     ));
-    
+
     expect(getByTestId("footer")).toBeInTheDocument();
   });
 
   it("applies custom class", () => {
     const { container } = render(() => (
-      <ChatBubble class="custom-class">
-        Test message
-      </ChatBubble>
+      <ChatBubble class="custom-class">Test message</ChatBubble>
     ));
-    
+
     expect(container.querySelector(".chat")).toHaveClass("custom-class");
   });
 
   it("merges user-provided classList", () => {
     const { container } = render(() => (
-      <ChatBubble classList={{ "dynamic-class": true, "inactive-class": false }}>
+      <ChatBubble
+        classList={{ "dynamic-class": true, "inactive-class": false }}
+      >
         Test message
       </ChatBubble>
     ));
-    
+
     expect(container.querySelector(".chat")).toHaveClass("dynamic-class");
     expect(container.querySelector(".chat")).not.toHaveClass("inactive-class");
   });
@@ -217,7 +234,7 @@ describe("ChatBubble Component", () => {
         </div>
       </ChatBubble>
     ));
-    
+
     expect(getByTestId("jsx-content")).toBeInTheDocument();
   });
 
@@ -233,28 +250,37 @@ describe("ChatBubble Component", () => {
         time="12:45 PM"
         footer="Read"
         class="custom-chat"
-        classList={{ "highlight": true }}
+        classList={{ highlight: true }}
       >
         This is a complete chat message with all features!
       </ChatBubble>
     ));
-    
+
     // Check message content
-    expect(getByText("This is a complete chat message with all features!")).toBeInTheDocument();
-    
+    expect(
+      getByText("This is a complete chat message with all features!"),
+    ).toBeInTheDocument();
+
     // Check classes
-    expect(container.querySelector(".chat")).toHaveClass("chat-end", "custom-chat", "highlight");
-    expect(container.querySelector(".chat-bubble")).toHaveClass("chat-bubble-primary", "chat-bubble-lg");
-    
+    expect(container.querySelector(".chat")).toHaveClass(
+      "chat-end",
+      "custom-chat",
+      "highlight",
+    );
+    expect(container.querySelector(".chat-bubble")).toHaveClass(
+      "chat-bubble-primary",
+      "chat-bubble-lg",
+    );
+
     // Check avatar
     const avatar = container.querySelector("img");
     expect(avatar).toHaveAttribute("src", "https://example.com/avatar.jpg");
     expect(avatar).toHaveAttribute("alt", "Test User");
-    
+
     // Check header and time
     expect(getByText("Test User")).toBeInTheDocument();
     expect(getByText("12:45 PM")).toBeInTheDocument();
-    
+
     // Check footer
     expect(getByText("Read")).toBeInTheDocument();
   });
@@ -263,7 +289,7 @@ describe("ChatBubble Component", () => {
     const { getByText, container } = render(() => (
       <ChatBubble>Minimal message</ChatBubble>
     ));
-    
+
     expect(getByText("Minimal message")).toBeInTheDocument();
     expect(container.querySelector(".chat")).toHaveClass("chat", "chat-start");
     expect(container.querySelector(".chat-bubble")).toHaveClass("chat-bubble");

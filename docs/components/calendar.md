@@ -7,7 +7,7 @@ The Calendar component provides a comprehensive date selection interface followi
 ## Features
 
 - ✅ **Single, Multiple, and Range Selection** - Flexible date selection modes
-- ✅ **DaisyUI Integration** - Supports all DaisyUI variants and modifiers  
+- ✅ **DaisyUI Integration** - Supports all DaisyUI variants and modifiers
 - ✅ **Keyboard Navigation** - Full arrow key navigation with Enter/Space selection
 - ✅ **Accessibility** - WCAG 2.1 AA compliant with proper ARIA attributes
 - ✅ **Month Navigation** - Previous/next month controls with callbacks
@@ -38,10 +38,7 @@ function DateSelectionExample() {
   const [selectedDate, setSelectedDate] = createSignal<Date>();
 
   return (
-    <Calendar 
-      selectedDate={selectedDate()}
-      onDateSelect={setSelectedDate}
-    />
+    <Calendar selectedDate={selectedDate()} onDateSelect={setSelectedDate} />
   );
 }
 ```
@@ -56,11 +53,7 @@ function RangeSelectionExample() {
   const [dateRange, setDateRange] = createSignal<DateRange>();
 
   return (
-    <Calendar 
-      range
-      selectedRange={dateRange()}
-      onRangeSelect={setDateRange}
-    />
+    <Calendar range selectedRange={dateRange()} onRangeSelect={setDateRange} />
   );
 }
 ```
@@ -75,7 +68,7 @@ function MultipleSelectionExample() {
   const [selectedDates, setSelectedDates] = createSignal<Date[]>([]);
 
   return (
-    <Calendar 
+    <Calendar
       multiple
       selectedDates={selectedDates()}
       onMultipleSelect={setSelectedDates}
@@ -95,7 +88,7 @@ function VariantsExample() {
       {/* Size variants */}
       <Calendar size="sm" />
       <Calendar size="lg" />
-      
+
       {/* Style variants */}
       <Calendar variant="bordered" />
       <Calendar variant="compact" />
@@ -111,14 +104,18 @@ import { Calendar } from "solid-daisyui";
 
 function ConstraintsExample() {
   const today = new Date();
-  const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, today.getDate());
+  const nextMonth = new Date(
+    today.getFullYear(),
+    today.getMonth() + 1,
+    today.getDate(),
+  );
   const disabledDates = [
     new Date(2024, 0, 1), // New Year's Day
     new Date(2024, 6, 4), // Independence Day
   ];
 
   return (
-    <Calendar 
+    <Calendar
       minDate={today}
       maxDate={nextMonth}
       disabledDates={disabledDates}
@@ -137,7 +134,7 @@ function WeekStartExample() {
     <div class="space-y-4">
       {/* Start week on Sunday (default) */}
       <Calendar weekStartsOn={0} />
-      
+
       {/* Start week on Monday */}
       <Calendar weekStartsOn={1} />
     </div>
@@ -147,27 +144,27 @@ function WeekStartExample() {
 
 ## Props
 
-| Name | Type | Default | Description |
-| ---- | ---- | ------- | ----------- |
-| `size` | `"sm" \| "md" \| "lg"` | `"md"` | Size variant using DaisyUI classes |
-| `variant` | `"bordered" \| "compact"` | - | Style variant using DaisyUI classes |
-| `class` | `string` | - | Additional CSS classes |
-| `classList` | `Record<string, boolean>` | - | Dynamic class list for conditional styling |
-| `currentDate` | `Date` | `new Date()` | Currently displayed month/year |
-| `selectedDate` | `Date` | - | Currently selected date (single selection) |
-| `selectedDates` | `Date[]` | - | Array of selected dates (multiple selection) |
-| `selectedRange` | `DateRange` | - | Selected date range (range selection) |
-| `multiple` | `boolean` | `false` | Enable multiple date selection |
-| `range` | `boolean` | `false` | Enable date range selection |
-| `disabledDates` | `Date[]` | - | Array of dates to disable |
-| `minDate` | `Date` | - | Minimum selectable date |
-| `maxDate` | `Date` | - | Maximum selectable date |
-| `weekStartsOn` | `0 \| 1 \| 2 \| 3 \| 4 \| 5 \| 6` | `0` | Day to start week (0=Sunday, 1=Monday, etc.) |
-| `dateFormat` | `string` | - | Custom date format for accessibility labels |
-| `onDateSelect` | `(date: Date) => void` | - | Callback when a date is selected |
-| `onMultipleSelect` | `(dates: Date[]) => void` | - | Callback when multiple dates are selected |
-| `onRangeSelect` | `(range: DateRange) => void` | - | Callback when a date range is selected |
-| `onMonthChange` | `(date: Date) => void` | - | Callback when displayed month changes |
+| Name               | Type                              | Default      | Description                                  |
+| ------------------ | --------------------------------- | ------------ | -------------------------------------------- |
+| `size`             | `"sm" \| "md" \| "lg"`            | `"md"`       | Size variant using DaisyUI classes           |
+| `variant`          | `"bordered" \| "compact"`         | -            | Style variant using DaisyUI classes          |
+| `class`            | `string`                          | -            | Additional CSS classes                       |
+| `classList`        | `Record<string, boolean>`         | -            | Dynamic class list for conditional styling   |
+| `currentDate`      | `Date`                            | `new Date()` | Currently displayed month/year               |
+| `selectedDate`     | `Date`                            | -            | Currently selected date (single selection)   |
+| `selectedDates`    | `Date[]`                          | -            | Array of selected dates (multiple selection) |
+| `selectedRange`    | `DateRange`                       | -            | Selected date range (range selection)        |
+| `multiple`         | `boolean`                         | `false`      | Enable multiple date selection               |
+| `range`            | `boolean`                         | `false`      | Enable date range selection                  |
+| `disabledDates`    | `Date[]`                          | -            | Array of dates to disable                    |
+| `minDate`          | `Date`                            | -            | Minimum selectable date                      |
+| `maxDate`          | `Date`                            | -            | Maximum selectable date                      |
+| `weekStartsOn`     | `0 \| 1 \| 2 \| 3 \| 4 \| 5 \| 6` | `0`          | Day to start week (0=Sunday, 1=Monday, etc.) |
+| `dateFormat`       | `string`                          | -            | Custom date format for accessibility labels  |
+| `onDateSelect`     | `(date: Date) => void`            | -            | Callback when a date is selected             |
+| `onMultipleSelect` | `(dates: Date[]) => void`         | -            | Callback when multiple dates are selected    |
+| `onRangeSelect`    | `(range: DateRange) => void`      | -            | Callback when a date range is selected       |
+| `onMonthChange`    | `(date: Date) => void`            | -            | Callback when displayed month changes        |
 
 ## Types
 
@@ -190,11 +187,11 @@ interface DateRange {
 
 ### Keyboard Shortcuts
 
-| Key | Action |
-| --- | ------ |
-| `Arrow Keys` | Navigate between dates |
-| `Enter` / `Space` | Select focused date |
-| `Tab` | Navigate to next/previous month buttons |
+| Key               | Action                                  |
+| ----------------- | --------------------------------------- |
+| `Arrow Keys`      | Navigate between dates                  |
+| `Enter` / `Space` | Select focused date                     |
+| `Tab`             | Navigate to next/previous month buttons |
 
 ## DaisyUI Classes
 

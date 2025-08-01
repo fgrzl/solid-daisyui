@@ -18,7 +18,9 @@ describe("Label Component", () => {
     });
 
     it("applies htmlFor attribute when for prop is provided", () => {
-      const { container } = render(() => <Label for="test-input">Test Label</Label>);
+      const { container } = render(() => (
+        <Label for="test-input">Test Label</Label>
+      ));
       expect(container.firstChild).toHaveAttribute("for", "test-input");
     });
 
@@ -37,13 +39,17 @@ describe("Label Component", () => {
     });
 
     it("applies floating-label class when variant is floating", () => {
-      const { container } = render(() => <Label variant="floating">Floating Label</Label>);
+      const { container } = render(() => (
+        <Label variant="floating">Floating Label</Label>
+      ));
       expect(container.firstChild).toHaveClass("floating-label");
       expect(container.firstChild).not.toHaveClass("label");
     });
 
     it("maintains basic label variant by default", () => {
-      const { container } = render(() => <Label variant="basic">Basic Label</Label>);
+      const { container } = render(() => (
+        <Label variant="basic">Basic Label</Label>
+      ));
       expect(container.firstChild).toHaveClass("label");
       expect(container.firstChild).not.toHaveClass("floating-label");
     });
@@ -60,7 +66,9 @@ describe("Label Component", () => {
 
     it("applies classList when provided", () => {
       const { container } = render(() => (
-        <Label classList={{ "active": true, "inactive": false }}>Dynamic Label</Label>
+        <Label classList={{ active: true, inactive: false }}>
+          Dynamic Label
+        </Label>
       ));
       expect(container.firstChild).toHaveClass("label", "active");
       expect(container.firstChild).not.toHaveClass("inactive");
@@ -68,9 +76,15 @@ describe("Label Component", () => {
 
     it("combines class and classList properly", () => {
       const { container } = render(() => (
-        <Label class="base-class" classList={{ "dynamic": true }}>Combined Label</Label>
+        <Label class="base-class" classList={{ dynamic: true }}>
+          Combined Label
+        </Label>
       ));
-      expect(container.firstChild).toHaveClass("label", "base-class", "dynamic");
+      expect(container.firstChild).toHaveClass(
+        "label",
+        "base-class",
+        "dynamic",
+      );
     });
   });
 
@@ -85,14 +99,20 @@ describe("Label Component", () => {
       const { container } = render(() => (
         <Label aria-label="Custom aria label">Label Text</Label>
       ));
-      expect(container.firstChild).toHaveAttribute("aria-label", "Custom aria label");
+      expect(container.firstChild).toHaveAttribute(
+        "aria-label",
+        "Custom aria label",
+      );
     });
 
     it("supports aria-describedby attribute", () => {
       const { container } = render(() => (
         <Label aria-describedby="description-id">Label with description</Label>
       ));
-      expect(container.firstChild).toHaveAttribute("aria-describedby", "description-id");
+      expect(container.firstChild).toHaveAttribute(
+        "aria-describedby",
+        "description-id",
+      );
     });
 
     it("supports role attribute override", () => {
@@ -117,7 +137,7 @@ describe("Label Component", () => {
       const { getByText } = render(() => (
         <Label onClick={handleClick}>Clickable Label</Label>
       ));
-      
+
       fireEvent.click(getByText("Clickable Label"));
       expect(handleClick).toHaveBeenCalledTimes(1);
     });
@@ -125,9 +145,11 @@ describe("Label Component", () => {
     it("handles onFocus events", () => {
       const handleFocus = vi.fn();
       const { container } = render(() => (
-        <Label onFocus={handleFocus} tabIndex={0}>Focusable Label</Label>
+        <Label onFocus={handleFocus} tabIndex={0}>
+          Focusable Label
+        </Label>
       ));
-      
+
       fireEvent.focus(container.firstChild!);
       expect(handleFocus).toHaveBeenCalledTimes(1);
     });
@@ -135,9 +157,11 @@ describe("Label Component", () => {
     it("handles onBlur events", () => {
       const handleBlur = vi.fn();
       const { container } = render(() => (
-        <Label onBlur={handleBlur} tabIndex={0}>Blurable Label</Label>
+        <Label onBlur={handleBlur} tabIndex={0}>
+          Blurable Label
+        </Label>
       ));
-      
+
       fireEvent.blur(container.firstChild!);
       expect(handleBlur).toHaveBeenCalledTimes(1);
     });
@@ -145,9 +169,11 @@ describe("Label Component", () => {
     it("handles keyboard events", () => {
       const handleKeyDown = vi.fn();
       const { container } = render(() => (
-        <Label onKeyDown={handleKeyDown} tabIndex={0}>Keyboard Label</Label>
+        <Label onKeyDown={handleKeyDown} tabIndex={0}>
+          Keyboard Label
+        </Label>
       ));
-      
+
       fireEvent.keyDown(container.firstChild!, { key: "Enter" });
       expect(handleKeyDown).toHaveBeenCalledTimes(1);
     });
@@ -199,19 +225,25 @@ describe("Label Component", () => {
     });
 
     it("does not show indicators by default", () => {
-      const { container } = render(() => (
-        <Label>Default Label</Label>
-      ));
-      expect(container.querySelector(".label-required")).not.toBeInTheDocument();
-      expect(container.querySelector(".label-optional")).not.toBeInTheDocument();
+      const { container } = render(() => <Label>Default Label</Label>);
+      expect(
+        container.querySelector(".label-required"),
+      ).not.toBeInTheDocument();
+      expect(
+        container.querySelector(".label-optional"),
+      ).not.toBeInTheDocument();
     });
 
     it("required takes precedence over optional", () => {
       const { container } = render(() => (
-        <Label required optional>Conflicting Label</Label>
+        <Label required optional>
+          Conflicting Label
+        </Label>
       ));
       expect(container.querySelector(".label-required")).toBeInTheDocument();
-      expect(container.querySelector(".label-optional")).not.toBeInTheDocument();
+      expect(
+        container.querySelector(".label-optional"),
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -265,7 +297,9 @@ describe("Label Component", () => {
       ));
       expect(getByText("Username")).toBeInTheDocument();
       expect(container.querySelector("input")).toBeInTheDocument();
-      expect(container.querySelector("label")).toContainElement(container.querySelector("input"));
+      expect(container.querySelector("label")).toContainElement(
+        container.querySelector("input"),
+      );
     });
   });
 
@@ -281,7 +315,9 @@ describe("Label Component", () => {
 
     it("supports input sizing classes for floating labels", () => {
       const { container } = render(() => (
-        <Label variant="floating" size="lg">Large Floating Label</Label>
+        <Label variant="floating" size="lg">
+          Large Floating Label
+        </Label>
       ));
       expect(container.firstChild).toHaveClass("floating-label");
       // Size classes would be applied to contained inputs, not the label itself

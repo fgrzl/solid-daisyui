@@ -215,7 +215,7 @@ describe("Button Component", () => {
 
   it("handles keyboard navigation", () => {
     let enterPressed = false;
-    
+
     const handleClick = (event: MouseEvent) => {
       // This simulates how browsers handle keyboard events that trigger clicks
       if ((event as any).detail === 0) {
@@ -229,7 +229,7 @@ describe("Button Component", () => {
     ));
 
     const button = getByRole("button");
-    
+
     // Simulate keyboard activation by firing a click event with detail: 0
     fireEvent.click(button, { detail: 0 });
     expect(enterPressed).toBe(true);

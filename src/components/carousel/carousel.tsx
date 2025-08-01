@@ -1,4 +1,12 @@
-import { JSX, createSignal, children, For, Show, createEffect, createMemo } from "solid-js";
+import {
+  JSX,
+  createSignal,
+  children,
+  For,
+  Show,
+  createEffect,
+  createMemo,
+} from "solid-js";
 
 /**
  * Props for the Carousel component.
@@ -38,7 +46,7 @@ export interface CarouselProps<T = any> {
  * carousel-start, carousel-center, carousel-end, carousel-vertical, and carousel-horizontal.
  *
  * **Usage Patterns:**
- * 
+ *
  * **Recommended: CarouselItem Children** (best developer experience and composability):
  * ```tsx
  * <Carousel>
@@ -50,7 +58,7 @@ export interface CarouselProps<T = any> {
  *   </CarouselItem>
  * </Carousel>
  * ```
- * 
+ *
  * **Data-Driven with 'each'** (built-in foreach with CarouselItem):
  * ```tsx
  * <Carousel each={imageArray}>
@@ -61,7 +69,7 @@ export interface CarouselProps<T = any> {
  *   )}
  * </Carousel>
  * ```
- * 
+ *
  * **Legacy: Direct JSX Children** (backward compatibility, automatically wrapped):
  * ```tsx
  * <Carousel>
@@ -73,7 +81,9 @@ export interface CarouselProps<T = any> {
  * @param {CarouselProps<T>} props - The properties to configure the Carousel component.
  * @returns {JSX.Element} The rendered Carousel component.
  */
-export default function Carousel<T = any>(props: CarouselProps<T>): JSX.Element {
+export default function Carousel<T = any>(
+  props: CarouselProps<T>,
+): JSX.Element {
   // Initialize current slide index
   const [currentSlideIndex, setCurrentSlideIndex] = createSignal(
     props.currentSlide ?? 0,
@@ -82,10 +92,15 @@ export default function Carousel<T = any>(props: CarouselProps<T>): JSX.Element 
   // Resolve children to array for easier manipulation using createMemo for proper reactivity
   const slidesArray = createMemo(() => {
     // Handle data-driven pattern with 'each' prop
-    if (props.each && typeof props.children === 'function') {
-      return props.each.map((item, index) => (props.children as (item: T, index: () => number) => JSX.Element)(item, () => index));
+    if (props.each && typeof props.children === "function") {
+      return props.each.map((item, index) =>
+        (props.children as (item: T, index: () => number) => JSX.Element)(
+          item,
+          () => index,
+        ),
+      );
     }
-    
+
     // Handle traditional JSX children pattern
     const resolved = children(() => props.children as JSX.Element);
     const slides = resolved.toArray
@@ -215,17 +230,15 @@ export default function Carousel<T = any>(props: CarouselProps<T>): JSX.Element 
       tabIndex={0}
     >
       {/* Carousel items */}
-      <Show 
-        when={props.each && typeof props.children === 'function'} 
-        fallback={
-          <For each={slides}>
-            {(slide) => slide}
-          </For>
-        }
+      <Show
+        when={props.each && typeof props.children === "function"}
+        fallback={<For each={slides}>{(slide) => slide}</For>}
       >
         <For each={props.each}>
           {(item, index) => {
-            const renderedItem = (props.children as (item: T, index: () => number) => JSX.Element)(item, index);
+            const renderedItem = (
+              props.children as (item: T, index: () => number) => JSX.Element
+            )(item, index);
             return renderedItem;
           }}
         </For>
@@ -282,8 +295,8 @@ export default function Carousel<T = any>(props: CarouselProps<T>): JSX.Element 
       {/* Slide indicators */}
       <Show when={props.showIndicators && slides.length > 1}>
         <div class="carousel-indicators">
-          <Show 
-            when={props.each && typeof props.children === 'function'} 
+          <Show
+            when={props.each && typeof props.children === "function"}
             fallback={
               <For each={slides}>
                 {(_, index) => (

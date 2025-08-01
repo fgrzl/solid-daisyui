@@ -14,20 +14,20 @@ function MyComponent() {
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `children` | `JSX.Element \| string` | - | The message content to display |
-| `side` | `"start" \| "end"` | `"start"` | Chat bubble alignment (start = left, end = right) |
-| `color` | `"primary" \| "secondary" \| "accent" \| "info" \| "success" \| "warning" \| "error"` | - | Chat bubble color variant |
-| `size` | `"xs" \| "sm" \| "md" \| "lg"` | `"md"` | Chat bubble size |
-| `avatar` | `string` | - | URL for the avatar image |
-| `avatarAlt` | `string` | `"User avatar"` | Alt text for the avatar image |
-| `avatarElement` | `JSX.Element` | - | Custom avatar element (overrides avatar URL) |
-| `time` | `string \| JSX.Element` | - | Time stamp to display |
-| `header` | `string \| JSX.Element` | - | Header content above the message |
-| `footer` | `string \| JSX.Element` | - | Footer content below the message |
-| `class` | `string` | - | Additional CSS classes |
-| `classList` | `Record<string, boolean>` | - | Dynamic CSS classes |
+| Prop            | Type                                                                                  | Default         | Description                                       |
+| --------------- | ------------------------------------------------------------------------------------- | --------------- | ------------------------------------------------- |
+| `children`      | `JSX.Element \| string`                                                               | -               | The message content to display                    |
+| `side`          | `"start" \| "end"`                                                                    | `"start"`       | Chat bubble alignment (start = left, end = right) |
+| `color`         | `"primary" \| "secondary" \| "accent" \| "info" \| "success" \| "warning" \| "error"` | -               | Chat bubble color variant                         |
+| `size`          | `"xs" \| "sm" \| "md" \| "lg"`                                                        | `"md"`          | Chat bubble size                                  |
+| `avatar`        | `string`                                                                              | -               | URL for the avatar image                          |
+| `avatarAlt`     | `string`                                                                              | `"User avatar"` | Alt text for the avatar image                     |
+| `avatarElement` | `JSX.Element`                                                                         | -               | Custom avatar element (overrides avatar URL)      |
+| `time`          | `string \| JSX.Element`                                                               | -               | Time stamp to display                             |
+| `header`        | `string \| JSX.Element`                                                               | -               | Header content above the message                  |
+| `footer`        | `string \| JSX.Element`                                                               | -               | Footer content below the message                  |
+| `class`         | `string`                                                                              | -               | Additional CSS classes                            |
+| `classList`     | `Record<string, boolean>`                                                             | -               | Dynamic CSS classes                               |
 
 ## Examples
 
@@ -37,7 +37,7 @@ function MyComponent() {
 // Left-aligned message (default)
 <ChatBubble>Hi there!</ChatBubble>
 
-// Right-aligned message  
+// Right-aligned message
 <ChatBubble side="end">Hello back!</ChatBubble>
 ```
 
@@ -45,7 +45,7 @@ function MyComponent() {
 
 ```tsx
 // Using avatar URL
-<ChatBubble 
+<ChatBubble
   avatar="https://example.com/user1.jpg"
   avatarAlt="John Doe"
 >
@@ -53,7 +53,7 @@ function MyComponent() {
 </ChatBubble>
 
 // Using custom avatar element
-<ChatBubble 
+<ChatBubble
   avatarElement={
     <div class="avatar placeholder">
       <div class="bg-neutral text-neutral-content rounded-full w-10">
@@ -69,7 +69,7 @@ function MyComponent() {
 ### Chat with Headers and Time
 
 ```tsx
-<ChatBubble 
+<ChatBubble
   header="John Doe"
   time="12:45"
   avatar="https://example.com/user1.jpg"
@@ -78,7 +78,7 @@ function MyComponent() {
 </ChatBubble>
 
 // JSX time element
-<ChatBubble 
+<ChatBubble
   header="Jane Smith"
   time={<time class="text-xs opacity-50">2 minutes ago</time>}
 >
@@ -89,7 +89,7 @@ function MyComponent() {
 ### Chat with Footer
 
 ```tsx
-<ChatBubble 
+<ChatBubble
   side="end"
   footer="Delivered"
 >
@@ -97,7 +97,7 @@ function MyComponent() {
 </ChatBubble>
 
 // JSX footer with status icons
-<ChatBubble 
+<ChatBubble
   side="end"
   footer={
     <div class="flex items-center gap-1">
@@ -138,7 +138,7 @@ function ChatExample() {
   return (
     <div class="flex flex-col gap-4">
       {/* Incoming message */}
-      <ChatBubble 
+      <ChatBubble
         avatar="https://example.com/user1.jpg"
         avatarAlt="John Doe"
         header="John Doe"
@@ -149,20 +149,12 @@ function ChatExample() {
       </ChatBubble>
 
       {/* Outgoing message */}
-      <ChatBubble 
-        side="end"
-        color="accent"
-        footer="Delivered"
-      >
+      <ChatBubble side="end" color="accent" footer="Delivered">
         Absolutely! See you at 1 PM at the usual place.
       </ChatBubble>
 
       {/* System message */}
-      <ChatBubble 
-        color="info"
-        size="sm"
-        class="mx-auto"
-      >
+      <ChatBubble color="info" size="sm" class="mx-auto">
         John Doe is typing...
       </ChatBubble>
     </div>
@@ -173,7 +165,7 @@ function ChatExample() {
 ### Rich Content Messages
 
 ```tsx
-<ChatBubble 
+<ChatBubble
   header="Support Agent"
   avatar="https://example.com/support.jpg"
   color="primary"

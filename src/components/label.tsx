@@ -43,10 +43,10 @@ export interface LabelProps {
  * Label component for providing context and accessibility for form controls.
  * Follows DaisyUI Label component patterns with support for basic and floating label variants.
  * Implements WCAG 2.1 AA accessibility standards with proper semantic structure and ARIA attributes.
- * 
+ *
  * Supports both explicit association via `for` attribute and implicit association via nesting.
  * The floating variant provides modern Material Design-style floating label behavior.
- * 
+ *
  * @param {LabelProps} props - The properties to configure the Label component.
  * @returns {JSX.Element} The rendered Label component.
  */

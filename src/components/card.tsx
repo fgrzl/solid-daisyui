@@ -45,11 +45,11 @@ export interface CardProps {
 
 /**
  * Card component for displaying content in a structured, visually appealing container.
- * 
+ *
  * Supports all DaisyUI card variants including bordered, compact, side layout, and glass effects.
  * Provides flexible image positioning, customizable action buttons, and proper accessibility features.
  * Can be used as a static content container or interactive element with click handlers.
- * 
+ *
  * @param {CardProps} props - The properties to configure the Card component.
  * @returns {JSX.Element} The rendered Card component.
  */
@@ -87,7 +87,7 @@ export default function Card(props: CardProps): JSX.Element {
         altKey: event.altKey,
         ctrlKey: event.ctrlKey,
         metaKey: event.metaKey,
-        shiftKey: event.shiftKey
+        shiftKey: event.shiftKey,
       } as unknown as MouseEvent;
       props.onClick(syntheticEvent);
     }
@@ -100,24 +100,31 @@ export default function Card(props: CardProps): JSX.Element {
 
   const renderTitle = () => {
     if (!props.title) return null;
-    
+
     const level = props.titleLevel || 2;
     const titleProps = { class: "card-title", children: props.title };
-    
+
     switch (level) {
-      case 1: return <h1 {...titleProps} />;
-      case 2: return <h2 {...titleProps} />;
-      case 3: return <h3 {...titleProps} />;
-      case 4: return <h4 {...titleProps} />;
-      case 5: return <h5 {...titleProps} />;
-      case 6: return <h6 {...titleProps} />;
-      default: return <h2 {...titleProps} />;
+      case 1:
+        return <h1 {...titleProps} />;
+      case 2:
+        return <h2 {...titleProps} />;
+      case 3:
+        return <h3 {...titleProps} />;
+      case 4:
+        return <h4 {...titleProps} />;
+      case 5:
+        return <h5 {...titleProps} />;
+      case 6:
+        return <h6 {...titleProps} />;
+      default:
+        return <h2 {...titleProps} />;
     }
   };
 
   const renderImage = () => {
     if (!props.imageSrc) return null;
-    
+
     return (
       <figure>
         <img src={props.imageSrc} alt={props.imageAlt || ""} />
@@ -145,9 +152,7 @@ export default function Card(props: CardProps): JSX.Element {
                 {(action) => action}
               </For>
             </Show>
-            <Show when={!Array.isArray(props.actions)}>
-              {props.actions}
-            </Show>
+            <Show when={!Array.isArray(props.actions)}>{props.actions}</Show>
           </div>
         </Show>
       </div>
