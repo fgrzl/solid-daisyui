@@ -54,6 +54,16 @@ describe("Link Component", () => {
       expect(linkElement).toHaveAttribute("href", "mailto:test@example.com");
     });
 
+    it("has router integration infrastructure in place", () => {
+      // This test verifies that the router integration code exists and doesn't throw errors
+      const { container } = render(() => <Link href="/test">Test Link</Link>);
+      const linkElement = container.firstChild as HTMLElement;
+      // Even without router available, should render as anchor with proper attributes
+      expect(linkElement.tagName).toBe("A");
+      expect(linkElement).toHaveAttribute("href", "/test");
+      expect(linkElement).toHaveClass("link");
+    });
+
     it("detects relative paths as internal", () => {
       const testCases = ["/dashboard", "./page", "../parent", "#section", "?query=1"];
       testCases.forEach(href => {

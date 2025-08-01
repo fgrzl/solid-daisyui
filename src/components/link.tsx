@@ -37,15 +37,39 @@ function isInternalLink(href?: string): boolean {
 }
 
 /**
+ * Cached router A component to avoid repeated import attempts
+ */
+let cachedRouterA: any = undefined;
+let routerChecked = false;
+
+/**
  * Try to get the SolidJS Router A component if available.
  * Since @solidjs/router is a peer dependency, we check if it's available at runtime.
  */
 function getRouterA(): any {
+  if (routerChecked) {
+    return cachedRouterA;
+  }
+  
   try {
-    // For now, we'll disable router integration until we can properly handle dynamic imports
-    // This ensures backwards compatibility while we work on the implementation
+    // Try to import the A component from @solidjs/router
+    // Using dynamic require to avoid build-time dependency resolution
+    const routerModule = eval('(() => { try { return require("@solidjs/router"); } catch { return null; } })()');
+    
+    if (routerModule && routerModule.A) {
+      cachedRouterA = routerModule.A;
+      routerChecked = true;
+      return cachedRouterA;
+    }
+    
+    // Router not available or doesn't have A component
+    cachedRouterA = null;
+    routerChecked = true;
     return null;
   } catch {
+    // Router not available, graceful fallback
+    cachedRouterA = null;
+    routerChecked = true;
     return null;
   }
 }
