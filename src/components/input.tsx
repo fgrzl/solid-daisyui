@@ -1,4 +1,4 @@
-import { JSX, createSignal, mergeProps, splitProps } from "solid-js";
+import { JSX, createSignal, createMemo, mergeProps, splitProps } from "solid-js";
 
 /**
  * Props for the Input component.
@@ -93,10 +93,14 @@ export default function Input(props: InputProps): JSX.Element {
   // Handle controlled vs uncontrolled mode
   const [internalValue, setInternalValue] = createSignal(local.defaultValue || "");
   const isControlled = () => local.value !== undefined;
-  const currentValue = () => isControlled() ? (local.value || "") : internalValue();
+  
+  // Memoize current value calculation for performance
+  const currentValue = createMemo(() => 
+    isControlled() ? (local.value || "") : internalValue()
+  );
 
-  // Build classes following DaisyUI patterns
-  const classes = () => {
+  // Memoize class calculation to avoid recreating object on every render
+  const classes = createMemo(() => {
     const baseClasses: Record<string, boolean> = {
       input: true,
     };
@@ -126,7 +130,7 @@ export default function Input(props: InputProps): JSX.Element {
     }
 
     return baseClasses;
-  };
+  });
 
   // Handle input change events
   const handleInput = (event: Event) => {
@@ -139,18 +143,13 @@ export default function Input(props: InputProps): JSX.Element {
     }
 
     // Call onChange callback if provided
-    if (local.onChange) {
-      local.onChange(newValue, event);
-    }
+    local.onChange?.(newValue, event);
   };
 
-  // Handle ref forwarding
+  // Simplified ref handling
   const handleRef = (el: HTMLInputElement) => {
     if (typeof local.ref === "function") {
       local.ref(el);
-    } else if (local.ref) {
-      // For direct ref assignment (though not typical in Solid)
-      (local.ref as any) = el;
     }
   };
 
