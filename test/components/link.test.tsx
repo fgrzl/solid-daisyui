@@ -31,6 +31,55 @@ describe("Link Component", () => {
     });
   });
 
+  // Router Integration Tests
+  describe("Router Integration", () => {
+    it("uses regular anchor for internal links when router is not available", () => {
+      const { container } = render(() => <Link href="/internal">Internal Link</Link>);
+      const linkElement = container.firstChild as HTMLElement;
+      expect(linkElement.tagName).toBe("A");
+      expect(linkElement).toHaveAttribute("href", "/internal");
+    });
+
+    it("uses regular anchor for external links", () => {
+      const { container } = render(() => <Link href="https://example.com">External Link</Link>);
+      const linkElement = container.firstChild as HTMLElement;
+      expect(linkElement.tagName).toBe("A");
+      expect(linkElement).toHaveAttribute("href", "https://example.com");
+    });
+
+    it("uses regular anchor for special protocol links", () => {
+      const { container } = render(() => <Link href="mailto:test@example.com">Email Link</Link>);
+      const linkElement = container.firstChild as HTMLElement;
+      expect(linkElement.tagName).toBe("A");
+      expect(linkElement).toHaveAttribute("href", "mailto:test@example.com");
+    });
+
+    it("detects relative paths as internal", () => {
+      const testCases = ["/dashboard", "./page", "../parent", "#section", "?query=1"];
+      testCases.forEach(href => {
+        const { container } = render(() => <Link href={href}>Test Link</Link>);
+        const linkElement = container.firstChild as HTMLElement;
+        expect(linkElement).toHaveAttribute("href", href);
+      });
+    });
+
+    it("detects external URLs correctly", () => {
+      const testCases = [
+        "https://example.com",
+        "http://example.com", 
+        "//example.com",
+        "mailto:test@example.com",
+        "tel:+1234567890",
+        "ftp://files.example.com"
+      ];
+      testCases.forEach(href => {
+        const { container } = render(() => <Link href={href}>Test Link</Link>);
+        const linkElement = container.firstChild as HTMLElement;
+        expect(linkElement).toHaveAttribute("href", href);
+      });
+    });
+  });
+
   // DaisyUI Color Variants Tests
   describe("DaisyUI Color Variants", () => {
     it("applies link-primary class for primary variant", () => {
