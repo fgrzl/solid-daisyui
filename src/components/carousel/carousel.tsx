@@ -1,4 +1,4 @@
-import { JSX, createSignal, children, For, Show, createEffect } from "solid-js";
+import { JSX, createSignal, children, For, Show, createEffect, createMemo } from "solid-js";
 
 /**
  * Props for the Carousel component.
@@ -79,8 +79,8 @@ export default function Carousel<T = any>(props: CarouselProps<T>): JSX.Element 
     props.currentSlide ?? 0,
   );
 
-  // Resolve children to array for easier manipulation
-  const slidesArray = () => {
+  // Resolve children to array for easier manipulation using createMemo for proper reactivity
+  const slidesArray = createMemo(() => {
     // Handle data-driven pattern with 'each' prop
     if (props.each && typeof props.children === 'function') {
       return props.each.map((item, index) => (props.children as (item: T, index: () => number) => JSX.Element)(item, () => index));
@@ -96,13 +96,6 @@ export default function Carousel<T = any>(props: CarouselProps<T>): JSX.Element 
           ? [resolved()]
           : [];
     return slides as JSX.Element[];
-  };
-
-  // Update current slide when prop changes
-  createEffect(() => {
-    if (props.currentSlide !== undefined) {
-      setCurrentSlideIndex(props.currentSlide);
-    }
   });
 
   // Build classes following DaisyUI patterns
