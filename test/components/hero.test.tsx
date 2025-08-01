@@ -664,4 +664,32 @@ describe("Hero Component Integration with Child Components", () => {
       expect(getByText("Right Content")).toBeInTheDocument();
     });
   });
+
+  describe("Compound Component Pattern", () => {
+    it("provides Hero.Content as compound component", () => {
+      // Test that Hero.Content exists and is the same as HeroContent
+      expect(Hero.Content).toBeDefined();
+      expect(Hero.Content).toBe(HeroContent);
+    });
+
+    it("provides Hero.Overlay as compound component", () => {
+      // Test that Hero.Overlay exists and is the same as HeroOverlay
+      expect(Hero.Overlay).toBeDefined();
+      expect(Hero.Overlay).toBe(HeroOverlay);
+    });
+
+    it("works with compound component syntax for basic functionality", () => {
+      // Test that compound components can be used
+      const { getByText } = render(() => (
+        <Hero backgroundImage="/hero-bg.jpg">
+          <Hero.Overlay opacity={40} />
+          <Hero.Content>
+            <h1>Compound Component Hero</h1>
+          </Hero.Content>
+        </Hero>
+      ));
+      
+      expect(getByText("Compound Component Hero")).toBeInTheDocument();
+    });
+  });
 });

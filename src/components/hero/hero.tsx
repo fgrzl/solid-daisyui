@@ -39,7 +39,7 @@ export interface HeroProps {
  * @param {HeroProps} props - The properties to configure the Hero component.
  * @returns {JSX.Element} The rendered Hero component.
  */
-export default function Hero(props: HeroProps): JSX.Element {
+function Hero(props: HeroProps): JSX.Element {
   // Build base classes following DaisyUI patterns
   const classes = () => {
     const baseClasses: Record<string, boolean> = {
@@ -125,3 +125,20 @@ export default function Hero(props: HeroProps): JSX.Element {
     </section>
   );
 }
+
+// Import child components for compound component pattern
+import HeroContent from "./hero-content";
+import HeroOverlay from "./hero-overlay";
+
+// Define the compound component type
+type HeroComponent = typeof Hero & {
+  Content: typeof HeroContent;
+  Overlay: typeof HeroOverlay;
+};
+
+// Attach child components to Hero for compound component pattern
+(Hero as HeroComponent).Content = HeroContent;
+(Hero as HeroComponent).Overlay = HeroOverlay;
+
+// Export with compound component types
+export default Hero as HeroComponent;

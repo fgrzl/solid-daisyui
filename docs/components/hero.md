@@ -37,6 +37,18 @@ import { Hero, HeroContent, HeroOverlay } from "solid-daisyui";
     </div>
   </HeroContent>
 </Hero>
+
+// Or using compound component syntax
+<Hero backgroundImage="/hero-bg.jpg">
+  <Hero.Overlay opacity={50} />
+  <Hero.Content align="center">
+    <div class="max-w-md">
+      <h1 class="text-5xl font-bold text-white">Hello there</h1>
+      <p class="py-6 text-white">Provident cupiditate voluptatem.</p>
+      <button class="btn btn-primary">Get Started</button>
+    </div>
+  </Hero.Content>
+</Hero>
 ```
 
 ## Usage
