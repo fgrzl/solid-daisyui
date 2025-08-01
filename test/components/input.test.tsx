@@ -1,6 +1,6 @@
 import { fireEvent, render } from "@solidjs/testing-library";
 import { describe, it, expect, vi } from "vitest";
-import Input from "@/components/input";
+import { Input } from "@/components/input";
 
 describe("Input Component", () => {
   // Basic Rendering Tests

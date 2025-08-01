@@ -1,8 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render } from "@solidjs/testing-library";
-import { JSX } from "solid-js";
-import Validator, { ValidatorInput } from "@/components/validator";
-import Input from "@/components/input";
+import { Validator, ValidatorInput } from "@/components/input";
+import { Input } from "@/components/input";
 
 describe("Validator Component", () => {
   // Basic Rendering Tests
@@ -356,9 +355,9 @@ describe("ValidatorInput Component", () => {
       expect(input).toHaveClass("input");
     });
 
-    it("prioritizes explicit variant over state", () => {
+    it("applies state as variant to input", () => {
       const { container } = render(() => (
-        <ValidatorInput state="error" variant="primary" />
+        <ValidatorInput state="error" />
       ));
       
       const input = container.querySelector("input");

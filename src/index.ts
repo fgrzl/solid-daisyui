@@ -56,7 +56,7 @@ export * from "./components/toggle";
 export * from "./components/tooltip";
 export * from "./components/treeview";
 export * from "./components/upload";
-export * from "./components/validator";
+
 export * from "./components/video";
 export * from "./components/widget";
 export * from "./components/wizard";
