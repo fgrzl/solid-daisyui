@@ -5,7 +5,6 @@
 The Breadcrumbs component provides hierarchical navigation paths that allow users to understand their current location within a website or application. It follows DaisyUI design standards and implements WCAG 2.1 AA accessibility guidelines.
 
 The component now supports two approaches:
-
 - **Recommended**: Composable structure using `Breadcrumb` components for better flexibility
 - **Legacy**: Items array for backward compatibility
 
@@ -21,7 +20,7 @@ import { Breadcrumbs, Breadcrumb } from "solid-daisyui";
   <Breadcrumb href="/products">Products</Breadcrumb>
   <Breadcrumb href="/products/electronics">Electronics</Breadcrumb>
   <Breadcrumb current>Current Page</Breadcrumb>
-</Breadcrumbs>;
+</Breadcrumbs>
 ```
 
 ### With Click Handlers
@@ -42,14 +41,10 @@ When using with solid-router, you can pass the A component as children:
 import { A } from "@solidjs/router";
 
 <Breadcrumbs>
-  <Breadcrumb>
-    <A href="/">Home</A>
-  </Breadcrumb>
-  <Breadcrumb>
-    <A href="/products">Products</A>
-  </Breadcrumb>
+  <Breadcrumb><A href="/">Home</A></Breadcrumb>
+  <Breadcrumb><A href="/products">Products</A></Breadcrumb>
   <Breadcrumb current>Current Page</Breadcrumb>
-</Breadcrumbs>;
+</Breadcrumbs>
 ```
 
 ### Legacy: Items Array (Deprecated)
@@ -61,16 +56,19 @@ const items = [
   { label: "Home", href: "/" },
   { label: "Products", href: "/products" },
   { label: "Electronics", href: "/products/electronics" },
-  { label: "Current Page", current: true },
+  { label: "Current Page", current: true }
 ];
 
-<Breadcrumbs items={items} />;
+<Breadcrumbs items={items} />
 ```
 
 ### Legacy: Custom Separator
 
 ```tsx
-<Breadcrumbs items={items} separator=" → " />
+<Breadcrumbs 
+  items={items} 
+  separator=" → " 
+/>
 ```
 
 ### Legacy: With Click Handlers
@@ -79,22 +77,18 @@ const items = [
 const items = [
   { label: "Home", onClick: () => navigate("/") },
   { label: "Products", onClick: () => navigate("/products") },
-  { label: "Current Page" },
+  { label: "Current Page" }
 ];
 
-<Breadcrumbs items={items} />;
+<Breadcrumbs items={items} />
 ```
 
 ### Legacy: Using Children (Manual Layout)
 
 ```tsx
 <Breadcrumbs>
-  <li>
-    <a href="/">Home</a>
-  </li>
-  <li>
-    <a href="/products">Products</a>
-  </li>
+  <li><a href="/">Home</a></li>
+  <li><a href="/products">Products</a></li>
   <li>Current Page</li>
 </Breadcrumbs>
 ```
@@ -104,42 +98,45 @@ const items = [
 ```tsx
 const CustomSeparator = () => <span class="text-primary">→</span>;
 
-<Breadcrumbs items={items} separator={<CustomSeparator />} />;
+<Breadcrumbs 
+  items={items} 
+  separator={<CustomSeparator />} 
+/>
 ```
 
 ## Props
 
 ### Breadcrumbs Props
 
-| Name      | Type                      | Default        | Description                                                                           |
-| --------- | ------------------------- | -------------- | ------------------------------------------------------------------------------------- |
-| items     | `BreadcrumbItem[]`        | `undefined`    | **Deprecated**: Array of breadcrumb items to display. Use Breadcrumb children instead |
-| children  | `JSX.Element`             | `undefined`    | Breadcrumb content as Breadcrumb components or custom JSX                             |
-| separator | `string \| JSX.Element`   | `"/"`          | Custom separator between breadcrumb items (only used with items prop)                 |
-| class     | `string`                  | `undefined`    | Additional CSS classes to apply                                                       |
-| classList | `Record<string, boolean>` | `undefined`    | Dynamic class list for conditional styling                                            |
-| ariaLabel | `string`                  | `"Breadcrumb"` | Custom aria-label for navigation element                                              |
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| items | `BreadcrumbItem[]` | `undefined` | **Deprecated**: Array of breadcrumb items to display. Use Breadcrumb children instead |
+| children | `JSX.Element` | `undefined` | Breadcrumb content as Breadcrumb components or custom JSX |
+| separator | `string \| JSX.Element` | `"/"` | Custom separator between breadcrumb items (only used with items prop) |
+| class | `string` | `undefined` | Additional CSS classes to apply |
+| classList | `Record<string, boolean>` | `undefined` | Dynamic class list for conditional styling |
+| ariaLabel | `string` | `"Breadcrumb"` | Custom aria-label for navigation element |
 
 ### Breadcrumb Props
 
-| Name      | Type                      | Default     | Description                                         |
-| --------- | ------------------------- | ----------- | --------------------------------------------------- |
-| children  | `JSX.Element`             | `undefined` | Content to display inside the breadcrumb link       |
-| href      | `string`                  | `undefined` | URL to link to (renders as anchor)                  |
-| onClick   | `() => void`              | `undefined` | Click handler (renders as button)                   |
-| current   | `boolean`                 | `false`     | Marks item as current page (adds aria-current)      |
-| class     | `string`                  | `undefined` | Additional CSS classes to apply to the link element |
-| classList | `Record<string, boolean>` | `undefined` | Dynamic class list for conditional styling          |
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| children | `JSX.Element` | `undefined` | Content to display inside the breadcrumb link |
+| href | `string` | `undefined` | URL to link to (renders as anchor) |
+| onClick | `() => void` | `undefined` | Click handler (renders as button) |
+| current | `boolean` | `false` | Marks item as current page (adds aria-current) |
+| class | `string` | `undefined` | Additional CSS classes to apply to the link element |
+| classList | `Record<string, boolean>` | `undefined` | Dynamic class list for conditional styling |
 
 ### BreadcrumbItem Interface (Legacy)
 
-| Name    | Type          | Default     | Description                                    |
-| ------- | ------------- | ----------- | ---------------------------------------------- |
-| label   | `string`      | `undefined` | Text label to display                          |
-| href    | `string`      | `undefined` | URL to link to (renders as anchor)             |
-| onClick | `() => void`  | `undefined` | Click handler (renders as button)              |
-| current | `boolean`     | `false`     | Marks item as current page (adds aria-current) |
-| element | `JSX.Element` | `undefined` | Custom element to render instead of label      |
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| label | `string` | `undefined` | Text label to display |
+| href | `string` | `undefined` | URL to link to (renders as anchor) |
+| onClick | `() => void` | `undefined` | Click handler (renders as button) |
+| current | `boolean` | `false` | Marks item as current page (adds aria-current) |
+| element | `JSX.Element` | `undefined` | Custom element to render instead of label |
 
 ## Accessibility Features
 
@@ -153,13 +150,11 @@ const CustomSeparator = () => <span class="text-primary">→</span>;
 ## DaisyUI Classes
 
 The component uses the following DaisyUI classes:
-
 - `breadcrumbs` - Base breadcrumbs styling
 
 ## Component Structure
 
 ### Recommended: Composable Structure
-
 ```html
 <div class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
   <ul>
@@ -171,7 +166,6 @@ The component uses the following DaisyUI classes:
 ```
 
 ### Legacy: Items Structure
-
 ```html
 <div class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
   <ul>
@@ -187,19 +181,15 @@ The component uses the following DaisyUI classes:
 To migrate from the legacy items approach to the new composable structure:
 
 ### Before (Legacy)
-
 ```tsx
-<Breadcrumbs
-  items={[
-    { label: "Home", href: "/" },
-    { label: "Products", href: "/products" },
-    { label: "Current Page", current: true },
-  ]}
-/>
+<Breadcrumbs items={[
+  { label: "Home", href: "/" },
+  { label: "Products", href: "/products" },
+  { label: "Current Page", current: true }
+]} />
 ```
 
 ### After (Recommended)
-
 ```tsx
 <Breadcrumbs>
   <Breadcrumb href="/">Home</Breadcrumb>

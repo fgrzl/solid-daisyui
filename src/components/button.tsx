@@ -62,11 +62,11 @@ export interface ButtonProps {
 
 /**
  * The Button component provides a customizable button element following DaisyUI design standards.
- *
+ * 
  * Supports all DaisyUI button variants, sizes, and modifiers including outline, wide, block, and shape options.
  * Includes accessibility features with proper ARIA attributes, keyboard navigation support, and screen reader compatibility.
  * Handles loading states with spinner indication and provides icon support at start and end positions.
- *
+ * 
  * @param {ButtonProps} props - The properties to configure the Button component.
  * @returns {JSX.Element} The rendered Button component.
  */

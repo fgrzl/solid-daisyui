@@ -12,9 +12,7 @@ describe("Card Component", () => {
 
     it("renders with title and body content", () => {
       const { getByText } = render(() => (
-        <Card title="Card Title" body="Card body content">
-          Test Content
-        </Card>
+        <Card title="Card Title" body="Card body content">Test Content</Card>
       ));
       expect(getByText("Card Title")).toBeInTheDocument();
       expect(getByText("Card body content")).toBeInTheDocument();
@@ -22,18 +20,14 @@ describe("Card Component", () => {
 
     it("applies custom classes", () => {
       const { container } = render(() => (
-        <Card
-          class="custom-class"
+        <Card 
+          class="custom-class" 
           classList={{ "dynamic-class": true, "disabled-class": false }}
         >
           Test Content
         </Card>
       ));
-      expect(container.firstChild).toHaveClass(
-        "card",
-        "custom-class",
-        "dynamic-class",
-      );
+      expect(container.firstChild).toHaveClass("card", "custom-class", "dynamic-class");
       expect(container.firstChild).not.toHaveClass("disabled-class");
     });
   });
@@ -41,16 +35,10 @@ describe("Card Component", () => {
   describe("DaisyUI Variants", () => {
     it("applies variant classes correctly", () => {
       const { container } = render(() => (
-        <Card bordered compact side glass>
-          Test Content
-        </Card>
+        <Card bordered compact side glass>Test Content</Card>
       ));
       expect(container.firstChild).toHaveClass(
-        "card",
-        "card-bordered",
-        "card-compact",
-        "card-side",
-        "glass",
+        "card", "card-bordered", "card-compact", "card-side", "glass"
       );
     });
   });
@@ -58,9 +46,7 @@ describe("Card Component", () => {
   describe("Image Support", () => {
     it("renders image with proper structure", () => {
       const { getByRole, container } = render(() => (
-        <Card imageSrc="/test-image.jpg" imageAlt="Test Image">
-          Test Content
-        </Card>
+        <Card imageSrc="/test-image.jpg" imageAlt="Test Image">Test Content</Card>
       ));
       const image = getByRole("img");
       expect(image).toHaveAttribute("src", "/test-image.jpg");
@@ -70,9 +56,7 @@ describe("Card Component", () => {
 
     it("positions image correctly", () => {
       const { container } = render(() => (
-        <Card imageSrc="/test.jpg" imagePosition="bottom">
-          Test Content
-        </Card>
+        <Card imageSrc="/test.jpg" imagePosition="bottom">Test Content</Card>
       ));
       const figure = container.querySelector("figure");
       const cardBody = container.querySelector(".card-body");
@@ -83,9 +67,7 @@ describe("Card Component", () => {
   describe("Card Structure", () => {
     it("renders card-body and card-title elements", () => {
       const { container, getByRole } = render(() => (
-        <Card title="Test Title" titleLevel={3}>
-          Test Content
-        </Card>
+        <Card title="Test Title" titleLevel={3}>Test Content</Card>
       ));
       expect(container.querySelector(".card-body")).toBeInTheDocument();
       expect(container.querySelector(".card-title")).toBeInTheDocument();
@@ -97,15 +79,11 @@ describe("Card Component", () => {
     it("renders actions with positioning", () => {
       const actions = [<button>Button 1</button>, <button>Button 2</button>];
       const { getByText, container } = render(() => (
-        <Card actions={actions} actionsPosition="center">
-          Test Content
-        </Card>
+        <Card actions={actions} actionsPosition="center">Test Content</Card>
       ));
       expect(getByText("Button 1")).toBeInTheDocument();
       expect(getByText("Button 2")).toBeInTheDocument();
-      expect(container.querySelector(".card-actions")).toHaveClass(
-        "justify-center",
-      );
+      expect(container.querySelector(".card-actions")).toHaveClass("justify-center");
     });
 
     it("handles single action element", () => {
@@ -114,9 +92,7 @@ describe("Card Component", () => {
         <Card actions={action}>Test Content</Card>
       ));
       expect(getByText("Single Button")).toBeInTheDocument();
-      expect(container.querySelector(".card-actions")).toHaveClass(
-        "justify-end",
-      );
+      expect(container.querySelector(".card-actions")).toHaveClass("justify-end");
     });
   });
 
@@ -124,25 +100,20 @@ describe("Card Component", () => {
     it("handles click and keyboard events", () => {
       const handleClick = vi.fn();
       const { container, getByRole } = render(() => (
-        <Card onClick={handleClick} ariaLabel="Clickable card">
-          Test Content
-        </Card>
+        <Card onClick={handleClick} ariaLabel="Clickable card">Test Content</Card>
       ));
-
+      
       // Test click
       fireEvent.click(container.firstChild as Element);
       expect(handleClick).toHaveBeenCalledTimes(1);
-
+      
       // Test keyboard
       fireEvent.keyDown(container.firstChild as Element, { key: "Enter" });
       expect(handleClick).toHaveBeenCalledTimes(2);
-
+      
       // Test accessibility
       expect(getByRole("button")).toBeInTheDocument();
-      expect(container.firstChild).toHaveAttribute(
-        "aria-label",
-        "Clickable card",
-      );
+      expect(container.firstChild).toHaveAttribute("aria-label", "Clickable card");
       expect(container.firstChild).toHaveAttribute("tabIndex", "0");
     });
 
@@ -152,10 +123,7 @@ describe("Card Component", () => {
       ));
       // Article element has implicit role="article", no need for explicit role attribute
       expect(getByRole("article")).toBeInTheDocument();
-      expect(getByRole("article")).toHaveAttribute(
-        "aria-describedby",
-        "description",
-      );
+      expect(getByRole("article")).toHaveAttribute("aria-describedby", "description");
     });
   });
 
@@ -196,20 +164,13 @@ describe("Card Component", () => {
           Card content
         </Card>
       ));
-
+      
       expect(container.firstChild).toHaveClass(
-        "card",
-        "card-bordered",
-        "card-compact",
-        "glass",
-        "custom-class",
+        "card", "card-bordered", "card-compact", "glass", "custom-class"
       );
       expect(getByText("Full Featured Card")).toBeInTheDocument();
       expect(getByText("Action")).toBeInTheDocument();
-      expect(container.firstChild).toHaveAttribute(
-        "aria-label",
-        "Full featured card",
-      );
+      expect(container.firstChild).toHaveAttribute("aria-label", "Full featured card");
     });
   });
 });

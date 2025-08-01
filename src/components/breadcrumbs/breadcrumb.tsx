@@ -21,23 +21,24 @@ export interface BreadcrumbProps {
 
 /**
  * Breadcrumb component for individual breadcrumb items.
- *
+ * 
  * Renders as a list item (`<li>`) containing the appropriate navigation element.
  * Automatically uses solid-router's A component when inside a router context,
  * and falls back to regular anchor tags when no router is available.
  * Supports buttons with onClick, or static text for current page.
- *
+ * 
  * Designed to be used within a Breadcrumbs component container.
  * Provides seamless integration with solid-router while maintaining compatibility
  * outside of router contexts (useful for testing and standalone usage).
- *
+ * 
  * @param {BreadcrumbProps} props - The breadcrumb component props
  * @returns {JSX.Element} JSX element representing a breadcrumb list item
  */
 export default function Breadcrumb(props: BreadcrumbProps): JSX.Element {
+
   // Handle keyboard events for clickable items
   const handleKeyDown = (event: KeyboardEvent) => {
-    if ((event.key === "Enter" || event.key === " ") && props.onClick) {
+    if ((event.key === 'Enter' || event.key === ' ') && props.onClick) {
       // Call preventDefault only if onClick will be executed
       event.preventDefault();
       props.onClick();
@@ -53,8 +54,8 @@ export default function Breadcrumb(props: BreadcrumbProps): JSX.Element {
     if (props.href) {
       // Use regular anchor tag since router is peer dependency
       return (
-        <a
-          href={props.href}
+        <a 
+          href={props.href} 
           class={props.class}
           classList={props.classList}
           {...commonProps}
@@ -63,7 +64,7 @@ export default function Breadcrumb(props: BreadcrumbProps): JSX.Element {
         </a>
       );
     }
-
+    
     // Render as button if onClick is provided
     if (props.onClick) {
       return (
@@ -79,14 +80,22 @@ export default function Breadcrumb(props: BreadcrumbProps): JSX.Element {
         </button>
       );
     }
-
+    
     // Render as span for current/static items
     return (
-      <span class={props.class} classList={props.classList} {...commonProps}>
+      <span 
+        class={props.class}
+        classList={props.classList}
+        {...commonProps}
+      >
         {props.children}
       </span>
     );
   };
 
-  return <li>{renderContent()}</li>;
+  return (
+    <li>
+      {renderContent()}
+    </li>
+  );
 }

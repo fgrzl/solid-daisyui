@@ -17,16 +17,7 @@ export interface BadgeProps {
   children?: JSX.Element;
   class?: string;
   classList?: Record<string, boolean>;
-  variant?:
-    | "primary"
-    | "secondary"
-    | "accent"
-    | "info"
-    | "success"
-    | "warning"
-    | "error"
-    | "ghost"
-    | "neutral";
+  variant?: "primary" | "secondary" | "accent" | "info" | "success" | "warning" | "error" | "ghost" | "neutral";
   size?: "xs" | "sm" | "md" | "lg";
   outline?: boolean;
   "aria-label"?: string;
@@ -37,7 +28,7 @@ export interface BadgeProps {
 /**
  * Badge component for displaying status indicators, labels, or short informational text.
  * Follows DaisyUI Badge component patterns with support for variants, sizes, and outline style.
- *
+ * 
  * @param {BadgeProps} props - The properties to configure the Badge component.
  * @returns {JSX.Element} The rendered Badge component.
  */

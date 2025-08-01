@@ -463,15 +463,15 @@ describe("Carousel Component", () => {
 
     it("handles complex data structures with each prop", () => {
       const complexData = [
-        {
-          id: 1,
+        { 
+          id: 1, 
           image: { src: "image1.jpg", alt: "Image 1" },
-          caption: "First image",
+          caption: "First image"
         },
-        {
-          id: 2,
+        { 
+          id: 2, 
           image: { src: "image2.jpg", alt: "Image 2" },
-          caption: "Second image",
+          caption: "Second image"
         },
       ];
 
@@ -692,7 +692,7 @@ describe("Carousel Component", () => {
       // Verify that CarouselItem components have their own styling
       const items = container.querySelectorAll(".carousel-item");
       expect(items).toHaveLength(2);
-
+      
       // Check for the presence of custom classes
       const imageSlide = container.querySelector(".w-96");
       const cardSlide = container.querySelector(".w-full");
@@ -711,9 +711,7 @@ describe("Carousel Component", () => {
       ));
 
       expect(getByText("Properly wrapped slide")).toBeInTheDocument();
-      expect(
-        getByText("Direct JSX slide (not recommended)"),
-      ).toBeInTheDocument();
+      expect(getByText("Direct JSX slide (not recommended)")).toBeInTheDocument();
 
       // Only the CarouselItem should have carousel-item class
       const items = container.querySelectorAll(".carousel-item");
@@ -867,7 +865,9 @@ describe("CarouselItem Component", () => {
     });
 
     it("handles empty children gracefully", () => {
-      const { container } = render(() => <CarouselItem />);
+      const { container } = render(() => (
+        <CarouselItem />
+      ));
       expect(container.firstChild).toHaveClass("carousel-item");
       expect(container.firstChild).toBeEmptyDOMElement();
     });
@@ -917,7 +917,7 @@ describe("CarouselItem Component", () => {
         "carousel-item",
         "w-full",
         "md:w-1/2",
-        "lg:w-1/3",
+        "lg:w-1/3"
       );
     });
   });

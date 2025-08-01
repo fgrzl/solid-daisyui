@@ -9,15 +9,13 @@ The Alert component displays styled message boxes with optional content and icon
 ## Usage Examples
 
 ### Basic Alert
-
 ```tsx
 import { Alert } from "solid-daisyui";
 
-<Alert>This is a basic alert message</Alert>;
+<Alert>This is a basic alert message</Alert>
 ```
 
 ### Alert Types
-
 ```tsx
 <Alert type="info">This is an info alert</Alert>
 <Alert type="success">Operation completed successfully!</Alert>
@@ -26,7 +24,6 @@ import { Alert } from "solid-daisyui";
 ```
 
 ### Official DaisyUI Style Variants
-
 ```tsx
 <Alert type="success" style="outline">Outline style alert</Alert>
 <Alert type="warning" style="soft">Soft style alert</Alert>
@@ -34,17 +31,15 @@ import { Alert } from "solid-daisyui";
 ```
 
 ### Official DaisyUI Layout Options
-
 ```tsx
 <Alert type="info" vertical={true}>Vertical layout alert</Alert>
 <Alert type="success" vertical={false}>Horizontal layout alert</Alert>
 ```
 
 ### Custom Icons
-
 ```tsx
-<Alert
-  type="success"
+<Alert 
+  type="success" 
   icon={<CustomIcon />}
 >
   Alert with custom icon
@@ -56,12 +51,11 @@ import { Alert } from "solid-daisyui";
 ```
 
 ### Alert with Action Buttons
-
 ```tsx
-<Alert
+<Alert 
   buttons={[
     <button class="btn btn-sm">Accept</button>,
-    <button class="btn btn-sm btn-outline">Decline</button>,
+    <button class="btn btn-sm btn-outline">Decline</button>
   ]}
 >
   We use cookies for no reason.
@@ -69,46 +63,43 @@ import { Alert } from "solid-daisyui";
 ```
 
 ### Custom Dismissible Functionality (Extension)
-
 ```tsx
-{
-  /* Close button with custom callback */
-}
-<Alert
+{/* Close button with custom callback */}
+<Alert 
   onClose={() => {
     console.log("Alert dismissed");
     return true; // Allow closing
   }}
 >
   Custom dismissible alert
-</Alert>;
+</Alert>
 
-{
-  /* Always show close button */
-}
-<Alert dismissible={true}>Always dismissible alert</Alert>;
+{/* Always show close button */}
+<Alert dismissible={true}>
+  Always dismissible alert
+</Alert>
 
-{
-  /* Never show close button */
-}
-<Alert dismissible={false}>Non-dismissible alert</Alert>;
+{/* Never show close button */}
+<Alert dismissible={false}>
+  Non-dismissible alert
+</Alert>
 ```
 
 ## Props
 
-| Name        | Type                                          | Default | Description                                                                           |
-| ----------- | --------------------------------------------- | ------- | ------------------------------------------------------------------------------------- |
-| children    | `JSX.Element`                                 | -       | The content to display inside the alert                                               |
-| class       | `string`                                      | -       | Additional CSS classes to apply to the alert                                          |
-| classList   | `Record<string, boolean>`                     | -       | Dynamic class list for conditional styling                                            |
-| type        | `"info" \| "success" \| "warning" \| "error"` | -       | Alert type using official DaisyUI classes                                             |
-| icon        | `JSX.Element`                                 | -       | Custom icon to display in the alert                                                   |
-| hideIcon    | `boolean`                                     | `false` | If true, hides the icon in the alert                                                  |
-| style       | `"outline" \| "soft" \| "dash"`               | -       | **Official DaisyUI**: Style variant (alert-outline, alert-soft, alert-dash)           |
-| vertical    | `boolean`                                     | -       | **Official DaisyUI**: Layout option (true = alert-vertical, false = alert-horizontal) |
-| buttons     | `JSX.Element[]`                               | -       | Optional action buttons to display                                                    |
-| dismissible | `boolean`                                     | `false` | **Custom Extension**: If true, shows close button                                     |
-| onClose     | `() => boolean \| void`                       | -       | **Custom Extension**: Callback fired when close button is clicked                     |
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| children | `JSX.Element` | - | The content to display inside the alert |
+| class | `string` | - | Additional CSS classes to apply to the alert |
+| classList | `Record<string, boolean>` | - | Dynamic class list for conditional styling |
+| type | `"info" \| "success" \| "warning" \| "error"` | - | Alert type using official DaisyUI classes |
+| icon | `JSX.Element` | - | Custom icon to display in the alert |
+| hideIcon | `boolean` | `false` | If true, hides the icon in the alert |
+| style | `"outline" \| "soft" \| "dash"` | - | **Official DaisyUI**: Style variant (alert-outline, alert-soft, alert-dash) |
+| vertical | `boolean` | - | **Official DaisyUI**: Layout option (true = alert-vertical, false = alert-horizontal) |
+| buttons | `JSX.Element[]` | - | Optional action buttons to display |
+| dismissible | `boolean` | `false` | **Custom Extension**: If true, shows close button |
+| onClose | `() => boolean \| void` | - | **Custom Extension**: Callback fired when close button is clicked |
 
 ## Accessibility Features
 
@@ -121,24 +112,20 @@ import { Alert } from "solid-daisyui";
 ## DaisyUI Classes Used
 
 ### Base Classes
-
 - `alert` - Base alert class with grid layout
 
 ### Type Variants
-
 - `alert-info` - Info variant styling
-- `alert-success` - Success variant styling
+- `alert-success` - Success variant styling  
 - `alert-warning` - Warning variant styling
 - `alert-error` - Error variant styling
 
 ### Style Modifiers (Official DaisyUI)
-
 - `alert-outline` - Outlined border style
 - `alert-soft` - Soft background style
 - `alert-dash` - Dashed border style
 
 ### Layout Options (Official DaisyUI)
-
 - `alert-vertical` - Vertical stacked layout
 - `alert-horizontal` - Horizontal inline layout
 

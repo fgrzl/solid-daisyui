@@ -14,18 +14,18 @@ function MyComponent() {
 
 ## Props
 
-| Prop         | Type                                                                                  | Default | Description                                   |
-| ------------ | ------------------------------------------------------------------------------------- | ------- | --------------------------------------------- |
-| `value`      | `number`                                                                              | `0`     | Progress value (0-100)                        |
-| `children`   | `JSX.Element`                                                                         | -       | Content to display inside the progress circle |
-| `size`       | `"xs" \| "sm" \| "md" \| "lg" \| "xl"`                                                | `"md"`  | Size of the radial progress                   |
-| `color`      | `"primary" \| "secondary" \| "accent" \| "info" \| "success" \| "warning" \| "error"` | -       | Color variant                                 |
-| `thickness`  | `string`                                                                              | -       | Custom thickness of the progress ring         |
-| `customSize` | `string`                                                                              | -       | Custom size (CSS value, overrides size prop)  |
-| `class`      | `string`                                                                              | -       | Additional CSS classes                        |
-| `classList`  | `Record<string, boolean>`                                                             | -       | Dynamic CSS classes                           |
-| `aria-label` | `string`                                                                              | -       | ARIA label for accessibility                  |
-| `id`         | `string`                                                                              | -       | HTML id attribute                             |
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `number` | `0` | Progress value (0-100) |
+| `children` | `JSX.Element` | - | Content to display inside the progress circle |
+| `size` | `"xs" \| "sm" \| "md" \| "lg" \| "xl"` | `"md"` | Size of the radial progress |
+| `color` | `"primary" \| "secondary" \| "accent" \| "info" \| "success" \| "warning" \| "error"` | - | Color variant |
+| `thickness` | `string` | - | Custom thickness of the progress ring |
+| `customSize` | `string` | - | Custom size (CSS value, overrides size prop) |
+| `class` | `string` | - | Additional CSS classes |
+| `classList` | `Record<string, boolean>` | - | Dynamic CSS classes |
+| `aria-label` | `string` | - | ARIA label for accessibility |
+| `id` | `string` | - | HTML id attribute |
 
 ## Examples
 
@@ -80,21 +80,25 @@ function MyComponent() {
 ```tsx
 function InteractiveProgress() {
   const [progress, setProgress] = createSignal(0);
-
+  
   const increment = () => {
-    setProgress((prev) => Math.min(100, prev + 10));
+    setProgress(prev => Math.min(100, prev + 10));
   };
-
+  
   const reset = () => {
     setProgress(0);
   };
 
   return (
     <div class="flex flex-col items-center gap-4">
-      <RadialProgress value={progress()} color="primary" size="lg">
+      <RadialProgress 
+        value={progress()} 
+        color="primary" 
+        size="lg"
+      >
         {progress()}%
       </RadialProgress>
-
+      
       <div class="flex gap-2">
         <button class="btn btn-primary" onClick={increment}>
           +10%

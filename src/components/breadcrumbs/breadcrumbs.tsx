@@ -39,11 +39,11 @@ export interface BreadcrumbsProps {
 
 /**
  * Breadcrumbs component for displaying hierarchical navigation paths.
- *
+ * 
  * Follows DaisyUI Breadcrumbs component patterns with support for custom separators,
  * clickable items, and current page indicators. Implements WCAG 2.1 AA accessibility
  * standards with proper ARIA attributes and semantic HTML structure.
- *
+ * 
  * **Recommended Usage**: Use with Breadcrumb children for better composability:
  * ```tsx
  * <Breadcrumbs>
@@ -52,7 +52,7 @@ export interface BreadcrumbsProps {
  *   <Breadcrumb current>Current Page</Breadcrumb>
  * </Breadcrumbs>
  * ```
- *
+ * 
  * **Legacy Usage**: Items prop is deprecated but still supported for backward compatibility:
  * ```tsx
  * <Breadcrumbs items={[
@@ -61,7 +61,7 @@ export interface BreadcrumbsProps {
  *   { label: "Current Page", current: true }
  * ]} />
  * ```
- *
+ * 
  * @param {BreadcrumbsProps} props - The breadcrumbs component props
  * @returns {JSX.Element} JSX element representing the breadcrumbs navigation
  */
@@ -95,7 +95,7 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
 
     // Handle keyboard events for clickable items
     const handleKeyDown = (event: KeyboardEvent, onClick?: () => void) => {
-      if (onClick && (event.key === "Enter" || event.key === " ")) {
+      if (onClick && (event.key === 'Enter' || event.key === ' ')) {
         event.preventDefault();
         onClick();
       }
@@ -109,9 +109,7 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
       }
 
       // Common props for aria-current
-      const commonProps = item.current
-        ? { "aria-current": "page" as const }
-        : {};
+      const commonProps = item.current ? { "aria-current": "page" as const } : {};
 
       // Render as link if href is provided
       if (item.href) {
@@ -121,7 +119,7 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
           </a>
         );
       }
-
+      
       // Render as button if onClick is provided
       if (item.onClick) {
         return (
@@ -135,9 +133,13 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
           </button>
         );
       }
-
+      
       // Render as span for current/static items
-      return <span {...commonProps}>{item.label || ""}</span>;
+      return (
+        <span {...commonProps}>
+          {item.label || ""}
+        </span>
+      );
     };
 
     return (
@@ -164,10 +166,7 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
       }}
     >
       <ul>
-        <Show
-          when={props.items && props.items.length > 0}
-          fallback={props.children}
-        >
+        <Show when={props.items && props.items.length > 0} fallback={props.children}>
           {renderLegacyItems()}
         </Show>
       </ul>

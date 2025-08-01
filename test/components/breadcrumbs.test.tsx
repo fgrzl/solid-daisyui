@@ -10,9 +10,9 @@ describe("Breadcrumbs Component", () => {
       const items = [
         { label: "Home", href: "/" },
         { label: "Products", href: "/products" },
-        { label: "Current Page" },
+        { label: "Current Page" }
       ];
-
+      
       const { getByRole } = render(() => <Breadcrumbs items={items} />);
       expect(getByRole("navigation")).toBeInTheDocument();
     });
@@ -20,7 +20,7 @@ describe("Breadcrumbs Component", () => {
     it("renders with base breadcrumbs class", () => {
       const items = [{ label: "Home", href: "/" }];
       const { container } = render(() => <Breadcrumbs items={items} />);
-
+      
       const container_div = container.querySelector('div[role="navigation"]');
       expect(container_div).toHaveClass("breadcrumbs");
     });
@@ -28,11 +28,11 @@ describe("Breadcrumbs Component", () => {
     it("renders breadcrumb items as list", () => {
       const items = [
         { label: "Home", href: "/" },
-        { label: "Products", href: "/products" },
+        { label: "Products", href: "/products" }
       ];
-
+      
       const { container } = render(() => <Breadcrumbs items={items} />);
-      const list = container.querySelector("ul");
+      const list = container.querySelector('ul');
       expect(list).toBeInTheDocument();
     });
 
@@ -40,9 +40,9 @@ describe("Breadcrumbs Component", () => {
       const items = [
         { label: "Home", href: "/" },
         { label: "Products", href: "/products" },
-        { label: "Current" },
+        { label: "Current" }
       ];
-
+      
       const { getAllByRole } = render(() => <Breadcrumbs items={items} />);
       const listItems = getAllByRole("listitem");
       expect(listItems).toHaveLength(3);
@@ -59,7 +59,7 @@ describe("Breadcrumbs Component", () => {
           <Breadcrumb current>Current Page</Breadcrumb>
         </Breadcrumbs>
       ));
-
+      
       expect(getByRole("navigation")).toBeInTheDocument();
       expect(getByText("Home")).toBeInTheDocument();
       expect(getByText("Products")).toBeInTheDocument();
@@ -74,7 +74,7 @@ describe("Breadcrumbs Component", () => {
           <Breadcrumb current>Current Page</Breadcrumb>
         </Breadcrumbs>
       ));
-
+      
       const listItems = getAllByRole("listitem");
       expect(listItems).toHaveLength(3);
     });
@@ -88,7 +88,7 @@ describe("Breadcrumbs Component", () => {
           <Breadcrumb current>Current Page</Breadcrumb>
         </Breadcrumbs>
       ));
-
+      
       expect(getByRole("link", { name: "Home" })).toBeInTheDocument();
       expect(getByRole("button", { name: "Products" })).toBeInTheDocument();
     });
@@ -100,7 +100,7 @@ describe("Breadcrumbs Component", () => {
           <Breadcrumb href="/products">Products</Breadcrumb>
         </Breadcrumbs>
       ));
-
+      
       // Should not have separators when using children
       const separators = container.querySelectorAll('span[aria-hidden="true"]');
       expect(separators).toHaveLength(0);
@@ -112,7 +112,7 @@ describe("Breadcrumbs Component", () => {
     it("applies breadcrumbs class to container element", () => {
       const items = [{ label: "Home" }];
       const { container } = render(() => <Breadcrumbs items={items} />);
-
+      
       const container_div = container.querySelector('div[role="navigation"]');
       expect(container_div).toHaveClass("breadcrumbs");
     });
@@ -122,7 +122,7 @@ describe("Breadcrumbs Component", () => {
       const { container } = render(() => (
         <Breadcrumbs items={items} class="custom-breadcrumbs" />
       ));
-
+      
       const container_div = container.querySelector('div[role="navigation"]');
       expect(container_div).toHaveClass("breadcrumbs", "custom-breadcrumbs");
     });
@@ -130,12 +130,12 @@ describe("Breadcrumbs Component", () => {
     it("applies classList when provided", () => {
       const items = [{ label: "Home" }];
       const { container } = render(() => (
-        <Breadcrumbs
-          items={items}
-          classList={{ active: true, inactive: false }}
+        <Breadcrumbs 
+          items={items} 
+          classList={{ "active": true, "inactive": false }} 
         />
       ));
-
+      
       const container_div = container.querySelector('div[role="navigation"]');
       expect(container_div).toHaveClass("breadcrumbs", "active");
       expect(container_div).not.toHaveClass("inactive");
@@ -147,48 +147,49 @@ describe("Breadcrumbs Component", () => {
     it("renders link items with href", () => {
       const items = [
         { label: "Home", href: "/" },
-        { label: "Products", href: "/products" },
+        { label: "Products", href: "/products" }
       ];
-
+      
       const { getByRole } = render(() => <Breadcrumbs items={items} />);
       const homeLink = getByRole("link", { name: "Home" });
       const productsLink = getByRole("link", { name: "Products" });
-
+      
       expect(homeLink).toHaveAttribute("href", "/");
       expect(productsLink).toHaveAttribute("href", "/products");
     });
 
     it("renders non-link items without href", () => {
-      const items = [{ label: "Home", href: "/" }, { label: "Current Page" }];
-
-      const { getByText, queryByRole, getByRole } = render(() => (
-        <Breadcrumbs items={items} />
-      ));
-
+      const items = [
+        { label: "Home", href: "/" },
+        { label: "Current Page" }
+      ];
+      
+      const { getByText, queryByRole, getByRole } = render(() => <Breadcrumbs items={items} />);
+      
       expect(getByRole("link", { name: "Home" })).toBeInTheDocument();
       expect(getByText("Current Page")).toBeInTheDocument();
-      expect(
-        queryByRole("link", { name: "Current Page" }),
-      ).not.toBeInTheDocument();
+      expect(queryByRole("link", { name: "Current Page" })).not.toBeInTheDocument();
     });
 
     it("calls onClick handler when item is clicked", () => {
       const handleClick = vi.fn();
-      const items = [{ label: "Home", onClick: handleClick }];
-
+      const items = [
+        { label: "Home", onClick: handleClick }
+      ];
+      
       const { getByRole } = render(() => <Breadcrumbs items={items} />);
       const button = getByRole("button", { name: "Home" });
-
+      
       fireEvent.click(button);
       expect(handleClick).toHaveBeenCalledTimes(1);
     });
 
     it("renders item with custom element", () => {
-      const CustomElement = () => (
-        <span data-testid="custom">Custom Element</span>
-      );
-      const items = [{ element: <CustomElement /> }];
-
+      const CustomElement = () => <span data-testid="custom">Custom Element</span>;
+      const items = [
+        { element: <CustomElement /> }
+      ];
+      
       const { getByTestId } = render(() => <Breadcrumbs items={items} />);
       expect(getByTestId("custom")).toBeInTheDocument();
     });
@@ -200,35 +201,41 @@ describe("Breadcrumbs Component", () => {
       const items = [
         { label: "Home", href: "/" },
         { label: "Products", href: "/products" },
-        { label: "Current" },
+        { label: "Current" }
       ];
-
+      
       const { container } = render(() => <Breadcrumbs items={items} />);
-
+      
       // Should have 2 separators for 3 items
-      const separators = container.querySelectorAll("li:not(:last-child)");
+      const separators = container.querySelectorAll('li:not(:last-child)');
       expect(separators).toHaveLength(2);
     });
 
     it("renders custom separator when provided", () => {
-      const items = [{ label: "Home", href: "/" }, { label: "Products" }];
-
+      const items = [
+        { label: "Home", href: "/" },
+        { label: "Products" }
+      ];
+      
       const { getByText } = render(() => (
         <Breadcrumbs items={items} separator="|" />
       ));
-
+      
       expect(getByText("|")).toBeInTheDocument();
     });
 
     it("renders custom separator element", () => {
-      const items = [{ label: "Home", href: "/" }, { label: "Products" }];
-
+      const items = [
+        { label: "Home", href: "/" },
+        { label: "Products" }
+      ];
+      
       const CustomSeparator = () => <span data-testid="custom-sep">→</span>;
-
+      
       const { getByTestId } = render(() => (
         <Breadcrumbs items={items} separator={<CustomSeparator />} />
       ));
-
+      
       expect(getByTestId("custom-sep")).toBeInTheDocument();
     });
   });
@@ -244,7 +251,7 @@ describe("Breadcrumbs Component", () => {
     it("has aria-label for navigation", () => {
       const items = [{ label: "Home" }];
       const { getByRole } = render(() => <Breadcrumbs items={items} />);
-
+      
       const nav = getByRole("navigation");
       expect(nav).toHaveAttribute("aria-label", "Breadcrumb");
     });
@@ -254,7 +261,7 @@ describe("Breadcrumbs Component", () => {
       const { getByRole } = render(() => (
         <Breadcrumbs items={items} ariaLabel="Custom Navigation" />
       ));
-
+      
       const nav = getByRole("navigation");
       expect(nav).toHaveAttribute("aria-label", "Custom Navigation");
     });
@@ -262,26 +269,28 @@ describe("Breadcrumbs Component", () => {
     it("marks current page with aria-current", () => {
       const items = [
         { label: "Home", href: "/" },
-        { label: "Current Page", current: true },
+        { label: "Current Page", current: true }
       ];
-
+      
       const { getByText } = render(() => <Breadcrumbs items={items} />);
       const currentItem = getByText("Current Page");
-
+      
       expect(currentItem).toHaveAttribute("aria-current", "page");
     });
 
     it("supports keyboard navigation for clickable items", () => {
       const handleClick = vi.fn();
-      const items = [{ label: "Home", onClick: handleClick }];
-
+      const items = [
+        { label: "Home", onClick: handleClick }
+      ];
+      
       const { getByRole } = render(() => <Breadcrumbs items={items} />);
       const button = getByRole("button");
-
+      
       // Test Enter key
       fireEvent.keyDown(button, { key: "Enter" });
       expect(handleClick).toHaveBeenCalledTimes(1);
-
+      
       // Test Space key
       fireEvent.keyDown(button, { key: " " });
       expect(handleClick).toHaveBeenCalledTimes(2);
@@ -297,20 +306,20 @@ describe("Breadcrumbs Component", () => {
           <Breadcrumb>Current</Breadcrumb>
         </Breadcrumbs>
       ));
-
+      
       expect(getByText("Home")).toBeInTheDocument();
       expect(getByText("Current")).toBeInTheDocument();
     });
 
     it("prioritizes items prop over children for backward compatibility", () => {
       const items = [{ label: "Items Home" }];
-
+      
       const { getByText, queryByText } = render(() => (
         <Breadcrumbs items={items}>
           <Breadcrumb>Children Home</Breadcrumb>
         </Breadcrumbs>
       ));
-
+      
       expect(getByText("Items Home")).toBeInTheDocument();
       expect(queryByText("Children Home")).not.toBeInTheDocument();
     });
@@ -318,13 +327,11 @@ describe("Breadcrumbs Component", () => {
     it("renders custom JSX children when no items", () => {
       const { getByText } = render(() => (
         <Breadcrumbs>
-          <li>
-            <a href="/">Custom Home</a>
-          </li>
+          <li><a href="/">Custom Home</a></li>
           <li>Custom Current</li>
         </Breadcrumbs>
       ));
-
+      
       expect(getByText("Custom Home")).toBeInTheDocument();
       expect(getByText("Custom Current")).toBeInTheDocument();
     });
@@ -334,20 +341,18 @@ describe("Breadcrumbs Component", () => {
   describe("Edge Cases", () => {
     it("renders empty list when no items or children", () => {
       const { container } = render(() => <Breadcrumbs />);
-      const list = container.querySelector("ul");
+      const list = container.querySelector('ul');
       expect(list).toBeEmptyDOMElement();
     });
 
     it("handles single item without separator", () => {
       const items = [{ label: "Single Item" }];
-      const { getByText, container } = render(() => (
-        <Breadcrumbs items={items} />
-      ));
-
+      const { getByText, container } = render(() => <Breadcrumbs items={items} />);
+      
       expect(getByText("Single Item")).toBeInTheDocument();
-
+      
       // Should not have any separators
-      const listItems = container.querySelectorAll("li");
+      const listItems = container.querySelectorAll('li');
       expect(listItems).toHaveLength(1);
     });
 
@@ -355,17 +360,17 @@ describe("Breadcrumbs Component", () => {
       const items = [
         { label: "Home", href: "/" },
         { href: "/no-label" }, // Missing label
-        { label: "End" },
+        { label: "End" }
       ];
-
+      
       const { container } = render(() => <Breadcrumbs items={items} />);
-      const listItems = container.querySelectorAll("li");
+      const listItems = container.querySelectorAll('li');
       expect(listItems).toHaveLength(3);
     });
 
     it("handles empty items array", () => {
       const { container } = render(() => <Breadcrumbs items={[]} />);
-      const list = container.querySelector("ul");
+      const list = container.querySelector('ul');
       expect(list).toBeEmptyDOMElement();
     });
 
@@ -373,13 +378,11 @@ describe("Breadcrumbs Component", () => {
       const { getByText, getByTestId } = render(() => (
         <Breadcrumbs>
           <Breadcrumb href="/">Home</Breadcrumb>
-          <li>
-            <span data-testid="custom">Custom Element</span>
-          </li>
+          <li><span data-testid="custom">Custom Element</span></li>
           <Breadcrumb current>Current</Breadcrumb>
         </Breadcrumbs>
       ));
-
+      
       expect(getByText("Home")).toBeInTheDocument();
       expect(getByTestId("custom")).toBeInTheDocument();
       expect(getByText("Current")).toBeInTheDocument();
@@ -391,9 +394,9 @@ describe("Breadcrumbs Component", () => {
     it("accepts all valid props without errors", () => {
       const items = [
         { label: "Home", href: "/" },
-        { label: "Current", current: true },
+        { label: "Current", current: true }
       ];
-
+      
       expect(() => {
         render(() => (
           <Breadcrumbs

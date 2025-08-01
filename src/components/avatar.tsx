@@ -113,10 +113,8 @@ export default function Avatar(props: AvatarProps): JSX.Element {
   };
 
   // Determine what content to render
-  const shouldShowImage = () =>
-    props.src && !imageError() && !props.placeholder;
-  const shouldShowPlaceholder = () =>
-    props.placeholder || (props.fallback && (!props.src || imageError()));
+  const shouldShowImage = () => props.src && !imageError() && !props.placeholder;
+  const shouldShowPlaceholder = () => props.placeholder || (props.fallback && (!props.src || imageError()));
 
   const getDisplayText = () => {
     if (props.placeholder) return props.placeholder;
@@ -127,7 +125,7 @@ export default function Avatar(props: AvatarProps): JSX.Element {
   // Generate accessibility label
   const getAriaLabel = () => {
     let label = "";
-
+    
     if (props.placeholder) {
       label = `Avatar with initials ${props.placeholder}`;
     } else if (props.alt) {
@@ -169,7 +167,7 @@ export default function Avatar(props: AvatarProps): JSX.Element {
           <span aria-hidden="true">{getDisplayText()}</span>
         </Show>
       </div>
-
+      
       {/* Presence indicators */}
       <Show when={props.status === "online"}>
         <div class="online" aria-hidden="true"></div>

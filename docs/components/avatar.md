@@ -10,7 +10,12 @@ Avatar component for displaying user profile pictures or placeholder initials wi
 import { Avatar } from "solid-daisyui";
 
 function Example() {
-  return <Avatar src="https://example.com/avatar.jpg" alt="User Avatar" />;
+  return (
+    <Avatar 
+      src="https://example.com/avatar.jpg" 
+      alt="User Avatar" 
+    />
+  );
 }
 ```
 
@@ -20,7 +25,9 @@ function Example() {
 import { Avatar } from "solid-daisyui";
 
 function Example() {
-  return <Avatar placeholder="JD" />;
+  return (
+    <Avatar placeholder="JD" />
+  );
 }
 ```
 
@@ -47,7 +54,13 @@ function Example() {
 import { Avatar } from "solid-daisyui";
 
 function Example() {
-  return <Avatar src="avatar.jpg" alt="User" rounded />;
+  return (
+    <Avatar 
+      src="avatar.jpg" 
+      alt="User" 
+      rounded 
+    />
+  );
 }
 ```
 
@@ -57,7 +70,14 @@ function Example() {
 import { Avatar } from "solid-daisyui";
 
 function Example() {
-  return <Avatar src="avatar.jpg" alt="User" rounded ring />;
+  return (
+    <Avatar 
+      src="avatar.jpg" 
+      alt="User" 
+      rounded 
+      ring 
+    />
+  );
 }
 ```
 
@@ -69,8 +89,18 @@ import { Avatar } from "solid-daisyui";
 function Example() {
   return (
     <div class="flex gap-4">
-      <Avatar src="avatar.jpg" alt="Online User" status="online" rounded />
-      <Avatar src="avatar.jpg" alt="Offline User" status="offline" rounded />
+      <Avatar 
+        src="avatar.jpg" 
+        alt="Online User" 
+        status="online" 
+        rounded 
+      />
+      <Avatar 
+        src="avatar.jpg" 
+        alt="Offline User" 
+        status="offline" 
+        rounded 
+      />
     </div>
   );
 }
@@ -98,30 +128,36 @@ function Example() {
 import { Avatar } from "solid-daisyui";
 
 function Example() {
-  return <Avatar src="invalid-url.jpg" alt="User" fallback="JD" />;
+  return (
+    <Avatar 
+      src="invalid-url.jpg" 
+      alt="User" 
+      fallback="JD" 
+    />
+  );
 }
 ```
 
 ## Props
 
-| Name          | Type                           | Default    | Description                                                          |
-| ------------- | ------------------------------ | ---------- | -------------------------------------------------------------------- |
-| `src`         | `string`                       | -          | Image source URL for the avatar                                      |
-| `alt`         | `string`                       | `"Avatar"` | Alternative text for the avatar image                                |
-| `placeholder` | `string`                       | -          | Initials or text to display when no image is provided                |
-| `size`        | `"xs" \| "sm" \| "md" \| "lg"` | `"md"`     | Size of the avatar                                                   |
-| `rounded`     | `boolean`                      | `false`    | Whether the avatar should be fully rounded                           |
-| `ring`        | `boolean`                      | `false`    | Whether to show a ring around the avatar                             |
-| `status`      | `"online" \| "offline"`        | -          | Online presence indicator                                            |
-| `mask`        | `string`                       | -          | Mask variant for the avatar (e.g., "squircle", "heart", "hexagon-2") |
-| `class`       | `string`                       | -          | Additional CSS classes to apply                                      |
-| `classList`   | `Record<string, boolean>`      | -          | Dynamic class list for conditional styling                           |
-| `fallback`    | `string`                       | -          | Fallback text to display when image fails to load                    |
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| `src` | `string` | - | Image source URL for the avatar |
+| `alt` | `string` | `"Avatar"` | Alternative text for the avatar image |
+| `placeholder` | `string` | - | Initials or text to display when no image is provided |
+| `size` | `"xs" \| "sm" \| "md" \| "lg"` | `"md"` | Size of the avatar |
+| `rounded` | `boolean` | `false` | Whether the avatar should be fully rounded |
+| `ring` | `boolean` | `false` | Whether to show a ring around the avatar |
+| `status` | `"online" \| "offline"` | - | Online presence indicator |
+| `mask` | `string` | - | Mask variant for the avatar (e.g., "squircle", "heart", "hexagon-2") |
+| `class` | `string` | - | Additional CSS classes to apply |
+| `classList` | `Record<string, boolean>` | - | Dynamic class list for conditional styling |
+| `fallback` | `string` | - | Fallback text to display when image fails to load |
 
 ## Size Classes
 
 - `xs`: 24px (w-6)
-- `sm`: 32px (w-8)
+- `sm`: 32px (w-8) 
 - `md`: 48px (w-12) - default
 - `lg`: 64px (w-16)
 
@@ -135,7 +171,6 @@ function Example() {
 ## Examples in Action
 
 The Avatar component automatically handles:
-
 - Image loading failures with fallback text
 - Presence indicator positioning
 - Size-appropriate text scaling

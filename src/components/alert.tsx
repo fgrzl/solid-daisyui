@@ -33,10 +33,10 @@ export interface AlertProps {
 /**
  * Alert component for displaying styled message boxes with optional content and icons.
  * Follows official DaisyUI Alert component patterns for consistent styling and behavior.
- *
+ * 
  * Supports all official DaisyUI alert features including style variants (outline, soft, dash),
  * layout options (vertical, horizontal), and accessibility features.
- *
+ * 
  * **Custom Extensions**: Includes optional dismissible functionality with close button
  * and onClose callback - these are not part of standard DaisyUI but provided as useful extensions.
  *
@@ -132,8 +132,7 @@ export default function Alert(props: AlertProps): JSX.Element | null {
 
     // Add official DaisyUI layout modifiers
     if (props.vertical !== undefined) {
-      baseClasses[props.vertical ? "alert-vertical" : "alert-horizontal"] =
-        true;
+      baseClasses[props.vertical ? "alert-vertical" : "alert-horizontal"] = true;
     }
 
     // Add custom class if provided
@@ -147,7 +146,7 @@ export default function Alert(props: AlertProps): JSX.Element | null {
   // Handle close action with proper event handling and keyboard support
   const handleClose = (event?: Event) => {
     event?.preventDefault();
-
+    
     // Call onClose callback if provided
     if (props.onClose) {
       const result = props.onClose();
@@ -156,14 +155,14 @@ export default function Alert(props: AlertProps): JSX.Element | null {
         return;
       }
     }
-
+    
     // Use batch update to ensure reactivity works properly in tests
     setIsVisible(false);
   };
 
   // Handle keyboard events for close button
   const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.key === "Enter" || event.key === " ") {
+    if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       handleClose(event);
     }
@@ -175,9 +174,7 @@ export default function Alert(props: AlertProps): JSX.Element | null {
   }
 
   // Determine if should show close button (custom extension)
-  const showCloseButton =
-    props.dismissible !== false &&
-    (props.onClose || props.dismissible === true);
+  const showCloseButton = props.dismissible !== false && (props.onClose || props.dismissible === true);
 
   return (
     <div
@@ -189,18 +186,20 @@ export default function Alert(props: AlertProps): JSX.Element | null {
       }}
     >
       {/* Icon - First child in DaisyUI grid structure */}
-      {!props.hideIcon &&
-        (props.icon || defaultIcons[props.type || "info"]) &&
-        (props.icon || defaultIcons[props.type || "info"])}
-
+      {!props.hideIcon && (props.icon || defaultIcons[props.type || "info"]) && (
+        props.icon || defaultIcons[props.type || "info"]
+      )}
+      
       {/* Main content - Second child in DaisyUI grid structure */}
       <span>{props.children}</span>
-
+      
       {/* Action buttons - Additional children in DaisyUI grid structure */}
       {props.buttons && props.buttons.length > 0 && (
-        <div>{props.buttons.map((button) => button)}</div>
+        <div>
+          {props.buttons.map((button) => button)}
+        </div>
       )}
-
+      
       {/* Close button - Custom extension, not part of standard DaisyUI */}
       {showCloseButton && (
         <button

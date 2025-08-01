@@ -1,15 +1,13 @@
 # Carousel Component
 
 ## Overview
-
 A responsive, accessible carousel component for displaying a scrollable collection of slides. Built with SolidJS and styled with DaisyUI.
 
 ## Usage
 
 ### Recommended: CarouselItem Children (Best Developer Experience)
-
 ```tsx
-import { Carousel, CarouselItem } from "@/components";
+import { Carousel, CarouselItem } from '@/components';
 
 <Carousel>
   <CarouselItem>
@@ -21,11 +19,10 @@ import { Carousel, CarouselItem } from "@/components";
   <CarouselItem>
     <img src="image3.jpg" alt="Image 3" />
   </CarouselItem>
-</Carousel>;
+</Carousel>
 ```
 
 ### Data-Driven with 'each' Prop (Built-in Foreach)
-
 ```tsx
 <Carousel each={imageArray}>
   {(image, index) => (
@@ -37,7 +34,6 @@ import { Carousel, CarouselItem } from "@/components";
 ```
 
 ### Legacy: Direct JSX Children (Backward Compatibility)
-
 ```tsx
 <Carousel>
   <div class="carousel-item">Slide 1</div>
@@ -49,32 +45,29 @@ import { Carousel, CarouselItem } from "@/components";
 ## Components
 
 ### Carousel Props
-
-| Name           | Type                                                           | Default    | Description                                                                        |
-| -------------- | -------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------- |
-| children       | JSX.Element \| ((item: T, index: () => number) => JSX.Element) | -          | The slides to display. For best results, use CarouselItem components as children   |
-| each           | T[]                                                            | -          | Array of data items to render. When provided, children should be a render function |
-| class          | string                                                         | -          | Additional CSS classes to apply to the carousel container                          |
-| classList      | Record<string, boolean>                                        | -          | Dynamic class list for conditional styling                                         |
-| snap           | "start" \| "center" \| "end"                                   | -          | DaisyUI snap alignment for carousel items                                          |
-| vertical       | boolean                                                        | false      | Whether the carousel should be vertical (true) or horizontal (false/default)       |
-| showNavigation | boolean                                                        | false      | Whether to show previous/next navigation buttons                                   |
-| showIndicators | boolean                                                        | false      | Whether to show slide indicator dots                                               |
-| currentSlide   | number                                                         | 0          | The currently active slide index (0-based)                                         |
-| onChange       | (index: number) => void                                        | -          | Callback fired when the current slide changes                                      |
-| ariaLabel      | string                                                         | "Carousel" | Custom aria-label for the carousel container                                       |
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| children | JSX.Element \| ((item: T, index: () => number) => JSX.Element) | - | The slides to display. For best results, use CarouselItem components as children |
+| each | T[] | - | Array of data items to render. When provided, children should be a render function |
+| class | string | - | Additional CSS classes to apply to the carousel container |
+| classList | Record<string, boolean> | - | Dynamic class list for conditional styling |
+| snap | "start" \| "center" \| "end" | - | DaisyUI snap alignment for carousel items |
+| vertical | boolean | false | Whether the carousel should be vertical (true) or horizontal (false/default) |
+| showNavigation | boolean | false | Whether to show previous/next navigation buttons |
+| showIndicators | boolean | false | Whether to show slide indicator dots |
+| currentSlide | number | 0 | The currently active slide index (0-based) |
+| onChange | (index: number) => void | - | Callback fired when the current slide changes |
+| ariaLabel | string | "Carousel" | Custom aria-label for the carousel container |
 
 ### CarouselItem Props
-
-| Name      | Type                    | Default | Description                                                            |
-| --------- | ----------------------- | ------- | ---------------------------------------------------------------------- |
-| children  | JSX.Element             | -       | The content to display inside the carousel item                        |
-| class     | string                  | -       | Additional CSS classes to apply to the carousel item                   |
-| classList | Record<string, boolean> | -       | Dynamic class list for conditional styling                             |
-| id        | string                  | -       | Optional ID for the carousel item (useful for scroll-to functionality) |
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| children | JSX.Element | - | The content to display inside the carousel item |
+| class | string | - | Additional CSS classes to apply to the carousel item |
+| classList | Record<string, boolean> | - | Dynamic class list for conditional styling |
+| id | string | - | Optional ID for the carousel item (useful for scroll-to functionality) |
 
 ## Accessibility
-
 - Supports full keyboard navigation with arrow keys, Home, and End
 - Includes proper ARIA attributes (role="region", aria-label, aria-pressed)
 - Compatible with screen readers
@@ -85,7 +78,6 @@ import { Carousel, CarouselItem } from "@/components";
 ## Examples
 
 ### Basic Carousel with CarouselItem
-
 ```tsx
 <Carousel>
   <CarouselItem>
@@ -113,41 +105,43 @@ import { Carousel, CarouselItem } from "@/components";
 ```
 
 ### Data-Driven Image Carousel
-
 ```tsx
 const images = [
   { src: "image1.jpg", alt: "Beautiful sunset" },
   { src: "image2.jpg", alt: "Mountain landscape" },
-  { src: "image3.jpg", alt: "Ocean waves" },
+  { src: "image3.jpg", alt: "Ocean waves" }
 ];
 
 <Carousel each={images} showNavigation showIndicators>
   {(image, index) => (
     <CarouselItem class="w-full">
-      <img src={image.src} alt={image.alt} class="w-full h-64 object-cover" />
+      <img 
+        src={image.src} 
+        alt={image.alt}
+        class="w-full h-64 object-cover"
+      />
     </CarouselItem>
   )}
-</Carousel>;
+</Carousel>
 ```
 
 ### Product Carousel with Complex Data
-
 ```tsx
 const products = [
-  {
-    id: 1,
-    name: "Product 1",
-    price: 29.99,
+  { 
+    id: 1, 
+    name: "Product 1", 
+    price: 29.99, 
     image: "product1.jpg",
-    featured: true,
+    featured: true 
   },
-  {
-    id: 2,
-    name: "Product 2",
-    price: 39.99,
+  { 
+    id: 2, 
+    name: "Product 2", 
+    price: 39.99, 
     image: "product2.jpg",
-    featured: false,
-  },
+    featured: false 
+  }
 ];
 
 <Carousel each={products} snap="center" showIndicators>
@@ -155,29 +149,22 @@ const products = [
     <CarouselItem class="w-64">
       <div class="card bg-base-100 shadow-xl">
         <figure>
-          <img
-            src={product.image}
-            alt={product.name}
-            class="h-48 w-full object-cover"
-          />
+          <img src={product.image} alt={product.name} class="h-48 w-full object-cover" />
         </figure>
         <div class="card-body">
           <h3 class="card-title">
             {product.name}
-            {product.featured && (
-              <div class="badge badge-secondary">Featured</div>
-            )}
+            {product.featured && <div class="badge badge-secondary">Featured</div>}
           </h3>
           <p class="text-lg font-bold">${product.price}</p>
         </div>
       </div>
     </CarouselItem>
   )}
-</Carousel>;
+</Carousel>
 ```
 
 ### Vertical Carousel with Navigation
-
 ```tsx
 <Carousel vertical showNavigation>
   <CarouselItem>
@@ -193,7 +180,6 @@ const products = [
 ```
 
 ### Carousel with Custom Styled Items
-
 ```tsx
 <Carousel snap="center" showIndicators>
   <CarouselItem class="w-96 h-64">
@@ -221,16 +207,15 @@ const products = [
 ```
 
 ### Controlled Carousel
-
 ```tsx
 function ControlledCarousel() {
   const [currentSlide, setCurrentSlide] = createSignal(0);
-
+  
   return (
-    <Carousel
-      currentSlide={currentSlide()}
+    <Carousel 
+      currentSlide={currentSlide()} 
       onChange={setCurrentSlide}
-      showNavigation
+      showNavigation 
       showIndicators
     >
       <CarouselItem>
@@ -264,21 +249,18 @@ function ControlledCarousel() {
 ### When to Use Each Pattern
 
 **CarouselItem Children (Recommended)** - Use when:
-
 - You want the best developer experience and TypeScript support
 - You need consistent styling and structure for all slides
 - You want proper accessibility features built-in
 - You need to apply custom classes or IDs to individual slides
 
 **Data-Driven with 'each'** - Use when:
-
 - You have dynamic data arrays (images, products, etc.)
 - You want consistent rendering for each item
 - You need to handle varying array lengths
 - You want to leverage SolidJS's reactive `For` component
 
 **Direct JSX Children (Legacy)** - Use when:
-
 - Migrating from existing carousel implementations
 - You need complete control over the slide structure
 - Working with third-party components that provide their own carousel-item structure
@@ -286,33 +268,28 @@ function ControlledCarousel() {
 ## Benefits of CarouselItem
 
 ### Better Developer Experience
-
 - **Consistent Structure**: All slides have the same base styling and behavior
 - **TypeScript Support**: Better autocomplete and type checking
 - **Composability**: Can be easily styled and customized per slide
 - **Accessibility**: Built-in focus management and ARIA attributes
 
 ### Enhanced Functionality
-
 - **Custom Classes**: Apply different widths, heights, and styles per slide
 - **IDs for Navigation**: Useful for programmatic scrolling or deep linking
 - **Consistent Spacing**: Proper DaisyUI carousel-item implementation
 - **Responsive Design**: Works seamlessly with Tailwind CSS utilities
 
 ## DaisyUI Classes
-
 This component uses the following official DaisyUI classes:
-
 - `.carousel` - Base carousel container
 - `.carousel-item` - Individual slide container (applied automatically by CarouselItem)
 - `.carousel-vertical` - Vertical orientation
 - `.carousel-horizontal` - Horizontal orientation (default)
 - `.carousel-start` - Start snap alignment
-- `.carousel-center` - Center snap alignment
+- `.carousel-center` - Center snap alignment  
 - `.carousel-end` - End snap alignment
 
 ## Notes
-
 - **CarouselItem is the recommended approach** for new implementations
 - The carousel is fully responsive and works with any slide content
 - Navigation controls are optional and only show when enabled
@@ -327,36 +304,28 @@ This component uses the following official DaisyUI classes:
 # CarouselItem Component
 
 ## Overview
-
 A wrapper component for individual carousel slides that ensures proper DaisyUI styling and accessibility. Designed to be used within a Carousel component container.
 
 ## Props
-
-| Name      | Type                    | Default | Description                                                            |
-| --------- | ----------------------- | ------- | ---------------------------------------------------------------------- |
-| children  | JSX.Element             | -       | The content to display inside the carousel item                        |
-| class     | string                  | -       | Additional CSS classes to apply to the carousel item                   |
-| classList | Record<string, boolean> | -       | Dynamic class list for conditional styling                             |
-| id        | string                  | -       | Optional ID for the carousel item (useful for scroll-to functionality) |
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| children | JSX.Element | - | The content to display inside the carousel item |
+| class | string | - | Additional CSS classes to apply to the carousel item |
+| classList | Record<string, boolean> | - | Dynamic class list for conditional styling |
+| id | string | - | Optional ID for the carousel item (useful for scroll-to functionality) |
 
 ## Features
 
 ### Automatic DaisyUI Integration
-
 - Automatically applies the `carousel-item` class
 - Ensures proper styling and behavior within DaisyUI carousels
 - Handles focus management and accessibility attributes
 
 ### Customizable Sizing
-
 ```tsx
 <Carousel snap="start">
   <CarouselItem class="w-full">
-    <img
-      src="banner.jpg"
-      alt="Full width banner"
-      class="w-full h-48 object-cover"
-    />
+    <img src="banner.jpg" alt="Full width banner" class="w-full h-48 object-cover" />
   </CarouselItem>
   <CarouselItem class="w-96">
     <div class="card bg-base-100 shadow-xl">
@@ -370,7 +339,6 @@ A wrapper component for individual carousel slides that ensures proper DaisyUI s
 ```
 
 ### Responsive Design Support
-
 ```tsx
 <Carousel>
   <CarouselItem class="w-full md:w-1/2 lg:w-1/3">
@@ -385,7 +353,6 @@ A wrapper component for individual carousel slides that ensures proper DaisyUI s
 ```
 
 ### With IDs for Navigation
-
 ```tsx
 <Carousel>
   <CarouselItem id="intro-slide">
@@ -406,7 +373,6 @@ A wrapper component for individual carousel slides that ensures proper DaisyUI s
 ```
 
 ## CarouselItem Accessibility
-
 - **Automatic Focus Management**: Each CarouselItem is automatically focusable with `tabindex="0"`
 - **Keyboard Navigation**: Participates in carousel keyboard navigation
 - **Screen Reader Support**: Works seamlessly with assistive technologies
@@ -415,7 +381,6 @@ A wrapper component for individual carousel slides that ensures proper DaisyUI s
 ## Best Practices with CarouselItem
 
 ### Use CarouselItem for Consistency
-
 ```tsx
 // ✅ Recommended - Consistent structure and styling
 <Carousel>
@@ -437,7 +402,6 @@ A wrapper component for individual carousel slides that ensures proper DaisyUI s
 ```
 
 ### Leverage Custom Classes for Layout
-
 ```tsx
 // ✅ Good - Use utility classes for responsive design
 <CarouselItem class="w-full sm:w-1/2 lg:w-1/3">
@@ -455,15 +419,18 @@ A wrapper component for individual carousel slides that ensures proper DaisyUI s
 ```
 
 ### Use IDs for Navigation
-
 ```tsx
 // ✅ Good - IDs enable programmatic navigation
 <Carousel>
   <CarouselItem id="hero">
-    <div class="hero bg-base-200">{/* Hero content */}</div>
+    <div class="hero bg-base-200">
+      {/* Hero content */}
+    </div>
   </CarouselItem>
   <CarouselItem id="features">
-    <div class="grid grid-cols-3 gap-4">{/* Features grid */}</div>
+    <div class="grid grid-cols-3 gap-4">
+      {/* Features grid */}
+    </div>
   </CarouselItem>
 </Carousel>
 
@@ -471,16 +438,13 @@ A wrapper component for individual carousel slides that ensures proper DaisyUI s
 ```
 
 ## CarouselItem DaisyUI Integration
-
 CarouselItem automatically applies the `carousel-item` class and works seamlessly with all DaisyUI carousel features:
-
 - **Snap Scrolling**: Works with `snap="start|center|end"` on parent Carousel
-- **Orientation**: Compatible with both horizontal and vertical carousels
+- **Orientation**: Compatible with both horizontal and vertical carousels  
 - **Responsive**: Inherits responsive behavior from DaisyUI
 - **Theming**: Automatically adapts to DaisyUI themes
 
 ## CarouselItem Notes
-
 - CarouselItem should always be used within a Carousel component
 - The component automatically handles the `carousel-item` class application
 - Custom classes are merged with the base `carousel-item` class
