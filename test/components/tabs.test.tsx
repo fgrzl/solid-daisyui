@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, fireEvent, screen } from "@solidjs/testing-library";
+import { render, fireEvent } from "@solidjs/testing-library";
 import { createSignal } from "solid-js";
 import Tabs from "@/components/tabs";
 
@@ -253,7 +253,7 @@ describe("Tabs Component", () => {
       const { getAllByRole } = render(() => <Tabs tabs={basicTabs} />);
       
       const tabs = getAllByRole("tab");
-      tabs.forEach((tab, index) => {
+      tabs.forEach((tab) => {
         expect(tab).toHaveAttribute("id");
         expect(tab).toHaveAttribute("aria-controls");
         const id = tab.getAttribute("id");
@@ -310,7 +310,7 @@ describe("Tabs Component", () => {
       const tabpanels = container.querySelectorAll('[role="tabpanel"]');
       expect(tabpanels).toHaveLength(2);
       
-      tabpanels.forEach((panel, index) => {
+      tabpanels.forEach((panel) => {
         expect(panel).toHaveAttribute("role", "tabpanel");
         expect(panel).toHaveAttribute("id");
         expect(panel).toHaveAttribute("aria-labelledby");
