@@ -1,4 +1,4 @@
-import { JSX, createSignal } from "solid-js";
+import { JSX, createSignal, createMemo } from "solid-js";
 
 /**
  * Props for the Swap component.
@@ -11,6 +11,34 @@ import { JSX, createSignal } from "solid-js";
  * @property {string} [class] - Additional CSS classes to apply to the swap container.
  * @property {Record<string, boolean>} [classList] - Dynamic class list for conditional styling using SolidJS classList.
  * @property {string} [aria-label] - Accessible label for the swap component. Defaults to "Toggle switch" if not provided.
+ * 
+ * @example
+ * ```tsx
+ * // Basic swap with icon toggle
+ * <Swap 
+ *   on={<HamburgerIcon />} 
+ *   off={<CloseIcon />}
+ *   onToggle={(active) => setMenuOpen(active)}
+ * />
+ * 
+ * // Controlled swap with animation
+ * <Swap 
+ *   active={darkMode}
+ *   variant="rotate"
+ *   on={<MoonIcon />} 
+ *   off={<SunIcon />}
+ *   onToggle={setDarkMode}
+ *   aria-label="Toggle dark mode"
+ * />
+ * 
+ * // Uncontrolled swap with custom styling
+ * <Swap 
+ *   variant="flip"
+ *   class="text-primary"
+ *   on={<span>❤️</span>} 
+ *   off={<span>🤍</span>}
+ * />
+ * ```
  */
 export interface SwapProps {
   active?: boolean;
@@ -36,20 +64,47 @@ export interface SwapProps {
  * 
  * Implements WCAG 2.1 AA accessibility standards with proper ARIA attributes,
  * keyboard navigation (Enter/Space), and semantic switch role.
+ * 
+ * **DaisyUI Classes Used:**
+ * - `swap`: Base component class
+ * - `swap-active`: Applied when component is in active state
+ * - `swap-rotate`: Rotation animation variant
+ * - `swap-flip`: Flip animation variant
+ * - `swap-on`: Container for active state content
+ * - `swap-off`: Container for inactive state content
  *
  * @param {SwapProps} props - The swap component props
  * @returns {JSX.Element} JSX element representing the swap component
+ * 
+ * @example
+ * ```tsx
+ * // Theme toggle example
+ * function ThemeToggle() {
+ *   const [isDark, setIsDark] = createSignal(false);
+ *   
+ *   return (
+ *     <Swap
+ *       active={isDark()}
+ *       variant="rotate"
+ *       on={<MoonIcon />}
+ *       off={<SunIcon />}
+ *       onToggle={setIsDark}
+ *       aria-label="Toggle dark mode"
+ *     />
+ *   );
+ * }
+ * ```
  */
 export default function Swap(props: SwapProps): JSX.Element {
   // Internal state for uncontrolled mode
   const [internalActive, setInternalActive] = createSignal(false);
   
-  // Determine if component is controlled or uncontrolled
-  const isControlled = () => props.active !== undefined;
-  const isActive = () => isControlled() ? props.active! : internalActive();
+  // Memoized computed values for performance optimization
+  const isControlled = createMemo(() => props.active !== undefined);
+  const isActive = createMemo(() => isControlled() ? props.active! : internalActive());
   
-  // Build swap container classes following DaisyUI patterns
-  const swapClasses = () => {
+  // Memoized class construction to prevent unnecessary re-computations
+  const swapClasses = createMemo(() => {
     const baseClasses: Record<string, boolean> = {
       swap: true,
       "swap-active": isActive(),
@@ -68,14 +123,13 @@ export default function Swap(props: SwapProps): JSX.Element {
     }
 
     return baseClasses;
-  };
+  });
 
-  // Handle toggle action with proper event handling
-  const handleToggle = (event?: Event) => {
-    event?.preventDefault();
-    
-    const newActive = !isActive();
-    
+  // Memoized accessibility label
+  const ariaLabel = createMemo(() => props["aria-label"] || "Toggle switch");
+
+  // Extract toggle logic into a separate function for better organization
+  const toggleState = (newActive: boolean) => {
     // Update internal state for uncontrolled mode
     if (!isControlled()) {
       setInternalActive(newActive);
@@ -83,6 +137,12 @@ export default function Swap(props: SwapProps): JSX.Element {
     
     // Call onToggle callback if provided
     props.onToggle?.(newActive);
+  };
+
+  // Handle toggle action with proper event handling
+  const handleToggle = (event?: Event) => {
+    event?.preventDefault();
+    toggleState(!isActive());
   };
 
   // Handle keyboard events for accessibility
@@ -98,14 +158,11 @@ export default function Swap(props: SwapProps): JSX.Element {
     handleToggle(event);
   };
 
-  // Get accessible label
-  const getAriaLabel = () => props["aria-label"] || "Toggle switch";
-
   return (
     <label
       role="switch"
       aria-checked={isActive()}
-      aria-label={getAriaLabel()}
+      aria-label={ariaLabel()}
       tabindex="0"
       onKeyDown={handleKeyDown}
       onClick={handleClick}
@@ -114,7 +171,7 @@ export default function Swap(props: SwapProps): JSX.Element {
         ...props.classList,
       }}
     >
-      {/* Hidden checkbox for state management */}
+      {/* Hidden checkbox for state management - following DaisyUI patterns */}
       <input
         type="checkbox"
         checked={isActive()}
@@ -123,12 +180,12 @@ export default function Swap(props: SwapProps): JSX.Element {
         readOnly
       />
       
-      {/* On state content */}
+      {/* On state content - visible when swap is active */}
       <div class="swap-on">
         {props.on}
       </div>
       
-      {/* Off state content */}
+      {/* Off state content - visible when swap is inactive */}
       <div class="swap-off">
         {props.off}
       </div>
