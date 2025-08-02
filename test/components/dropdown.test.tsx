@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, fireEvent } from "@solidjs/testing-library";
 import { createSignal } from "solid-js";
-import Dropdown from "@/components/dropdown";
+import { Dropdown, DropdownTrigger, DropdownContent, DropdownItem } from "@/components/dropdown";
 
 describe("Dropdown Component", () => {
   beforeEach(() => {
@@ -518,6 +518,297 @@ describe("Dropdown Component", () => {
       // Click on disabled trigger should not open dropdown
       fireEvent.click(trigger);
       expect(container.firstChild).not.toHaveClass("dropdown-open");
+    });
+  });
+
+  // Structured Components Tests
+  describe("Structured Components", () => {
+    describe("DropdownTrigger", () => {
+      it("renders with data attribute", () => {
+        const { container } = render(() => (
+          <Dropdown>
+            <DropdownTrigger>
+              <button class="btn">Trigger</button>
+            </DropdownTrigger>
+            <DropdownContent>
+              <div>Content</div>
+            </DropdownContent>
+          </Dropdown>
+        ));
+        
+        expect(container.querySelector('[data-dropdown-trigger="true"]')).toBeInTheDocument();
+      });
+
+      it("applies custom classes", () => {
+        const { container } = render(() => (
+          <Dropdown>
+            <DropdownTrigger class="custom-trigger">
+              <button class="btn">Trigger</button>
+            </DropdownTrigger>
+            <DropdownContent>
+              <div>Content</div>
+            </DropdownContent>
+          </Dropdown>
+        ));
+        
+        expect(container.querySelector('[data-dropdown-trigger="true"]')).toHaveClass("custom-trigger");
+      });
+
+      it("supports classList prop", () => {
+        const { container } = render(() => (
+          <Dropdown>
+            <DropdownTrigger classList={{ "active": true, "inactive": false }}>
+              <button class="btn">Trigger</button>
+            </DropdownTrigger>
+            <DropdownContent>
+              <div>Content</div>
+            </DropdownContent>
+          </Dropdown>
+        ));
+        
+        const trigger = container.querySelector('[data-dropdown-trigger="true"]');
+        expect(trigger).toHaveClass("active");
+        expect(trigger).not.toHaveClass("inactive");
+      });
+    });
+
+    describe("DropdownContent", () => {
+      it("renders with dropdown-content class and data attribute", () => {
+        const { container } = render(() => (
+          <Dropdown>
+            <DropdownTrigger>
+              <button class="btn">Trigger</button>
+            </DropdownTrigger>
+            <DropdownContent>
+              <div>Content</div>
+            </DropdownContent>
+          </Dropdown>
+        ));
+        
+        const content = container.querySelector('[data-dropdown-content="true"]');
+        expect(content).toBeInTheDocument();
+        expect(content).toHaveClass("dropdown-content");
+      });
+
+      it("applies custom classes", () => {
+        const { container } = render(() => (
+          <Dropdown>
+            <DropdownTrigger>
+              <button class="btn">Trigger</button>
+            </DropdownTrigger>
+            <DropdownContent class="custom-content">
+              <div>Content</div>
+            </DropdownContent>
+          </Dropdown>
+        ));
+        
+        const content = container.querySelector('[data-dropdown-content="true"]');
+        expect(content).toHaveClass("dropdown-content", "custom-content");
+      });
+
+      it("supports classList prop", () => {
+        const { container } = render(() => (
+          <Dropdown>
+            <DropdownTrigger>
+              <button class="btn">Trigger</button>
+            </DropdownTrigger>
+            <DropdownContent classList={{ "visible": true, "hidden": false }}>
+              <div>Content</div>
+            </DropdownContent>
+          </Dropdown>
+        ));
+        
+        const content = container.querySelector('[data-dropdown-content="true"]');
+        expect(content).toHaveClass("visible");
+        expect(content).not.toHaveClass("hidden");
+      });
+    });
+
+    describe("DropdownItem", () => {
+      it("renders with data attribute", () => {
+        const { container } = render(() => (
+          <Dropdown>
+            <DropdownTrigger>
+              <button class="btn">Trigger</button>
+            </DropdownTrigger>
+            <DropdownContent>
+              <ul class="menu">
+                <DropdownItem>
+                  <a>Item 1</a>
+                </DropdownItem>
+              </ul>
+            </DropdownContent>
+          </Dropdown>
+        ));
+        
+        expect(container.querySelector('[data-dropdown-item="true"]')).toBeInTheDocument();
+      });
+
+      it("applies active class when active prop is true", () => {
+        const { container } = render(() => (
+          <Dropdown>
+            <DropdownTrigger>
+              <button class="btn">Trigger</button>
+            </DropdownTrigger>
+            <DropdownContent>
+              <ul class="menu">
+                <DropdownItem active>
+                  <a>Active Item</a>
+                </DropdownItem>
+              </ul>
+            </DropdownContent>
+          </Dropdown>
+        ));
+        
+        expect(container.querySelector('[data-dropdown-item="true"]')).toHaveClass("active");
+      });
+
+      it("applies disabled class when disabled prop is true", () => {
+        const { container } = render(() => (
+          <Dropdown>
+            <DropdownTrigger>
+              <button class="btn">Trigger</button>
+            </DropdownTrigger>
+            <DropdownContent>
+              <ul class="menu">
+                <DropdownItem disabled>
+                  <a>Disabled Item</a>
+                </DropdownItem>
+              </ul>
+            </DropdownContent>
+          </Dropdown>
+        ));
+        
+        expect(container.querySelector('[data-dropdown-item="true"]')).toHaveClass("disabled");
+      });
+
+      it("handles click events", () => {
+        const handleClick = vi.fn();
+        const { container } = render(() => (
+          <Dropdown>
+            <DropdownTrigger>
+              <button class="btn">Trigger</button>
+            </DropdownTrigger>
+            <DropdownContent>
+              <ul class="menu">
+                <DropdownItem onClick={handleClick}>
+                  <a>Clickable Item</a>
+                </DropdownItem>
+              </ul>
+            </DropdownContent>
+          </Dropdown>
+        ));
+        
+        const item = container.querySelector('[data-dropdown-item="true"]') as HTMLElement;
+        fireEvent.click(item);
+        expect(handleClick).toHaveBeenCalled();
+      });
+
+      it("prevents click events when disabled", () => {
+        const handleClick = vi.fn();
+        const { container } = render(() => (
+          <Dropdown>
+            <DropdownTrigger>
+              <button class="btn">Trigger</button>
+            </DropdownTrigger>
+            <DropdownContent>
+              <ul class="menu">
+                <DropdownItem disabled onClick={handleClick}>
+                  <a>Disabled Item</a>
+                </DropdownItem>
+              </ul>
+            </DropdownContent>
+          </Dropdown>
+        ));
+        
+        const item = container.querySelector('[data-dropdown-item="true"]') as HTMLElement;
+        fireEvent.click(item);
+        expect(handleClick).not.toHaveBeenCalled();
+      });
+    });
+
+    describe("Integration Tests", () => {
+      it("structured components work together", () => {
+        const { getByText, container } = render(() => (
+          <Dropdown>
+            <DropdownTrigger>
+              <button class="btn">Open Menu</button>
+            </DropdownTrigger>
+            <DropdownContent>
+              <ul class="menu bg-base-100 rounded-box w-52 p-2 shadow">
+                <DropdownItem>
+                  <a>Item 1</a>
+                </DropdownItem>
+                <DropdownItem active>
+                  <a>Item 2 (Active)</a>
+                </DropdownItem>
+                <DropdownItem disabled>
+                  <a>Item 3 (Disabled)</a>
+                </DropdownItem>
+              </ul>
+            </DropdownContent>
+          </Dropdown>
+        ));
+        
+        // Check all components are rendered
+        expect(container.querySelector('[data-dropdown-trigger="true"]')).toBeInTheDocument();
+        expect(container.querySelector('[data-dropdown-content="true"]')).toBeInTheDocument();
+        expect(container.querySelectorAll('[data-dropdown-item="true"]')).toHaveLength(3);
+        
+        // Check content
+        expect(getByText("Open Menu")).toBeInTheDocument();
+        expect(getByText("Item 1")).toBeInTheDocument();
+        expect(getByText("Item 2 (Active)")).toBeInTheDocument();
+        expect(getByText("Item 3 (Disabled)")).toBeInTheDocument();
+      });
+
+      it("maintains backward compatibility with legacy children pattern", () => {
+        const { getByText, container } = render(() => (
+          <Dropdown>
+            <button class="btn">Legacy Trigger</button>
+            <ul class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+              <li><a>Legacy Item 1</a></li>
+              <li><a>Legacy Item 2</a></li>
+            </ul>
+          </Dropdown>
+        ));
+        
+        // Should work with old pattern
+        expect(getByText("Legacy Trigger")).toBeInTheDocument();
+        expect(getByText("Legacy Item 1")).toBeInTheDocument();
+        expect(getByText("Legacy Item 2")).toBeInTheDocument();
+        expect(container.querySelector('.dropdown-content')).toBeInTheDocument();
+      });
+
+      it("click functionality works with structured components", () => {
+        const { getByText, container } = render(() => (
+          <Dropdown>
+            <DropdownTrigger>
+              <button class="btn">Toggle</button>
+            </DropdownTrigger>
+            <DropdownContent>
+              <ul class="menu">
+                <DropdownItem>
+                  <a>Item</a>
+                </DropdownItem>
+              </ul>
+            </DropdownContent>
+          </Dropdown>
+        ));
+        
+        const trigger = getByText("Toggle");
+        
+        // Should not be open initially
+        expect(container.firstChild).not.toHaveClass("dropdown-open");
+        
+        // Click should open
+        fireEvent.click(trigger);
+        expect(container.firstChild).toHaveClass("dropdown-open");
+        
+        // Click again should close
+        fireEvent.click(trigger);
+        expect(container.firstChild).not.toHaveClass("dropdown-open");
+      });
     });
   });
 });

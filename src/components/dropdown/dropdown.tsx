@@ -215,6 +215,43 @@ export default function Dropdown(props: DropdownProps): JSX.Element {
     return resolved() ? [resolved() as JSX.Element] : [];
   });
 
+  // Check if children are structured components (DropdownTrigger, DropdownContent)
+  const isStructuredChildren = createMemo(() => {
+    const children = childrenArray();
+    return children.some(child => {
+      if (!child || typeof child !== "object" || !("props" in child)) {
+        return false;
+      }
+      const props = child.props as any;
+      return props?.["data-dropdown-trigger"] === "true" || props?.["data-dropdown-content"] === "true";
+    });
+  });
+
+  // Extract structured trigger and content
+  const structuredTrigger = createMemo(() => {
+    if (!isStructuredChildren()) return null;
+    const children = childrenArray();
+    return children.find(child => {
+      if (!child || typeof child !== "object" || !("props" in child)) {
+        return false;
+      }
+      const props = child.props as any;
+      return props?.["data-dropdown-trigger"] === "true";
+    });
+  });
+
+  const structuredContent = createMemo(() => {
+    if (!isStructuredChildren()) return null;
+    const children = childrenArray();
+    return children.find(child => {
+      if (!child || typeof child !== "object" || !("props" in child)) {
+        return false;
+      }
+      const props = child.props as any;
+      return props?.["data-dropdown-content"] === "true";
+    });
+  });
+
   // Handle trigger click events  
   const handleTriggerClick = (event: MouseEvent, element: HTMLElement) => {
     // Check if the actual clicked element (not the wrapper) is disabled
@@ -293,42 +330,70 @@ export default function Dropdown(props: DropdownProps): JSX.Element {
         ...props.classList,
       }}
     >
-      <For each={childrenArray()}>
-        {(child, index) => {
-          // First child is the trigger
-          if (index() === 0) {
-            return (
-              <div
-                ref={(el) => {
-                  if (el) {
-                    enhanceTriggerElement(child, el);
-                  }
-                }}
-                style="display: contents;"
-              >
-                {child}
-              </div>
-            );
-          }
-          
-          // Second child is the content
-          if (index() === 1) {
-            return (
-              <div
-                class="dropdown-content"
-                id={contentId()}
-                role="menu"
-                aria-labelledby={triggerId()}
-              >
-                {child}
-              </div>
-            );
-          }
-          
-          // Any additional children are rendered as-is
-          return child;
-        }}
-      </For>
+      {isStructuredChildren() ? (
+        // Structured component pattern
+        <>
+          {structuredTrigger() && (
+            <div
+              ref={(el) => {
+                if (el) {
+                  enhanceTriggerElement(structuredTrigger()!, el);
+                }
+              }}
+              style="display: contents;"
+            >
+              {structuredTrigger()}
+            </div>
+          )}
+          {structuredContent() && (
+            <div
+              id={contentId()}
+              role="menu"
+              aria-labelledby={triggerId()}
+            >
+              {structuredContent()}
+            </div>
+          )}
+        </>
+      ) : (
+        // Legacy children pattern (for backward compatibility)
+        <For each={childrenArray()}>
+          {(child, index) => {
+            // First child is the trigger
+            if (index() === 0) {
+              return (
+                <div
+                  ref={(el) => {
+                    if (el) {
+                      enhanceTriggerElement(child, el);
+                    }
+                  }}
+                  style="display: contents;"
+                >
+                  {child}
+                </div>
+              );
+            }
+            
+            // Second child is the content
+            if (index() === 1) {
+              return (
+                <div
+                  class="dropdown-content"
+                  id={contentId()}
+                  role="menu"
+                  aria-labelledby={triggerId()}
+                >
+                  {child}
+                </div>
+              );
+            }
+            
+            // Any additional children are rendered as-is
+            return child;
+          }}
+        </For>
+      )}
     </div>
   );
 }
