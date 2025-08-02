@@ -1,17 +1,15 @@
-import { JSX, createSignal, createContext, useContext, createEffect, createMemo, children, For } from "solid-js";
-import { createStore } from "solid-js/store";
+import { JSX, createSignal, createContext, useContext, createEffect, onMount } from "solid-js";
 
 // Context for tabs state management
 export interface TabsContextValue {
   activeTab: () => number;
   setActiveTab: (index: number) => void;
-  registerTab: (id: string) => number;
-  unregisterTab: (id: string) => void;
+  registerTab: () => number;
   variant?: "bordered" | "lifted" | "boxed";
   size?: "xs" | "sm" | "md" | "lg";
 }
 
-const TabsContext = createContext<TabsContextValue>();
+const TabsContext = createContext<TabsContextValue | undefined>(undefined);
 
 /**
  * Props for the Tabs component.
@@ -99,45 +97,32 @@ export interface TabContentProps {
  * @returns {JSX.Element} The rendered Tabs component.
  */
 export default function Tabs(props: TabsProps): JSX.Element {
-  // State management using SolidJS store for complex coordination
-  const [tabsState, setTabsState] = createStore({
-    registeredTabs: [] as string[],
-    activeTabIndex: props.defaultActiveTab ?? 0,
-  });
-
-  // Create reactive signals for active tab management
+  // Simple counter for tab registration
+  let tabCounter = 0;
+  
+  // Active tab state
+  const [activeTabIndex, setActiveTabIndex] = createSignal(props.defaultActiveTab ?? 0);
   const [controlledActiveTab, setControlledActiveTab] = createSignal(props.activeTab);
   
   // Determine if in controlled mode
   const isControlled = () => props.activeTab !== undefined;
   
   // Get current active tab index
-  const activeTabIndex = () => {
-    return isControlled() ? (controlledActiveTab() ?? 0) : tabsState.activeTabIndex;
+  const currentActiveTab = () => {
+    return isControlled() ? (controlledActiveTab() ?? 0) : activeTabIndex();
   };
 
   // Set active tab
   const setActiveTab = (index: number) => {
     if (!isControlled()) {
-      setTabsState("activeTabIndex", index);
+      setActiveTabIndex(index);
     }
     props.onChange?.(index);
   };
 
-  // Tab registration for proper coordination
-  const registerTab = (id: string): number => {
-    const existingIndex = tabsState.registeredTabs.indexOf(id);
-    if (existingIndex !== -1) {
-      return existingIndex;
-    }
-    
-    const newIndex = tabsState.registeredTabs.length;
-    setTabsState("registeredTabs", [...tabsState.registeredTabs, id]);
-    return newIndex;
-  };
-
-  const unregisterTab = (id: string) => {
-    setTabsState("registeredTabs", tabsState.registeredTabs.filter(tabId => tabId !== id));
+  // Simple tab registration
+  const registerTab = (): number => {
+    return tabCounter++;
   };
 
   // Build classes following DaisyUI patterns
@@ -165,18 +150,29 @@ export default function Tabs(props: TabsProps): JSX.Element {
   };
 
   // Handle keyboard navigation
-  const handleKeyDown = (event: KeyboardEvent, currentIndex: number) => {
-    const tabCount = tabsState.registeredTabs.length;
+  const handleKeyDown = (event: KeyboardEvent) => {
+    const target = event.target as HTMLElement;
+    if (target.role !== 'tab') return;
+    
+    // Find all tab elements
+    const tablist = target.closest('[role="tablist"]');
+    if (!tablist) return;
+    
+    const tabs = Array.from(tablist.querySelectorAll('[role="tab"]')) as HTMLElement[];
+    const currentIndex = tabs.indexOf(target);
+    
+    if (currentIndex === -1) return;
+    
     let newIndex = currentIndex;
-
+    
     switch (event.key) {
       case "ArrowLeft":
         event.preventDefault();
-        newIndex = currentIndex > 0 ? currentIndex - 1 : tabCount - 1;
+        newIndex = currentIndex > 0 ? currentIndex - 1 : tabs.length - 1;
         break;
       case "ArrowRight":
         event.preventDefault();
-        newIndex = currentIndex < tabCount - 1 ? currentIndex + 1 : 0;
+        newIndex = currentIndex < tabs.length - 1 ? currentIndex + 1 : 0;
         break;
       case "Home":
         event.preventDefault();
@@ -184,12 +180,14 @@ export default function Tabs(props: TabsProps): JSX.Element {
         break;
       case "End":
         event.preventDefault();
-        newIndex = tabCount - 1;
+        newIndex = tabs.length - 1;
         break;
       default:
         return; // Don't handle other keys
     }
-
+    
+    // Focus the new tab and activate it
+    tabs[newIndex]?.focus();
     setActiveTab(newIndex);
   };
 
@@ -202,16 +200,12 @@ export default function Tabs(props: TabsProps): JSX.Element {
 
   // Context value for child components
   const contextValue: TabsContextValue = {
-    activeTab: activeTabIndex,
+    activeTab: currentActiveTab,
     setActiveTab,
     registerTab,
-    unregisterTab,
     variant: props.variant,
     size: props.size,
   };
-
-  // Resolve children for proper tab indexing
-  const resolvedChildren = children(() => props.children);
 
   return (
     <TabsContext.Provider value={contextValue}>
@@ -222,9 +216,9 @@ export default function Tabs(props: TabsProps): JSX.Element {
           ...classes(),
           ...props.classList,
         }}
-        onKeyDown={(e) => handleKeyDown(e, activeTabIndex())}
+        onKeyDown={handleKeyDown}
       >
-        {resolvedChildren()}
+        {props.children}
       </div>
     </TabsContext.Provider>
   );
@@ -239,17 +233,17 @@ export default function Tabs(props: TabsProps): JSX.Element {
  */
 export function Tab(props: TabProps): JSX.Element {
   const context = useContext(TabsContext);
+  
   if (!context) {
     throw new Error("Tab must be used within a Tabs component");
   }
 
-  // Generate stable tab ID and register this tab
-  const tabId = createMemo(() => Math.random().toString(36).substr(2, 9));
+  // Register this tab and get its index
   const [tabIndex, setTabIndex] = createSignal<number>(-1);
 
-  // Register tab on mount and get index
-  createEffect(() => {
-    const index = context.registerTab(tabId());
+  // Register tab on mount
+  onMount(() => {
+    const index = context.registerTab();
     setTabIndex(index);
   });
 
@@ -315,8 +309,6 @@ export function Tab(props: TabProps): JSX.Element {
  * @returns {JSX.Element | null} The rendered TabContent component or null if not active.
  */
 export function TabContent(props: TabContentProps): JSX.Element | null {
-  const context = useContext(TabsContext);
-  
   // Determine if this content is active
   const isActive = () => {
     if (props.isActive !== undefined) {
