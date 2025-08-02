@@ -135,6 +135,17 @@ describe("Radio Component", () => {
     expect(radio).toHaveAttribute("aria-label", "Custom label");
     expect(radio).toHaveAttribute("aria-describedby", "description");
     expect(radio).toHaveAttribute("id", "test-radio");
+    expect(radio).toHaveAttribute("role", "radio");
+  });
+
+  it("sets aria-checked attribute correctly", () => {
+    const { container: uncheckedContainer } = render(() => <Radio checked={false} />);
+    const uncheckedRadio = uncheckedContainer.querySelector('input[type="radio"]');
+    expect(uncheckedRadio).toHaveAttribute("aria-checked", "false");
+
+    const { container: checkedContainer } = render(() => <Radio checked={true} />);
+    const checkedRadio = checkedContainer.querySelector('input[type="radio"]');
+    expect(checkedRadio).toHaveAttribute("aria-checked", "true");
   });
 
   it("supports custom tabIndex", () => {
@@ -207,6 +218,21 @@ describe("Radio Component", () => {
     const radio = container.querySelector('input[type="radio"]');
     expect(radio).toBeInTheDocument();
     expect(radio).toHaveClass("radio");
+  });
+
+  it("uses memoized classes for performance", () => {
+    const { container } = render(() => (
+      <Radio size="lg" color="primary" class="custom-class" />
+    ));
+    const radio = container.querySelector('input[type="radio"]');
+    expect(radio).toHaveClass("radio", "radio-lg", "radio-primary", "custom-class");
+  });
+
+  it("maintains semantic radio input behavior", () => {
+    const { container } = render(() => <Radio />);
+    const radio = container.querySelector('input[type="radio"]');
+    expect(radio).toHaveAttribute("type", "radio");
+    expect(radio).toHaveAttribute("role", "radio");
   });
 
   it("prevents event handling when disabled", () => {
