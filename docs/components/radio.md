@@ -1,6 +1,15 @@
 # Radio Component
 
-The Radio component provides a customizable radio input element with DaisyUI styling for form inputs.
+The Radio component provides a customizable radio input element with DaisyUI styling for form inputs. Built with SolidJS reactive patterns and comprehensive accessibility support following WCAG 2.1 AA standards.
+
+## Features
+
+- ✅ **Full DaisyUI Integration**: Uses official DaisyUI radio classes and variants
+- ✅ **Accessibility First**: ARIA attributes, keyboard navigation, screen reader support
+- ✅ **TypeScript Support**: Comprehensive type safety with detailed JSDoc documentation  
+- ✅ **SolidJS Reactive**: Optimized with createMemo for performance
+- ✅ **Form Integration**: Proper radio grouping and validation support
+- ✅ **Customizable**: Sizes, colors, custom classes, and dynamic styling
 
 ## Basic Usage
 
@@ -227,26 +236,48 @@ function FormExample() {
 
 ## Accessibility
 
-The Radio component includes comprehensive accessibility support:
+The Radio component includes comprehensive accessibility support following WCAG 2.1 AA standards:
 
-- Proper semantic `input[type="radio"]` element
-- Support for ARIA attributes (`aria-label`, `aria-describedby`)
-- Keyboard navigation with proper tab order
-- Form association with `name` attribute for grouping
-- Required field support for form validation
-- Screen reader compatibility
+- ✅ **Semantic HTML**: Proper `input[type="radio"]` element with `role="radio"`
+- ✅ **ARIA Support**: `aria-label`, `aria-describedby`, `aria-checked` attributes
+- ✅ **Keyboard Navigation**: Full keyboard support with proper tab order
+- ✅ **Screen Reader Compatible**: Proper announcements and state changes
+- ✅ **Form Integration**: Name grouping for radio button sets
+- ✅ **Validation Support**: Required field support with proper error handling
+- ✅ **Focus Management**: Clear focus indicators and logical tab order
+
+### Accessibility Example
+
+```tsx
+<Radio
+  name="accessible-option"
+  value="option1"
+  aria-label="Choose option 1"
+  aria-describedby="option1-description"
+  required
+/>
+<div id="option1-description">
+  This option provides basic features for small teams
+</div>
+```
 
 ## TypeScript Support
 
-The Radio component is fully typed with TypeScript, providing comprehensive type safety for all props and event handlers.
+The Radio component is fully typed with TypeScript, providing comprehensive type safety for all props and event handlers with detailed JSDoc documentation.
 
 ```tsx
 interface RadioProps {
+  /** Name attribute for radio grouping */
   name?: string;
+  /** Value submitted with form */
   value?: string;
+  /** Whether radio is checked */
   checked?: boolean;
+  /** Whether radio is disabled */
   disabled?: boolean;
+  /** Size variant using DaisyUI classes */
   size?: "xs" | "sm" | "md" | "lg";
+  /** Color variant using DaisyUI classes */
   color?:
     | "primary"
     | "secondary"
@@ -255,6 +286,36 @@ interface RadioProps {
     | "warning"
     | "info"
     | "error";
-  // ... additional props
+  /** Additional CSS classes */
+  class?: string;
+  /** Dynamic class list for conditional styling */
+  classList?: Record<string, boolean>;
+  /** Change event handler */
+  onChange?: (event: Event & { currentTarget: HTMLInputElement; target: HTMLInputElement }) => void;
+  /** Focus event handler */
+  onFocus?: (event: FocusEvent & { currentTarget: HTMLInputElement; target: HTMLInputElement }) => void;
+  /** Blur event handler */
+  onBlur?: (event: FocusEvent & { currentTarget: HTMLInputElement; target: HTMLInputElement }) => void;
+  /** ARIA label for accessibility */
+  "aria-label"?: string;
+  /** ARIA described by reference */
+  "aria-describedby"?: string;
+  /** HTML ID attribute */
+  id?: string;
+  /** Tab index for navigation */
+  tabIndex?: number;
+  /** Required for form validation */
+  required?: boolean;
+  /** Form association by ID */
+  form?: string;
 }
 ```
+
+## Performance
+
+The Radio component is optimized for performance using SolidJS reactive patterns:
+
+- **Memoized Classes**: Uses `createMemo` to cache class computations
+- **Efficient Props Splitting**: Separates custom props from native input props
+- **Minimal Re-renders**: Only updates when props actually change
+- **Tree Shakeable**: Import only what you need
