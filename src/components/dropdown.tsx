@@ -1,4 +1,46 @@
-import { JSX, createSignal, createEffect, onCleanup, children as resolveChildren, onMount, For } from "solid-js";
+import { JSX, createSignal, createEffect, onCleanup, children as resolveChildren, onMount, For, createMemo } from "solid-js";
+
+/**
+ * Utility function to check if an element is disabled
+ */
+const isElementDisabled = (element: HTMLElement): boolean => {
+  return element.hasAttribute("disabled") || 
+         element.getAttribute("aria-disabled") === "true" ||
+         (element as HTMLButtonElement).disabled;
+};
+
+/**
+ * Utility function to find the first focusable element in a container
+ */
+const findFirstFocusableElement = (container: Element): HTMLElement | null => {
+  return container.querySelector(
+    "a, button, input, textarea, select, [tabindex]:not([tabindex='-1'])"
+  ) as HTMLElement;
+};
+
+/**
+ * Utility function to set ARIA attributes on an element
+ */
+const setAriaAttributes = (
+  element: HTMLElement, 
+  triggerId: string, 
+  contentId: string, 
+  isOpen: boolean,
+  ariaLabel?: string
+): void => {
+  element.setAttribute("id", triggerId);
+  element.setAttribute("aria-expanded", isOpen.toString());
+  element.setAttribute("aria-haspopup", "true");
+  element.setAttribute("aria-controls", contentId);
+  
+  if (ariaLabel) {
+    element.setAttribute("aria-label", ariaLabel);
+  }
+  
+  if (!element.hasAttribute("tabindex")) {
+    element.setAttribute("tabindex", "0");
+  }
+};
 
 /**
  * Props for the Dropdown component.
@@ -61,8 +103,8 @@ export default function Dropdown(props: DropdownProps): JSX.Element {
     }
   });
 
-  // Build dropdown container classes following DaisyUI patterns
-  const dropdownClasses = () => {
+  // Build dropdown container classes following DaisyUI patterns (memoized for performance)
+  const dropdownClasses = createMemo(() => {
     const baseClasses: Record<string, boolean> = {
       dropdown: true,
     };
@@ -93,7 +135,7 @@ export default function Dropdown(props: DropdownProps): JSX.Element {
     }
 
     return baseClasses;
-  };
+  });
 
   // Handle dropdown toggle
   const toggleDropdown = (event?: Event, fromTarget?: HTMLElement) => {
@@ -105,13 +147,8 @@ export default function Dropdown(props: DropdownProps): JSX.Element {
     }
 
     // Check if target is disabled
-    if (fromTarget) {
-      const isDisabled = fromTarget.hasAttribute("disabled") || 
-                        fromTarget.getAttribute("aria-disabled") === "true" ||
-                        (fromTarget as HTMLButtonElement).disabled;
-      if (isDisabled) {
-        return;
-      }
+    if (fromTarget && isElementDisabled(fromTarget)) {
+      return;
     }
 
     const newState = !isOpen();
@@ -126,11 +163,9 @@ export default function Dropdown(props: DropdownProps): JSX.Element {
       // Use requestAnimationFrame for better timing in both real world and tests
       requestAnimationFrame(() => {
         const content = dropdownRef?.querySelector(".dropdown-content");
-        const firstFocusable = content?.querySelector(
-          "a, button, input, textarea, select, [tabindex]:not([tabindex='-1'])"
-        ) as HTMLElement;
-        if (firstFocusable) {
-          firstFocusable.focus();
+        if (content) {
+          const firstFocusable = findFirstFocusableElement(content);
+          firstFocusable?.focus();
         }
       });
     }
@@ -171,24 +206,20 @@ export default function Dropdown(props: DropdownProps): JSX.Element {
     });
   });
 
-  // Resolve children to identify trigger and content
-  const childrenArray = () => {
+  // Resolve children to identify trigger and content (memoized for performance)
+  const childrenArray = createMemo(() => {
     const resolved = resolveChildren(() => props.children);
     if (Array.isArray(resolved())) {
       return resolved() as JSX.Element[];
     }
     return resolved() ? [resolved() as JSX.Element] : [];
-  };
+  });
 
   // Handle trigger click events  
   const handleTriggerClick = (event: MouseEvent, element: HTMLElement) => {
     // Check if the actual clicked element (not the wrapper) is disabled
     const clickedElement = event.target as HTMLElement;
-    const isDisabled = clickedElement.hasAttribute("disabled") || 
-                      clickedElement.getAttribute("aria-disabled") === "true" ||
-                      (clickedElement as HTMLButtonElement).disabled;
-    
-    if (isDisabled) {
+    if (isElementDisabled(clickedElement)) {
       event.preventDefault();
       return;
     }
@@ -203,11 +234,7 @@ export default function Dropdown(props: DropdownProps): JSX.Element {
       
       // Check if the actual target element is disabled
       const target = event.target as HTMLElement;
-      const isDisabled = target.hasAttribute("disabled") || 
-                        target.getAttribute("aria-disabled") === "true" ||
-                        (target as HTMLButtonElement).disabled;
-      
-      if (isDisabled) {
+      if (isElementDisabled(target)) {
         return;
       }
 
@@ -222,19 +249,7 @@ export default function Dropdown(props: DropdownProps): JSX.Element {
       const triggerElement = wrapperElement.firstElementChild as HTMLElement;
       if (triggerElement) {
         // Set ARIA attributes directly on the trigger element
-        triggerElement.setAttribute("id", triggerId());
-        triggerElement.setAttribute("aria-expanded", isOpen().toString());
-        triggerElement.setAttribute("aria-haspopup", "true");
-        triggerElement.setAttribute("aria-controls", contentId());
-        
-        if (props.ariaLabel) {
-          triggerElement.setAttribute("aria-label", props.ariaLabel);
-        }
-        
-        // Ensure tabindex if not already set
-        if (!triggerElement.hasAttribute("tabindex")) {
-          triggerElement.setAttribute("tabindex", "0");
-        }
+        setAriaAttributes(triggerElement, triggerId(), contentId(), isOpen(), props.ariaLabel);
 
         // Add event listeners
         const clickHandler = (e: MouseEvent) => {
