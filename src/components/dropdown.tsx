@@ -46,7 +46,6 @@ export default function Dropdown(props: DropdownProps): JSX.Element {
   const [contentId, setContentId] = createSignal("");
 
   let dropdownRef: HTMLDivElement | undefined;
-  let triggerRef: HTMLElement | undefined;
 
   // Generate unique IDs for accessibility
   onMount(() => {
@@ -124,7 +123,8 @@ export default function Dropdown(props: DropdownProps): JSX.Element {
     // Focus management for accessibility
     if (newState) {
       // When opening, focus the first focusable element in content
-      setTimeout(() => {
+      // Use requestAnimationFrame for better timing in both real world and tests
+      requestAnimationFrame(() => {
         const content = dropdownRef?.querySelector(".dropdown-content");
         const firstFocusable = content?.querySelector(
           "a, button, input, textarea, select, [tabindex]:not([tabindex='-1'])"
@@ -132,13 +132,14 @@ export default function Dropdown(props: DropdownProps): JSX.Element {
         if (firstFocusable) {
           firstFocusable.focus();
         }
-      }, 0);
+      });
     }
   };
 
   // Handle click outside
   const handleClickOutside = (event: Event) => {
-    if (isOpen() && dropdownRef && !dropdownRef.contains(event.target as Node)) {
+    const target = event.target as Node;
+    if (isOpen() && dropdownRef && !dropdownRef.contains(target)) {
       setIsOpen(false);
       props.onToggle?.(false);
     }
@@ -152,14 +153,15 @@ export default function Dropdown(props: DropdownProps): JSX.Element {
       props.onToggle?.(false);
       
       // Focus back to trigger
-      if (triggerRef) {
-        triggerRef.focus();
+      const trigger = dropdownRef?.querySelector(`#${triggerId()}`) as HTMLElement;
+      if (trigger) {
+        trigger.focus();
       }
     }
   };
 
   // Setup global event listeners
-  createEffect(() => {
+  onMount(() => {
     document.addEventListener("click", handleClickOutside);
     document.addEventListener("keydown", handleGlobalKeyDown);
 
@@ -178,17 +180,94 @@ export default function Dropdown(props: DropdownProps): JSX.Element {
     return resolved() ? [resolved() as JSX.Element] : [];
   };
 
-  // Handle trigger click events
-  const handleTriggerClick = (event: MouseEvent) => {
-    toggleDropdown(event, event.currentTarget as HTMLElement);
+  // Handle trigger click events  
+  const handleTriggerClick = (event: MouseEvent, element: HTMLElement) => {
+    // Check if the actual clicked element (not the wrapper) is disabled
+    const clickedElement = event.target as HTMLElement;
+    const isDisabled = clickedElement.hasAttribute("disabled") || 
+                      clickedElement.getAttribute("aria-disabled") === "true" ||
+                      (clickedElement as HTMLButtonElement).disabled;
+    
+    if (isDisabled) {
+      event.preventDefault();
+      return;
+    }
+
+    toggleDropdown(event, element);
   };
 
   // Handle trigger keyboard events
-  const handleTriggerKeyDown = (event: KeyboardEvent) => {
+  const handleTriggerKeyDown = (event: KeyboardEvent, element: HTMLElement) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
-      toggleDropdown(event, event.currentTarget as HTMLElement);
+      
+      // Check if the actual target element is disabled
+      const target = event.target as HTMLElement;
+      const isDisabled = target.hasAttribute("disabled") || 
+                        target.getAttribute("aria-disabled") === "true" ||
+                        (target as HTMLButtonElement).disabled;
+      
+      if (isDisabled) {
+        return;
+      }
+
+      toggleDropdown(event, element);
     }
+  };
+
+  // Enhanced event delegation to handle the trigger element directly
+  const enhanceTriggerElement = (element: JSX.Element, wrapperElement: HTMLElement) => {
+    // Add event listeners to the actual trigger element, not the wrapper
+    createEffect(() => {
+      const triggerElement = wrapperElement.firstElementChild as HTMLElement;
+      if (triggerElement) {
+        // Set ARIA attributes directly on the trigger element
+        triggerElement.setAttribute("id", triggerId());
+        triggerElement.setAttribute("aria-expanded", isOpen().toString());
+        triggerElement.setAttribute("aria-haspopup", "true");
+        triggerElement.setAttribute("aria-controls", contentId());
+        
+        if (props.ariaLabel) {
+          triggerElement.setAttribute("aria-label", props.ariaLabel);
+        }
+        
+        // Ensure tabindex if not already set
+        if (!triggerElement.hasAttribute("tabindex")) {
+          triggerElement.setAttribute("tabindex", "0");
+        }
+
+        // Add event listeners
+        const clickHandler = (e: MouseEvent) => {
+          // Also call any original click handler if element has props
+          if (element && typeof element === "object" && "props" in element) {
+            const originalOnClick = (element.props as any)?.onClick;
+            if (originalOnClick) {
+              originalOnClick(e);
+            }
+          }
+          handleTriggerClick(e, triggerElement);
+        };
+        
+        const keyDownHandler = (e: KeyboardEvent) => {
+          // Also call any original keydown handler if element has props
+          if (element && typeof element === "object" && "props" in element) {
+            const originalOnKeyDown = (element.props as any)?.onKeyDown;
+            if (originalOnKeyDown) {
+              originalOnKeyDown(e);
+            }
+          }
+          handleTriggerKeyDown(e, triggerElement);
+        };
+
+        triggerElement.addEventListener("click", clickHandler);
+        triggerElement.addEventListener("keydown", keyDownHandler);
+
+        onCleanup(() => {
+          triggerElement.removeEventListener("click", clickHandler);
+          triggerElement.removeEventListener("keydown", keyDownHandler);
+        });
+      }
+    });
   };
 
   return (
@@ -205,15 +284,11 @@ export default function Dropdown(props: DropdownProps): JSX.Element {
           if (index() === 0) {
             return (
               <div
-                ref={triggerRef}
-                id={triggerId()}
-                aria-expanded={isOpen()}
-                aria-haspopup="true"
-                aria-controls={contentId()}
-                aria-label={props.ariaLabel}
-                tabIndex={0}
-                onClick={handleTriggerClick}
-                onKeyDown={handleTriggerKeyDown}
+                ref={(el) => {
+                  if (el) {
+                    enhanceTriggerElement(child, el);
+                  }
+                }}
                 style="display: contents;"
               >
                 {child}
