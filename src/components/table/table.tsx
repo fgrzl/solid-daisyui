@@ -37,6 +37,43 @@ export interface TableProps {
  * 
  * Implements WCAG 2.1 AA accessibility standards with proper table structure,
  * captions, and ARIA attributes for screen reader compatibility.
+ * 
+ * **Recommended Usage with Structured Components:**
+ * ```tsx
+ * <Table zebra size="md">
+ *   <TableCaption>Employee Information</TableCaption>
+ *   <TableHead>
+ *     <TableRow>
+ *       <TableHeader scope="col">Name</TableHeader>
+ *       <TableHeader scope="col">Department</TableHeader>
+ *     </TableRow>
+ *   </TableHead>
+ *   <TableBody>
+ *     <TableRow>
+ *       <TableHeader scope="row">John Doe</TableHeader>
+ *       <TableData>Engineering</TableData>
+ *     </TableRow>
+ *   </TableBody>
+ * </Table>
+ * ```
+ * 
+ * **Legacy Usage (Backward Compatible):**
+ * ```tsx
+ * <Table zebra caption="Employee Information">
+ *   <thead>
+ *     <tr>
+ *       <th scope="col">Name</th>
+ *       <th scope="col">Department</th>
+ *     </tr>
+ *   </thead>
+ *   <tbody>
+ *     <tr>
+ *       <th scope="row">John Doe</th>
+ *       <td>Engineering</td>
+ *     </tr>
+ *   </tbody>
+ * </Table>
+ * ```
  *
  * @param {TableProps} props - The properties to configure the Table component.
  * @returns {JSX.Element} The rendered Table component.
