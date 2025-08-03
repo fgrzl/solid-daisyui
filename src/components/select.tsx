@@ -1,4 +1,4 @@
-import { JSX, createSignal, createEffect, For, Show } from "solid-js";
+import { JSX, createSignal, createEffect, createMemo, For, Show } from "solid-js";
 
 /**
  * Option type for individual select options.
@@ -89,8 +89,8 @@ export default function Select(props: SelectProps): JSX.Element {
     }
   });
 
-  // Build classes following DaisyUI patterns
-  const classes = () => {
+  // Build classes following DaisyUI patterns (memoized for performance)
+  const classes = createMemo(() => {
     const baseClasses: Record<string, boolean> = {
       select: true,
     };
@@ -120,7 +120,7 @@ export default function Select(props: SelectProps): JSX.Element {
     }
 
     return baseClasses;
-  };
+  });
 
   // Handle change event
   const handleChange = (event: Event) => {
@@ -160,8 +160,8 @@ export default function Select(props: SelectProps): JSX.Element {
     </optgroup>
   );
 
-  // Ensure options is always an array
-  const safeOptions = () => props.options || [];
+  // Ensure options is always an array (memoized for performance)
+  const safeOptions = createMemo(() => props.options || []);
 
   return (
     <select
