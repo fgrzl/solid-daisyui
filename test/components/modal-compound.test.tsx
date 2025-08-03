@@ -17,7 +17,7 @@ describe("Compound Modal Components", () => {
     it("renders modal with overlay, content, title, description, and actions", () => {
       const [isOpen] = createSignal(true);
       const { getByText, getByRole } = render(() => (
-        <modal.overlay isOpen={isOpen()} onClose={() => {}}>
+        <modal.overlay disablePortal isOpen={isOpen()} onClose={() => {}}>
           <modal.content>
             <modal.title>Delete User</modal.title>
             <modal.description>This action cannot be undone. Are you sure?</modal.description>
@@ -41,7 +41,7 @@ describe("Compound Modal Components", () => {
       const onClose = vi.fn();
       
       const { getByText } = render(() => (
-        <modal.overlay isOpen={isOpen()} onClose={onClose}>
+        <modal.overlay disablePortal isOpen={isOpen()} onClose={onClose}>
           <modal.content>
             <modal.actions>
               <button data-modal-close="">Cancel</button>
@@ -61,7 +61,7 @@ describe("Compound Modal Components", () => {
     it("renders modal with Overlay, Content, Title, Description, and Actions", () => {
       const [isOpen] = createSignal(true);
       const { getByText, getByRole } = render(() => (
-        <Modal2.Overlay isOpen={isOpen()} onClose={() => {}}>
+        <Modal2.Overlay disablePortal isOpen={isOpen()} onClose={() => {}}>
           <Modal2.Content>
             <Modal2.Title>Delete User</Modal2.Title>
             <Modal2.Description>This action cannot be undone. Are you sure?</Modal2.Description>
@@ -86,7 +86,7 @@ describe("Compound Modal Components", () => {
     it("renders using individual component exports", () => {
       const [isOpen] = createSignal(true);
       const { getByText, getByRole } = render(() => (
-        <ModalOverlay isOpen={isOpen()} onClose={() => {}}>
+        <ModalOverlay disablePortal isOpen={isOpen()} onClose={() => {}}>
           <ModalContent>
             <ModalTitle>Delete User</ModalTitle>
             <ModalDescription>This action cannot be undone. Are you sure?</ModalDescription>
@@ -111,7 +111,7 @@ describe("ModalOverlay Component", () => {
   it("applies modal classes correctly", () => {
     const [isOpen] = createSignal(true);
     const { container } = render(() => (
-      <ModalOverlay isOpen={isOpen()} variant="top">
+      <ModalOverlay disablePortal isOpen={isOpen()} variant="top">
         <ModalContent>Content</ModalContent>
       </ModalOverlay>
     ));
@@ -127,7 +127,7 @@ describe("ModalOverlay Component", () => {
     const onClose = vi.fn();
     
     render(() => (
-      <ModalOverlay isOpen={isOpen()} onClose={onClose}>
+      <ModalOverlay disablePortal isOpen={isOpen()} onClose={onClose}>
         <ModalContent>Content</ModalContent>
       </ModalOverlay>
     ));
@@ -141,7 +141,7 @@ describe("ModalOverlay Component", () => {
     const onClose = vi.fn();
     
     const { container } = render(() => (
-      <ModalOverlay isOpen={isOpen()} onClose={onClose}>
+      <ModalOverlay disablePortal isOpen={isOpen()} onClose={onClose}>
         <ModalContent>Content</ModalContent>
       </ModalOverlay>
     ));
@@ -156,7 +156,7 @@ describe("ModalOverlay Component", () => {
     const onClose = vi.fn();
     
     const { container } = render(() => (
-      <ModalOverlay isOpen={isOpen()} onClose={onClose} closeOnBackdrop={false}>
+      <ModalOverlay disablePortal isOpen={isOpen()} onClose={onClose} closeOnBackdrop={false}>
         <ModalContent>Content</ModalContent>
       </ModalOverlay>
     ));
@@ -171,7 +171,7 @@ describe("ModalOverlay Component", () => {
     const onClose = vi.fn();
     
     render(() => (
-      <ModalOverlay isOpen={isOpen()} onClose={onClose} closeOnEscape={false}>
+      <ModalOverlay disablePortal isOpen={isOpen()} onClose={onClose} closeOnEscape={false}>
         <ModalContent>Content</ModalContent>
       </ModalOverlay>
     ));
@@ -183,7 +183,7 @@ describe("ModalOverlay Component", () => {
   it("supports ARIA attributes", () => {
     const [isOpen] = createSignal(true);
     const { getByRole } = render(() => (
-      <ModalOverlay 
+      <ModalOverlay disablePortal 
         isOpen={isOpen()} 
         aria-labelledby="modal-title"
         aria-describedby="modal-desc"
@@ -202,7 +202,7 @@ describe("ModalContent Component", () => {
   it("applies modal-box class", () => {
     const [isOpen] = createSignal(true);
     const { container } = render(() => (
-      <ModalOverlay isOpen={isOpen()}>
+      <ModalOverlay disablePortal isOpen={isOpen()}>
         <ModalContent>Content</ModalContent>
       </ModalOverlay>
     ));
@@ -213,7 +213,7 @@ describe("ModalContent Component", () => {
   it("applies size classes correctly", () => {
     const [isOpen] = createSignal(true);
     const { container } = render(() => (
-      <ModalOverlay isOpen={isOpen()}>
+      <ModalOverlay disablePortal isOpen={isOpen()}>
         <ModalContent size="lg">Content</ModalContent>
       </ModalOverlay>
     ));
@@ -226,7 +226,7 @@ describe("ModalContent Component", () => {
     const onClose = vi.fn();
     
     const { container } = render(() => (
-      <ModalOverlay isOpen={isOpen()} onClose={onClose}>
+      <ModalOverlay disablePortal isOpen={isOpen()} onClose={onClose}>
         <ModalContent>Content</ModalContent>
       </ModalOverlay>
     ));
@@ -239,7 +239,7 @@ describe("ModalContent Component", () => {
   it("supports custom classes", () => {
     const [isOpen] = createSignal(true);
     const { container } = render(() => (
-      <ModalOverlay isOpen={isOpen()}>
+      <ModalOverlay disablePortal isOpen={isOpen()}>
         <ModalContent class="custom-content">Content</ModalContent>
       </ModalOverlay>
     ));
@@ -252,7 +252,7 @@ describe("ModalTitle Component", () => {
   it("renders as h3 by default", () => {
     const [isOpen] = createSignal(true);
     const { container } = render(() => (
-      <ModalOverlay isOpen={isOpen()}>
+      <ModalOverlay disablePortal isOpen={isOpen()}>
         <ModalContent>
           <ModalTitle>Modal Title</ModalTitle>
         </ModalContent>
@@ -266,7 +266,7 @@ describe("ModalTitle Component", () => {
   it("supports custom element via 'as' prop", () => {
     const [isOpen] = createSignal(true);
     const { container } = render(() => (
-      <ModalOverlay isOpen={isOpen()}>
+      <ModalOverlay disablePortal isOpen={isOpen()}>
         <ModalContent>
           <ModalTitle as="h1">Modal Title</ModalTitle>
         </ModalContent>
@@ -280,7 +280,7 @@ describe("ModalTitle Component", () => {
   it("applies default title classes", () => {
     const [isOpen] = createSignal(true);
     const { container } = render(() => (
-      <ModalOverlay isOpen={isOpen()}>
+      <ModalOverlay disablePortal isOpen={isOpen()}>
         <ModalContent>
           <ModalTitle>Modal Title</ModalTitle>
         </ModalContent>
@@ -295,7 +295,7 @@ describe("ModalTitle Component", () => {
   it("supports custom ID for aria-labelledby", () => {
     const [isOpen] = createSignal(true);
     const { container } = render(() => (
-      <ModalOverlay isOpen={isOpen()}>
+      <ModalOverlay disablePortal isOpen={isOpen()}>
         <ModalContent>
           <ModalTitle id="custom-title">Modal Title</ModalTitle>
         </ModalContent>
@@ -310,7 +310,7 @@ describe("ModalDescription Component", () => {
   it("renders as paragraph by default", () => {
     const [isOpen] = createSignal(true);
     const { container } = render(() => (
-      <ModalOverlay isOpen={isOpen()}>
+      <ModalOverlay disablePortal isOpen={isOpen()}>
         <ModalContent>
           <ModalDescription>Modal description</ModalDescription>
         </ModalContent>
@@ -324,7 +324,7 @@ describe("ModalDescription Component", () => {
   it("supports custom element via 'as' prop", () => {
     const [isOpen] = createSignal(true);
     const { container } = render(() => (
-      <ModalOverlay isOpen={isOpen()}>
+      <ModalOverlay disablePortal isOpen={isOpen()}>
         <ModalContent>
           <ModalDescription as="div">Modal description</ModalDescription>
         </ModalContent>
@@ -337,7 +337,7 @@ describe("ModalDescription Component", () => {
   it("applies default description classes", () => {
     const [isOpen] = createSignal(true);
     const { container } = render(() => (
-      <ModalOverlay isOpen={isOpen()}>
+      <ModalOverlay disablePortal isOpen={isOpen()}>
         <ModalContent>
           <ModalDescription>Modal description</ModalDescription>
         </ModalContent>
@@ -352,7 +352,7 @@ describe("ModalDescription Component", () => {
   it("supports custom ID for aria-describedby", () => {
     const [isOpen] = createSignal(true);
     const { container } = render(() => (
-      <ModalOverlay isOpen={isOpen()}>
+      <ModalOverlay disablePortal isOpen={isOpen()}>
         <ModalContent>
           <ModalDescription id="custom-desc">Modal description</ModalDescription>
         </ModalContent>
@@ -367,7 +367,7 @@ describe("ModalActions Component", () => {
   it("applies modal-action class", () => {
     const [isOpen] = createSignal(true);
     const { container } = render(() => (
-      <ModalOverlay isOpen={isOpen()}>
+      <ModalOverlay disablePortal isOpen={isOpen()}>
         <ModalContent>
           <ModalActions>
             <button>Action</button>
@@ -384,7 +384,7 @@ describe("ModalActions Component", () => {
     const onClose = vi.fn();
     
     const { getByText } = render(() => (
-      <ModalOverlay isOpen={isOpen()} onClose={onClose}>
+      <ModalOverlay disablePortal isOpen={isOpen()} onClose={onClose}>
         <ModalContent>
           <ModalActions>
             <button data-modal-close="">Close</button>
@@ -403,7 +403,7 @@ describe("ModalActions Component", () => {
     const onClose = vi.fn();
     
     const { getByText } = render(() => (
-      <ModalOverlay isOpen={isOpen()} onClose={onClose}>
+      <ModalOverlay disablePortal isOpen={isOpen()} onClose={onClose}>
         <ModalContent>
           <ModalActions>
             <button>Regular Button</button>
@@ -419,7 +419,7 @@ describe("ModalActions Component", () => {
   it("supports custom classes", () => {
     const [isOpen] = createSignal(true);
     const { container } = render(() => (
-      <ModalOverlay isOpen={isOpen()}>
+      <ModalOverlay disablePortal isOpen={isOpen()}>
         <ModalContent>
           <ModalActions class="custom-actions">
             <button>Action</button>
@@ -440,7 +440,7 @@ describe("Integration Tests", () => {
     const { getByText, queryByRole, getByRole } = render(() => (
       <div>
         <button onClick={() => setIsOpen(true)}>Open Modal</button>
-        <ModalOverlay 
+        <ModalOverlay disablePortal 
           isOpen={isOpen()} 
           onClose={() => setIsOpen(false)}
           aria-labelledby="delete-title"
@@ -490,7 +490,7 @@ describe("Integration Tests", () => {
         <button onClick={() => setModal1Open(true)}>Open Modal 1</button>
         <button onClick={() => setModal2Open(true)}>Open Modal 2</button>
         
-        <ModalOverlay isOpen={modal1Open()} onClose={() => setModal1Open(false)}>
+        <ModalOverlay disablePortal isOpen={modal1Open()} onClose={() => setModal1Open(false)}>
           <ModalContent>
             <ModalTitle>Modal 1</ModalTitle>
             <ModalActions>
@@ -499,7 +499,7 @@ describe("Integration Tests", () => {
           </ModalContent>
         </ModalOverlay>
         
-        <ModalOverlay isOpen={modal2Open()} onClose={() => setModal2Open(false)}>
+        <ModalOverlay disablePortal isOpen={modal2Open()} onClose={() => setModal2Open(false)}>
           <ModalContent>
             <ModalTitle>Modal 2</ModalTitle>
             <ModalActions>

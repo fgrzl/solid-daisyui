@@ -1,4 +1,5 @@
 import { JSX, createEffect, onCleanup, Show } from "solid-js";
+import { Portal } from "solid-js/web";
 
 /**
  * Props for the Modal component.
@@ -17,6 +18,7 @@ import { JSX, createEffect, onCleanup, Show } from "solid-js";
  * @property {string} [aria-label] - Accessible label for the modal.
  * @property {string} [aria-labelledby] - ID of the element that labels the modal.
  * @property {string} [aria-describedby] - ID of the element that describes the modal.
+ * @property {boolean} [disablePortal=false] - Disable Portal rendering (mainly for testing).
  */
 export interface ModalProps {
   isOpen: boolean;
@@ -33,6 +35,7 @@ export interface ModalProps {
   "aria-label"?: string;
   "aria-labelledby"?: string;
   "aria-describedby"?: string;
+  disablePortal?: boolean;
 }
 
 /**
@@ -130,31 +133,39 @@ export default function Modal(props: ModalProps): JSX.Element | null {
     return baseClasses;
   };
 
+  const modalContent = () => (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={props["aria-label"]}
+      aria-labelledby={props["aria-labelledby"]}
+      aria-describedby={props["aria-describedby"]}
+      classList={{
+        ...modalClasses(),
+        ...props.classList,
+      }}
+      onClick={handleBackdropClick}
+    >
+      <div
+        classList={modalBoxClasses()}
+        onClick={handleModalBoxClick}
+        tabIndex={-1}
+      >
+        {props.children}
+        <Show when={props.actions}>
+          {props.actions}
+        </Show>
+      </div>
+    </div>
+  );
+
   return (
     <Show when={props.isOpen}>
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label={props["aria-label"]}
-        aria-labelledby={props["aria-labelledby"]}
-        aria-describedby={props["aria-describedby"]}
-        classList={{
-          ...modalClasses(),
-          ...props.classList,
-        }}
-        onClick={handleBackdropClick}
-      >
-        <div
-          classList={modalBoxClasses()}
-          onClick={handleModalBoxClick}
-          tabIndex={-1}
-        >
-          {props.children}
-          <Show when={props.actions}>
-            {props.actions}
-          </Show>
-        </div>
-      </div>
+      <Show when={!props.disablePortal} fallback={modalContent()}>
+        <Portal>
+          {modalContent()}
+        </Portal>
+      </Show>
     </Show>
   );
 }

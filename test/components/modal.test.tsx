@@ -9,7 +9,7 @@ describe("Modal Component", () => {
     it("renders with required props", () => {
       const [isOpen, setIsOpen] = createSignal(true);
       const { getByRole } = render(() => (
-        <Modal isOpen={isOpen()} onClose={() => setIsOpen(false)}>
+        <Modal disablePortal isOpen={isOpen()} onClose={() => setIsOpen(false)}>
           <div>Modal Content</div>
         </Modal>
       ));
@@ -19,7 +19,7 @@ describe("Modal Component", () => {
     it("renders with base modal classes", () => {
       const [isOpen] = createSignal(true);
       const { container } = render(() => (
-        <Modal isOpen={isOpen()} onClose={() => {}}>
+        <Modal disablePortal isOpen={isOpen()} onClose={() => {}}>
           <div>Content</div>
         </Modal>
       ));
@@ -30,7 +30,7 @@ describe("Modal Component", () => {
     it("renders children content inside modal box", () => {
       const [isOpen] = createSignal(true);
       const { getByText } = render(() => (
-        <Modal isOpen={isOpen()} onClose={() => {}}>
+        <Modal disablePortal isOpen={isOpen()} onClose={() => {}}>
           <div>Test Modal Content</div>
         </Modal>
       ));
@@ -40,7 +40,7 @@ describe("Modal Component", () => {
     it("does not render when isOpen is false", () => {
       const [isOpen] = createSignal(false);
       const { container } = render(() => (
-        <Modal isOpen={isOpen()} onClose={() => {}}>
+        <Modal disablePortal isOpen={isOpen()} onClose={() => {}}>
           <div>Content</div>
         </Modal>
       ));
@@ -53,7 +53,7 @@ describe("Modal Component", () => {
     it("applies modal-bottom class for bottom variant", () => {
       const [isOpen] = createSignal(true);
       const { container } = render(() => (
-        <Modal isOpen={isOpen()} onClose={() => {}} variant="bottom">
+        <Modal disablePortal isOpen={isOpen()} onClose={() => {}} variant="bottom">
           <div>Content</div>
         </Modal>
       ));
@@ -63,7 +63,7 @@ describe("Modal Component", () => {
     it("applies modal-middle class for middle variant", () => {
       const [isOpen] = createSignal(true);
       const { container } = render(() => (
-        <Modal isOpen={isOpen()} onClose={() => {}} variant="middle">
+        <Modal disablePortal isOpen={isOpen()} onClose={() => {}} variant="middle">
           <div>Content</div>
         </Modal>
       ));
@@ -73,7 +73,7 @@ describe("Modal Component", () => {
     it("applies modal-top class for top variant", () => {
       const [isOpen] = createSignal(true);
       const { container } = render(() => (
-        <Modal isOpen={isOpen()} onClose={() => {}} variant="top">
+        <Modal disablePortal isOpen={isOpen()} onClose={() => {}} variant="top">
           <div>Content</div>
         </Modal>
       ));
@@ -83,7 +83,7 @@ describe("Modal Component", () => {
     it("defaults to middle variant when no variant specified", () => {
       const [isOpen] = createSignal(true);
       const { container } = render(() => (
-        <Modal isOpen={isOpen()} onClose={() => {}}>
+        <Modal disablePortal isOpen={isOpen()} onClose={() => {}}>
           <div>Content</div>
         </Modal>
       ));
@@ -96,7 +96,7 @@ describe("Modal Component", () => {
     it("applies modal-sm class for small size", () => {
       const [isOpen] = createSignal(true);
       const { container } = render(() => (
-        <Modal isOpen={isOpen()} onClose={() => {}} size="sm">
+        <Modal disablePortal isOpen={isOpen()} onClose={() => {}} size="sm">
           <div>Content</div>
         </Modal>
       ));
@@ -106,7 +106,7 @@ describe("Modal Component", () => {
     it("applies modal-lg class for large size", () => {
       const [isOpen] = createSignal(true);
       const { container } = render(() => (
-        <Modal isOpen={isOpen()} onClose={() => {}} size="lg">
+        <Modal disablePortal isOpen={isOpen()} onClose={() => {}} size="lg">
           <div>Content</div>
         </Modal>
       ));
@@ -116,7 +116,7 @@ describe("Modal Component", () => {
     it("applies modal-xs class for extra small size", () => {
       const [isOpen] = createSignal(true);
       const { container } = render(() => (
-        <Modal isOpen={isOpen()} onClose={() => {}} size="xs">
+        <Modal disablePortal isOpen={isOpen()} onClose={() => {}} size="xs">
           <div>Content</div>
         </Modal>
       ));
@@ -130,7 +130,7 @@ describe("Modal Component", () => {
       const [isOpen] = createSignal(true);
       const onClose = vi.fn();
       const { container } = render(() => (
-        <Modal isOpen={isOpen()} onClose={onClose}>
+        <Modal disablePortal isOpen={isOpen()} onClose={onClose}>
           <div>Content</div>
         </Modal>
       ));
@@ -144,7 +144,7 @@ describe("Modal Component", () => {
       const [isOpen] = createSignal(true);
       const onClose = vi.fn();
       const { container } = render(() => (
-        <Modal isOpen={isOpen()} onClose={onClose}>
+        <Modal disablePortal isOpen={isOpen()} onClose={onClose}>
           <div>Content</div>
         </Modal>
       ));
@@ -158,7 +158,7 @@ describe("Modal Component", () => {
       const [isOpen] = createSignal(true);
       const onClose = vi.fn();
       const { container } = render(() => (
-        <Modal isOpen={isOpen()} onClose={onClose} closeOnBackdrop={false}>
+        <Modal disablePortal isOpen={isOpen()} onClose={onClose} closeOnBackdrop={false}>
           <div>Content</div>
         </Modal>
       ));
@@ -175,7 +175,7 @@ describe("Modal Component", () => {
       const [isOpen] = createSignal(true);
       const onClose = vi.fn();
       render(() => (
-        <Modal isOpen={isOpen()} onClose={onClose}>
+        <Modal disablePortal isOpen={isOpen()} onClose={onClose}>
           <div>Content</div>
         </Modal>
       ));
@@ -188,7 +188,7 @@ describe("Modal Component", () => {
       const [isOpen] = createSignal(true);
       const onClose = vi.fn();
       render(() => (
-        <Modal isOpen={isOpen()} onClose={onClose} closeOnEscape={false}>
+        <Modal disablePortal isOpen={isOpen()} onClose={onClose} closeOnEscape={false}>
           <div>Content</div>
         </Modal>
       ));
@@ -203,7 +203,7 @@ describe("Modal Component", () => {
     it("has proper ARIA attributes", () => {
       const [isOpen] = createSignal(true);
       const { getByRole } = render(() => (
-        <Modal isOpen={isOpen()} onClose={() => {}} aria-label="Test Modal">
+        <Modal disablePortal isOpen={isOpen()} onClose={() => {}} aria-label="Test Modal">
           <div>Content</div>
         </Modal>
       ));
@@ -216,7 +216,7 @@ describe("Modal Component", () => {
     it("supports aria-labelledby for title reference", () => {
       const [isOpen] = createSignal(true);
       const { getByRole } = render(() => (
-        <Modal isOpen={isOpen()} onClose={() => {}} aria-labelledby="modal-title">
+        <Modal disablePortal isOpen={isOpen()} onClose={() => {}} aria-labelledby="modal-title">
           <h2 id="modal-title">Modal Title</h2>
           <div>Content</div>
         </Modal>
@@ -229,7 +229,7 @@ describe("Modal Component", () => {
     it("supports aria-describedby for content reference", () => {
       const [isOpen] = createSignal(true);
       const { getByRole } = render(() => (
-        <Modal isOpen={isOpen()} onClose={() => {}} aria-describedby="modal-desc">
+        <Modal disablePortal isOpen={isOpen()} onClose={() => {}} aria-describedby="modal-desc">
           <div id="modal-desc">Modal description</div>
         </Modal>
       ));
@@ -244,7 +244,7 @@ describe("Modal Component", () => {
     it("traps focus within modal when open", () => {
       const [isOpen] = createSignal(true);
       const { container } = render(() => (
-        <Modal isOpen={isOpen()} onClose={() => {}}>
+        <Modal disablePortal isOpen={isOpen()} onClose={() => {}}>
           <button>First Button</button>
           <button>Second Button</button>
         </Modal>
@@ -266,7 +266,7 @@ describe("Modal Component", () => {
     it("applies custom class prop", () => {
       const [isOpen] = createSignal(true);
       const { container } = render(() => (
-        <Modal isOpen={isOpen()} onClose={() => {}} class="custom-modal">
+        <Modal disablePortal isOpen={isOpen()} onClose={() => {}} class="custom-modal">
           <div>Content</div>
         </Modal>
       ));
@@ -276,7 +276,7 @@ describe("Modal Component", () => {
     it("applies custom classList prop", () => {
       const [isOpen] = createSignal(true);
       const { container } = render(() => (
-        <Modal 
+        <Modal disablePortal 
           isOpen={isOpen()} 
           onClose={() => {}} 
           classList={{ "test-class": true, "false-class": false }}
@@ -291,7 +291,7 @@ describe("Modal Component", () => {
     it("applies custom modalBoxClass", () => {
       const [isOpen] = createSignal(true);
       const { container } = render(() => (
-        <Modal isOpen={isOpen()} onClose={() => {}} modalBoxClass="custom-box">
+        <Modal disablePortal isOpen={isOpen()} onClose={() => {}} modalBoxClass="custom-box">
           <div>Content</div>
         </Modal>
       ));
@@ -311,7 +311,7 @@ describe("Modal Component", () => {
       );
       
       const { getByText } = render(() => (
-        <Modal isOpen={isOpen()} onClose={() => {}} actions={actions}>
+        <Modal disablePortal isOpen={isOpen()} onClose={() => {}} actions={actions}>
           <div>Content</div>
         </Modal>
       ));
@@ -327,7 +327,7 @@ describe("Modal Component", () => {
       const [isOpen] = createSignal(true);
       expect(() => {
         render(() => (
-          <Modal isOpen={isOpen()}>
+          <Modal disablePortal isOpen={isOpen()}>
             <div>Content</div>
           </Modal>
         ));
@@ -338,7 +338,7 @@ describe("Modal Component", () => {
       const [isOpen] = createSignal(true);
       expect(() => {
         render(() => (
-          <Modal isOpen={isOpen()} onClose={() => {}} />
+          <Modal disablePortal isOpen={isOpen()} onClose={() => {}} />
         ));
       }).not.toThrow();
     });
@@ -346,7 +346,7 @@ describe("Modal Component", () => {
     it("handles rapid open/close state changes", () => {
       const [isOpen, setIsOpen] = createSignal(false);
       render(() => (
-        <Modal isOpen={isOpen()} onClose={() => setIsOpen(false)}>
+        <Modal disablePortal isOpen={isOpen()} onClose={() => setIsOpen(false)}>
           <div>Content</div>
         </Modal>
       ));

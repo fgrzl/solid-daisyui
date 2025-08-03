@@ -8,7 +8,7 @@ describe("Modal - New Backdrop/Box API", () => {
     const [isOpen, setIsOpen] = createSignal(true);
     
     const { container } = render(() => (
-      <modal.backdrop isOpen={isOpen()} onClose={() => setIsOpen(false)}>
+      <modal.backdrop disablePortal isOpen={isOpen()} onClose={() => setIsOpen(false)}>
         <modal.box>
           <modal.title>Delete User</modal.title>
           <modal.description>This action cannot be undone. Are you sure you want to continue?</modal.description>
@@ -31,7 +31,7 @@ describe("Modal - New Backdrop/Box API", () => {
     const [isOpen, setIsOpen] = createSignal(true);
     
     const { container } = render(() => (
-      <modal.backdrop isOpen={isOpen()} onClose={() => setIsOpen(false)}>
+      <modal.backdrop disablePortal isOpen={isOpen()} onClose={() => setIsOpen(false)}>
         <modal.box>
           <modal.actions>
             <modal.cancel>Cancel</modal.cancel>
@@ -49,7 +49,7 @@ describe("Modal - New Backdrop/Box API", () => {
     const [isOpen, setIsOpen] = createSignal(true);
     
     const { container } = render(() => (
-      <modal.backdrop isOpen={isOpen()} onClose={() => setIsOpen(false)}>
+      <modal.backdrop disablePortal isOpen={isOpen()} onClose={() => setIsOpen(false)}>
         <modal.box>
           <modal.actions>
             <modal.confirm variant="danger">Delete</modal.confirm>
@@ -66,7 +66,7 @@ describe("Modal - New Backdrop/Box API", () => {
     const onClose = vi.fn();
     
     const { getByText } = render(() => (
-      <modal.backdrop isOpen={isOpen()} onClose={onClose}>
+      <modal.backdrop disablePortal isOpen={isOpen()} onClose={onClose}>
         <modal.box>
           <modal.actions>
             <modal.cancel>Cancel</modal.cancel>
@@ -84,7 +84,7 @@ describe("Modal - New Backdrop/Box API", () => {
     const handleConfirm = vi.fn();
     
     const { getByText } = render(() => (
-      <modal.backdrop isOpen={isOpen()} onClose={() => setIsOpen(false)}>
+      <modal.backdrop disablePortal isOpen={isOpen()} onClose={() => setIsOpen(false)}>
         <modal.box>
           <modal.actions>
             <modal.confirm onClick={handleConfirm}>Delete</modal.confirm>
@@ -101,7 +101,7 @@ describe("Modal - New Backdrop/Box API", () => {
     const [isOpen, setIsOpen] = createSignal(true);
     
     const { container } = render(() => (
-      <modal.backdrop isOpen={isOpen()} onClose={() => setIsOpen(false)}>
+      <modal.backdrop disablePortal isOpen={isOpen()} onClose={() => setIsOpen(false)}>
         <modal.box>
           <modal.title>Delete User</modal.title>
           <modal.description>This action cannot be undone. Are you sure?</modal.description>

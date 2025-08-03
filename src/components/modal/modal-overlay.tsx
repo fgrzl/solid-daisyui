@@ -1,4 +1,5 @@
 import { JSX, createEffect, onCleanup, Show } from "solid-js";
+import { Portal } from "solid-js/web";
 import { ModalContext, ModalContextValue } from "./modal-context";
 
 /**
@@ -15,6 +16,7 @@ import { ModalContext, ModalContextValue } from "./modal-context";
  * @property {string} [aria-label] - Accessible label for the modal.
  * @property {string} [aria-labelledby] - ID of the element that labels the modal.
  * @property {string} [aria-describedby] - ID of the element that describes the modal.
+ * @property {boolean} [disablePortal=false] - Disable Portal rendering (mainly for testing).
  */
 export interface ModalOverlayProps {
   isOpen?: boolean;
@@ -28,6 +30,7 @@ export interface ModalOverlayProps {
   "aria-label"?: string;
   "aria-labelledby"?: string;
   "aria-describedby"?: string;
+  disablePortal?: boolean;
 }
 
 /**
@@ -95,24 +98,32 @@ export default function ModalOverlay(props: ModalOverlayProps): JSX.Element | nu
     closeOnEscape: props.closeOnEscape,
   };
 
+  const modalContent = () => (
+    <ModalContext.Provider value={contextValue}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={props["aria-label"]}
+        aria-labelledby={props["aria-labelledby"]}
+        aria-describedby={props["aria-describedby"]}
+        classList={{
+          ...modalClasses(),
+          ...props.classList,
+        }}
+        onClick={handleBackdropClick}
+      >
+        {props.children}
+      </div>
+    </ModalContext.Provider>
+  );
+
   return (
     <Show when={isOpen()}>
-      <ModalContext.Provider value={contextValue}>
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label={props["aria-label"]}
-          aria-labelledby={props["aria-labelledby"]}
-          aria-describedby={props["aria-describedby"]}
-          classList={{
-            ...modalClasses(),
-            ...props.classList,
-          }}
-          onClick={handleBackdropClick}
-        >
-          {props.children}
-        </div>
-      </ModalContext.Provider>
+      <Show when={!props.disablePortal} fallback={modalContent()}>
+        <Portal>
+          {modalContent()}
+        </Portal>
+      </Show>
     </Show>
   );
 }

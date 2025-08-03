@@ -8,7 +8,7 @@ describe("User Requested Examples Validation", () => {
     const onClose = vi.fn();
 
     const { container, getByText } = render(() => (
-      <modal.overlay onClose={onClose}>
+      <modal.overlay disablePortal onClose={onClose}>
         <modal.content>
           <modal.title>Delete User</modal.title>
           <modal.description>This action cannot be undone. Are you sure?</modal.description>
@@ -51,7 +51,7 @@ describe("User Requested Examples Validation", () => {
     const handleDelete = vi.fn();
 
     const { container, getByText } = render(() => (
-      <modal.backdrop isOpen={isOpen()} onClose={() => setIsOpen(false)}>
+      <modal.backdrop disablePortal isOpen={isOpen()} onClose={() => setIsOpen(false)}>
         <modal.box>
           <modal.title>Delete User</modal.title>
           <modal.description>This action cannot be undone. Are you sure you want to continue?</modal.description>
@@ -111,7 +111,7 @@ describe("User Requested Examples Validation", () => {
     const handleDelete = vi.fn();
 
     const { container } = render(() => (
-      <modal.backdrop isOpen={isOpen()} onClose={() => setIsOpen(false)}>
+      <modal.backdrop disablePortal isOpen={isOpen()} onClose={() => setIsOpen(false)}>
         <modal.box>
           <modal.title>Delete User</modal.title>
           <modal.description>This action cannot be undone. Are you sure you want to continue?</modal.description>
