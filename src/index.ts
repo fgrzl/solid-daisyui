@@ -23,6 +23,7 @@ export * from "./components/input";
 export * from "./components/join";
 export * from "./components/kbd";
 export * from "./components/label";
+export * from "./components/layout";
 export * from "./components/link";
 export * from "./components/list";
 export * from "./components/loading";
