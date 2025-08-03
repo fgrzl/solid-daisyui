@@ -11,4 +11,9 @@ export interface ModalContextValue {
   closeOnEscape?: boolean;
 }
 
-export const ModalContext = createContext<ModalContextValue>();
+export const ModalContext = createContext<ModalContextValue>({
+  isOpen: false,
+  onClose: undefined,
+  closeOnBackdrop: undefined,
+  closeOnEscape: undefined,
+});
