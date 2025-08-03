@@ -109,6 +109,7 @@ export interface LinkProps {
   "aria-describedby"?: string;
   role?: string;
   onClick?: (event: MouseEvent | KeyboardEvent) => void;
+  [key: string]: any; // Allow additional props to be passed through
 }
 
 /**
@@ -130,6 +131,26 @@ export interface LinkProps {
  * @returns {JSX.Element} The rendered Link component.
  */
 export default function Link(props: LinkProps): JSX.Element {
+  // Extract known props and separate additional props
+  const {
+    children,
+    class: className,
+    classList,
+    variant,
+    hover,
+    underline,
+    href,
+    target,
+    rel,
+    disabled,
+    tabIndex,
+    "aria-label": ariaLabel,
+    "aria-describedby": ariaDescribedBy,
+    role: roleProp,
+    onClick,
+    ...additionalProps
+  } = props;
+
   // Build classes following DaisyUI patterns
   const classes = () => {
     const baseClasses: Record<string, boolean> = {
@@ -137,23 +158,23 @@ export default function Link(props: LinkProps): JSX.Element {
     };
 
     // Add official DaisyUI color variant classes
-    if (props.variant) {
-      baseClasses[`link-${props.variant}`] = true;
+    if (variant) {
+      baseClasses[`link-${variant}`] = true;
     }
 
     // Add official DaisyUI hover class
-    if (props.hover) {
+    if (hover) {
       baseClasses["link-hover"] = true;
     }
 
     // Add no-underline class when underline is explicitly false
-    if (props.underline === false) {
+    if (underline === false) {
       baseClasses["no-underline"] = true;
     }
 
     // Add custom class if provided
-    if (props.class) {
-      baseClasses[props.class] = true;
+    if (className) {
+      baseClasses[className] = true;
     }
 
     return baseClasses;
@@ -161,87 +182,89 @@ export default function Link(props: LinkProps): JSX.Element {
 
   // Handle security for external links
   const computedRel = createMemo(() => {
-    if (props.target === "_blank") {
+    if (target === "_blank") {
       const securityRel = "noopener noreferrer";
-      if (props.rel) {
-        return `${props.rel} ${securityRel}`;
+      if (rel) {
+        return `${rel} ${securityRel}`;
       }
       return securityRel;
     }
-    return props.rel;
+    return rel;
   });
 
   // Handle click events with proper event handling and keyboard support
   const handleClick = (event: MouseEvent) => {
-    if (props.disabled) {
+    if (disabled) {
       event.preventDefault();
       event.stopPropagation();
       return;
     }
     
-    props.onClick?.(event);
+    onClick?.(event);
   };
 
   // Handle keyboard events for accessibility
   const handleKeyDown = (event: KeyboardEvent) => {
-    if (props.disabled) {
+    if (disabled) {
       return;
     }
 
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       // Call onClick handler directly with the keyboard event
-      props.onClick?.(event);
+      onClick?.(event);
     }
   };
 
   // Determine accessibility attributes
-  const role = props.role ?? (props.href ? "link" : "button");
-  const tabIndex = props.disabled ? -1 : (props.tabIndex ?? 0);
+  const role = roleProp ?? (href ? "link" : "button");
+  const computedTabIndex = disabled ? -1 : (tabIndex ?? 0);
 
   // Common props for router component
   const routerProps = {
-    href: props.href,
+    href: href,
     role: role,
-    tabindex: tabIndex,
-    "aria-disabled": props.disabled ? "true" as const : undefined,
-    "aria-label": props["aria-label"],
-    "aria-describedby": props["aria-describedby"],
+    tabindex: computedTabIndex,
+    "aria-disabled": disabled ? "true" as const : undefined,
+    "aria-label": ariaLabel,
+    "aria-describedby": ariaDescribedBy,
     onClick: handleClick,
     onKeyDown: handleKeyDown,
     classList: {
       ...classes(),
-      ...props.classList,
+      ...classList,
     },
+    ...additionalProps, // Spread additional props
   };
 
   // Common props for regular anchor
   const anchorProps = {
-    href: props.href,
-    target: props.target,
+    href: href,
+    target: target,
     rel: computedRel(),
     role: role,
-    tabindex: tabIndex,
-    "aria-disabled": props.disabled ? "true" as const : undefined,
-    "aria-label": props["aria-label"],
-    "aria-describedby": props["aria-describedby"],
+    tabindex: computedTabIndex,
+    "aria-disabled": disabled ? "true" as const : undefined,
+    "aria-label": ariaLabel,
+    "aria-describedby": ariaDescribedBy,
     onClick: handleClick,
     onKeyDown: handleKeyDown,
     classList: {
       ...classes(),
-      ...props.classList,
+      ...classList,
     },
+    ...additionalProps, // Spread additional props
   };
 
   // Determine if we should use router A component or regular anchor
   const RouterA = getRouterA();
-  const shouldUseRouter = RouterA && props.href && isInternalLink(props.href);
+  const shouldUseRouter = RouterA && href && isInternalLink(href);
 
   if (shouldUseRouter) {
     // Use SolidJS Router A component for internal navigation
     return (
       <RouterA {...routerProps}>
-        {props.children}
+        {children}
       </RouterA>
     );
   }
@@ -249,7 +272,7 @@ export default function Link(props: LinkProps): JSX.Element {
   // Use regular anchor tag for external links, no href, or when router is not available
   return (
     <a {...anchorProps}>
-      {props.children}
+      {children}
     </a>
   );
 }

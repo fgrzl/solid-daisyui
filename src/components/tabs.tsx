@@ -1,4 +1,4 @@
-import { JSX, createSignal, For } from "solid-js";
+import { JSX, createSignal, For, children } from "solid-js";
 import Link from "./link";
 
 /**
@@ -95,15 +95,6 @@ function Tab(props: TabProps): JSX.Element {
     props.onClick?.(event);
   };
 
-  // For compound component pattern, we store the props in data attributes
-  // so the parent Tabs component can extract them
-  const tabData = {
-    "data-tab-label": props.label,
-    "data-tab-disabled": props.disabled,
-    "data-tab-href": props.href,
-    "data-tab-target": props.target,
-  };
-
   // When used standalone (not as children of Tabs), render the actual tab
   if (props.href) {
     return (
@@ -114,18 +105,24 @@ function Tab(props: TabProps): JSX.Element {
         classList={props.classList}
         disabled={props.disabled}
         onClick={handleClick}
-        {...tabData}
+        role="tab"
       >
         {props.label}
       </Link>
     );
   }
 
-  // For non-navigation tabs or when used in compound pattern
+  // For non-navigation tabs used standalone
   return (
-    <div {...tabData} style={{ display: "none" }}>
-      {props.children}
-    </div>
+    <button
+      class={props.class}
+      classList={props.classList}
+      disabled={props.disabled}
+      onClick={handleClick}
+      role="tab"
+    >
+      {props.label}
+    </button>
   );
 }
 
@@ -162,31 +159,47 @@ export default function Tabs(props: TabsProps): JSX.Element {
 
     // Extract from children (compound component pattern)
     if (props.children) {
-      const childrenArray = Array.isArray(props.children) ? props.children : [props.children];
+      // Try to access raw children before they're resolved
+      const rawChildren = Array.isArray(props.children) ? props.children : [props.children];
       const validTabs: TabItem[] = [];
       
-      childrenArray.forEach((child: any) => {
-        if (child && typeof child === 'object' && child.type === Tab) {
-          validTabs.push({
-            label: child.props.label,
-            content: child.props.children,
-            href: child.props.href,
-            target: child.props.target,
-            disabled: child.props.disabled,
-            class: child.props.class,
-            classList: child.props.classList,
-            onClick: child.props.onClick,
-          });
+      rawChildren.forEach((child: any) => {
+        // Access the component function and its type
+        if (typeof child === 'function' && child.toString().includes('Tab')) {
+          // Create a fake render to extract props
+          try {
+            const rendered = child();
+            if (rendered && rendered.props) {
+              validTabs.push({
+                label: rendered.props.label,
+                content: rendered.props.children,
+                href: rendered.props.href,
+                target: rendered.props.target,
+                disabled: rendered.props.disabled,
+                class: rendered.props.class,
+                classList: rendered.props.classList,
+                onClick: rendered.props.onClick,
+              });
+            }
+          } catch (e) {
+            // If that fails, try another approach
+            console.log('Failed to extract props:', e);
+          }
         }
       });
       
-      return validTabs;
+      if (validTabs.length > 0) {
+        return validTabs;
+      }
     }
 
     return [];
   };
 
   const tabsData = getTabsData();
+
+  // If we have children but no tabs data, use children directly
+  const shouldUseChildren = () => props.children && tabsData.length === 0;
 
   // Determine active tab (controlled vs uncontrolled)
   const activeTab = () => {
@@ -329,12 +342,42 @@ export default function Tabs(props: TabsProps): JSX.Element {
         }}
         onKeyDown={handleKeyDown}
       >
-        <For each={tabsData}>
-          {(tabData, index) => {
-            // If tab has href, render as Link, otherwise as button
-            if (tabData.href) {
+        {shouldUseChildren() ? (
+          // Render children directly for compound component pattern
+          props.children
+        ) : (
+          // Render tabs from tabsData array
+          <For each={tabsData}>
+            {(tabData, index) => {
+              // If tab has href, render as Link, otherwise as button
+              if (tabData.href) {
+                return (
+                  <Link
+                    id={generateTabId(index())}
+                    role="tab"
+                    aria-selected={false} // Navigation tabs don't participate in tab state
+                    aria-controls={generatePanelId(index())}
+                    aria-disabled={tabData.disabled}
+                    tabindex={-1} // Navigation tabs aren't part of keyboard navigation sequence
+                    data-tab-index={index()}
+                    href={tabData.href}
+                    target={tabData.target}
+                    disabled={tabData.disabled}
+                    classList={{
+                      ...getTabClasses(index(), tabData),
+                      ...tabData.classList,
+                    }}
+                    onClick={() => handleTabClick(index())}
+                    onKeyDown={(e) => handleTabKeyDown(e, index())}
+                  >
+                    {tabData.label}
+                  </Link>
+                );
+              }
+
+              // Regular button for non-href tabs (original logic)
               return (
-                <Link
+                <button
                   id={generateTabId(index())}
                   role="tab"
                   aria-selected={activeTab() === index()}
@@ -342,9 +385,6 @@ export default function Tabs(props: TabsProps): JSX.Element {
                   aria-disabled={tabData.disabled}
                   tabindex={activeTab() === index() && !tabData.disabled ? 0 : -1}
                   data-tab-index={index()}
-                  href={tabData.href}
-                  target={tabData.target}
-                  disabled={tabData.disabled}
                   classList={{
                     ...getTabClasses(index(), tabData),
                     ...tabData.classList,
@@ -353,35 +393,14 @@ export default function Tabs(props: TabsProps): JSX.Element {
                   onKeyDown={(e) => handleTabKeyDown(e, index())}
                 >
                   {tabData.label}
-                </Link>
+                </button>
               );
-            }
-
-            // Regular button for non-href tabs (original logic)
-            return (
-              <button
-                id={generateTabId(index())}
-                role="tab"
-                aria-selected={activeTab() === index()}
-                aria-controls={generatePanelId(index())}
-                aria-disabled={tabData.disabled}
-                tabindex={activeTab() === index() && !tabData.disabled ? 0 : -1}
-                data-tab-index={index()}
-                classList={{
-                  ...getTabClasses(index(), tabData),
-                  ...tabData.classList,
-                }}
-                onClick={() => handleTabClick(index())}
-                onKeyDown={(e) => handleTabKeyDown(e, index())}
-              >
-                {tabData.label}
-              </button>
-            );
-          }}
-        </For>
+            }}
+          </For>
+        )}
       </div>
       
-      {props.showContent && tabsData.length > 0 && (
+      {props.showContent && !shouldUseChildren() && tabsData.length > 0 && (
         <div class="tab-content">
           <For each={tabsData}>
             {(tabData, index) => (
