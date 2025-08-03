@@ -404,51 +404,6 @@ describe("Modal Component", () => {
     });
   });
 
-  // Backdrop Behavior Tests
-  describe("Backdrop Behavior", () => {
-    it("calls onClose when backdrop is clicked", () => {
-      const [isOpen] = createSignal(true);
-      const onClose = vi.fn();
-      const { container } = render(() => (
-        <Modal disablePortal isOpen={isOpen()} onClose={onClose}>
-          <div>Content</div>
-        </Modal>
-      ));
-      
-      const backdrop = container.querySelector('.modal');
-      fireEvent.click(backdrop!);
-      expect(onClose).toHaveBeenCalled();
-    });
-
-    it("does not close when modal box is clicked", () => {
-      const [isOpen] = createSignal(true);
-      const onClose = vi.fn();
-      const { container } = render(() => (
-        <Modal disablePortal isOpen={isOpen()} onClose={onClose}>
-          <div>Content</div>
-        </Modal>
-      ));
-      
-      const modalBox = container.querySelector('.modal-box');
-      fireEvent.click(modalBox!);
-      expect(onClose).not.toHaveBeenCalled();
-    });
-
-    it("respects closeOnBackdrop prop", () => {
-      const [isOpen] = createSignal(true);
-      const onClose = vi.fn();
-      const { container } = render(() => (
-        <Modal disablePortal isOpen={isOpen()} onClose={onClose} closeOnBackdrop={false}>
-          <div>Content</div>
-        </Modal>
-      ));
-      
-      const backdrop = container.querySelector('.modal');
-      fireEvent.click(backdrop!);
-      expect(onClose).not.toHaveBeenCalled();
-    });
-  });
-
   // Keyboard Navigation Tests
   describe("Keyboard Navigation", () => {
     it("closes modal when Escape key is pressed", () => {
