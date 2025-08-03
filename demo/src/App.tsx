@@ -1,15 +1,10 @@
 import { createSignal } from "solid-js";
-import TabsDemo from "./TabsDemo";
 import solidLogo from "./assets/solid.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 
 function App() {
-  const [showDemo, setShowDemo] = createSignal(false);
-
-  if (showDemo()) {
-    return <TabsDemo />;
-  }
+  const [count, setCount] = createSignal(0);
 
   return (
     <>
@@ -21,20 +16,17 @@ function App() {
           <img src={solidLogo} class="logo solid" alt="Solid logo" />
         </a>
       </div>
-      <h1>Solid DaisyUI</h1>
+      <h1>Vite + Solid</h1>
       <div class="card">
-        <button 
-          class="btn btn-primary"
-          onClick={() => setShowDemo(true)}
-        >
-          View Tabs Component Demo
+        <button onClick={() => setCount((count) => count + 1)}>
+          count is {count()}
         </button>
         <p>
-          Advanced tabs architecture with TDD methodology
+          Edit <code>src/App.tsx</code> and save to test HMR
         </p>
       </div>
       <p class="read-the-docs">
-        Click the button above to see the comprehensive tabs component implementation
+        Click on the Vite and Solid logos to learn more
       </p>
     </>
   );
