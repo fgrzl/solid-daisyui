@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { render } from "@solidjs/testing-library";
-import Table from "@/components/table/table";
+import Table from "@/components/table";
 
 describe("Table Component", () => {
   // Basic Rendering Tests
@@ -264,6 +264,55 @@ describe("Table Component", () => {
       const { container } = render(() => <Table>{false}</Table>);
       const table = container.querySelector("table");
       expect(table).toBeInTheDocument();
+    });
+  });
+
+  // Compound Components Tests
+  describe("Compound Components", () => {
+    it("supports compound Table components", () => {
+      const { getByText, container } = render(() => (
+        <Table>
+          <Table.Head>
+            <Table.Row>
+              <Table.Header>Name</Table.Header>
+              <Table.Header>Age</Table.Header>
+            </Table.Row>
+          </Table.Head>
+          <Table.Body>
+            <Table.Row>
+              <Table.Data>John</Table.Data>
+              <Table.Data>30</Table.Data>
+            </Table.Row>
+          </Table.Body>
+        </Table>
+      ));
+      
+      expect(getByText("Name")).toBeInTheDocument();
+      expect(getByText("Age")).toBeInTheDocument();
+      expect(getByText("John")).toBeInTheDocument();
+      expect(getByText("30")).toBeInTheDocument();
+      
+      expect(container.querySelector("thead")).toBeInTheDocument();
+      expect(container.querySelector("tbody")).toBeInTheDocument();
+      expect(container.querySelector("th")).toBeInTheDocument();
+      expect(container.querySelector("td")).toBeInTheDocument();
+    });
+
+    it("renders Table.Caption compound component", () => {
+      const { getByText } = render(() => (
+        <Table>
+          <Table.Caption>Employee Data</Table.Caption>
+          <Table.Body>
+            <Table.Row>
+              <Table.Data>Content</Table.Data>
+            </Table.Row>
+          </Table.Body>
+        </Table>
+      ));
+      
+      const caption = getByText("Employee Data");
+      expect(caption).toBeInTheDocument();
+      expect(caption.tagName).toBe("CAPTION");
     });
   });
 });
