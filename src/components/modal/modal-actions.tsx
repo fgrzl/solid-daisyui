@@ -1,5 +1,5 @@
 import { JSX, useContext } from "solid-js";
-import { ModalContext } from "./modal-overlay";
+import { ModalContext } from "./modal-context";
 
 /**
  * Props for the ModalActions component.

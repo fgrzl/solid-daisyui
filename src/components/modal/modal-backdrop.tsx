@@ -1,16 +1,5 @@
-import { JSX, createEffect, onCleanup, Show, createContext } from "solid-js";
-
-/**
- * Context for Modal components to share state and handlers.
- */
-interface ModalContextValue {
-  isOpen: boolean;
-  onClose?: () => void;
-  closeOnBackdrop?: boolean;
-  closeOnEscape?: boolean;
-}
-
-export const ModalContext = createContext<ModalContextValue>();
+import { JSX, createEffect, onCleanup, Show } from "solid-js";
+import { ModalContext, ModalContextValue } from "./modal-context";
 
 /**
  * Props for the ModalBackdrop component.

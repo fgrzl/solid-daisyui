@@ -1,21 +1,10 @@
-import { JSX, createEffect, onCleanup, Show, createContext } from "solid-js";
-
-/**
- * Context for Modal components to share state and handlers.
- */
-interface ModalContextValue {
-  isOpen: boolean;
-  onClose?: () => void;
-  closeOnBackdrop?: boolean;
-  closeOnEscape?: boolean;
-}
-
-export const ModalContext = createContext<ModalContextValue>();
+import { JSX, createEffect, onCleanup, Show } from "solid-js";
+import { ModalContext, ModalContextValue } from "./modal-context";
 
 /**
  * Props for the ModalOverlay component.
  *
- * @property {boolean} isOpen - Controls whether the modal is visible.
+ * @property {boolean} [isOpen=true] - Controls whether the modal is visible. Defaults to true for convenience.
  * @property {() => void} [onClose] - Callback function called when the modal should be closed.
  * @property {JSX.Element} [children] - The content to display inside the modal overlay.
  * @property {string} [class] - Additional CSS classes to apply to the modal container.
@@ -28,7 +17,7 @@ export const ModalContext = createContext<ModalContextValue>();
  * @property {string} [aria-describedby] - ID of the element that describes the modal.
  */
 export interface ModalOverlayProps {
-  isOpen: boolean;
+  isOpen?: boolean;
   onClose?: () => void;
   children?: JSX.Element;
   class?: string;
@@ -51,9 +40,12 @@ export interface ModalOverlayProps {
  * @returns {JSX.Element | null} JSX element representing the modal overlay or null if not open
  */
 export default function ModalOverlay(props: ModalOverlayProps): JSX.Element | null {
+  // Default isOpen to true for convenience when not explicitly controlled
+  const isOpen = () => props.isOpen ?? true;
+
   // Handle escape key
   createEffect(() => {
-    if (!props.isOpen) return;
+    if (!isOpen()) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape" && props.closeOnEscape !== false && props.onClose) {
@@ -80,7 +72,7 @@ export default function ModalOverlay(props: ModalOverlayProps): JSX.Element | nu
   const modalClasses = () => {
     const baseClasses: Record<string, boolean> = {
       modal: true,
-      "modal-open": props.isOpen,
+      "modal-open": isOpen(),
     };
 
     // Add variant classes
@@ -97,14 +89,14 @@ export default function ModalOverlay(props: ModalOverlayProps): JSX.Element | nu
 
   // Create context value
   const contextValue: ModalContextValue = {
-    isOpen: props.isOpen,
+    isOpen: isOpen(),
     onClose: props.onClose,
     closeOnBackdrop: props.closeOnBackdrop,
     closeOnEscape: props.closeOnEscape,
   };
 
   return (
-    <Show when={props.isOpen}>
+    <Show when={isOpen()}>
       <ModalContext.Provider value={contextValue}>
         <div
           role="dialog"
