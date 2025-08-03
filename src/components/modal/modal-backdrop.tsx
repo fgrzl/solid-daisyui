@@ -13,11 +13,11 @@ interface ModalContextValue {
 export const ModalContext = createContext<ModalContextValue>();
 
 /**
- * Props for the ModalOverlay component.
+ * Props for the ModalBackdrop component.
  *
  * @property {boolean} isOpen - Controls whether the modal is visible.
  * @property {() => void} [onClose] - Callback function called when the modal should be closed.
- * @property {JSX.Element} [children] - The content to display inside the modal overlay.
+ * @property {JSX.Element} [children] - The content to display inside the modal backdrop.
  * @property {string} [class] - Additional CSS classes to apply to the modal container.
  * @property {Record<string, boolean>} [classList] - Dynamic class list for conditional styling.
  * @property {"bottom" | "middle" | "top"} [variant="middle"] - The vertical position variant of the modal.
@@ -27,7 +27,7 @@ export const ModalContext = createContext<ModalContextValue>();
  * @property {string} [aria-labelledby] - ID of the element that labels the modal.
  * @property {string} [aria-describedby] - ID of the element that describes the modal.
  */
-export interface ModalOverlayProps {
+export interface ModalBackdropProps {
   isOpen: boolean;
   onClose?: () => void;
   children?: JSX.Element;
@@ -42,15 +42,16 @@ export interface ModalOverlayProps {
 }
 
 /**
- * ModalOverlay component that provides the backdrop and container for modal content.
+ * ModalBackdrop component that provides the backdrop and container for modal content.
  * 
  * This component manages the modal state and provides context to child components.
  * It handles backdrop clicks, escape key presses, and provides proper ARIA attributes.
+ * Uses DaisyUI form pattern with method="dialog" for proper modal behavior.
  * 
- * @param {ModalOverlayProps} props - The modal overlay component props
- * @returns {JSX.Element | null} JSX element representing the modal overlay or null if not open
+ * @param {ModalBackdropProps} props - The modal backdrop component props
+ * @returns {JSX.Element | null} JSX element representing the modal backdrop or null if not open
  */
-export default function ModalOverlay(props: ModalOverlayProps): JSX.Element | null {
+export default function ModalBackdrop(props: ModalBackdropProps): JSX.Element | null {
   // Handle escape key
   createEffect(() => {
     if (!props.isOpen) return;
@@ -68,10 +69,10 @@ export default function ModalOverlay(props: ModalOverlayProps): JSX.Element | nu
     });
   });
 
-  // Handle backdrop click
-  const handleBackdropClick = (event: MouseEvent) => {
-    // Only close if clicking the backdrop itself, not child content
-    if (event.target === event.currentTarget && props.closeOnBackdrop !== false && props.onClose) {
+  // Handle backdrop form submission
+  const handleBackdropSubmit = (event: SubmitEvent) => {
+    event.preventDefault();
+    if (props.closeOnBackdrop !== false && props.onClose) {
       props.onClose();
     }
   };
@@ -116,9 +117,11 @@ export default function ModalOverlay(props: ModalOverlayProps): JSX.Element | nu
             ...modalClasses(),
             ...props.classList,
           }}
-          onClick={handleBackdropClick}
         >
           {props.children}
+          <form method="dialog" class="modal-backdrop" onSubmit={handleBackdropSubmit}>
+            <button type="submit">Close</button>
+          </form>
         </div>
       </ModalContext.Provider>
     </Show>

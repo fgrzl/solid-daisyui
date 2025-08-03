@@ -37,7 +37,7 @@ describe("Compound Modal Components", () => {
     });
 
     it("handles data-modal-close attribute on buttons", () => {
-      const [isOpen, setIsOpen] = createSignal(true);
+      const [isOpen] = createSignal(true);
       const onClose = vi.fn();
       
       const { getByText } = render(() => (
