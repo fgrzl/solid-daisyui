@@ -18,6 +18,7 @@ import { JSX, Show, For } from "solid-js";
  * @property {boolean} [compact] - If true, applies card-compact styling with reduced padding.
  * @property {boolean} [side] - If true, applies card-side styling for horizontal layout.
  * @property {boolean} [glass] - If true, applies glass effect styling.
+ * @property {"xs" | "sm" | "md" | "lg" | "xl"} [size] - The size of the card for consistent sizing across components.
  * @property {(event: MouseEvent) => void} [onClick] - Click event handler for interactive cards.
  * @property {string} [ariaLabel] - Accessible label for the card when interactive.
  * @property {string} [ariaDescribedBy] - ID of element that describes the card for screen readers.
@@ -38,6 +39,7 @@ export interface CardProps {
   compact?: boolean;
   side?: boolean;
   glass?: boolean;
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
   onClick?: (event: MouseEvent) => void;
   ariaLabel?: string;
   ariaDescribedBy?: string;
@@ -55,14 +57,43 @@ export interface CardProps {
  */
 export default function Card(props: CardProps): JSX.Element {
   // Build classes following DaisyUI patterns
-  const classes = () => ({
-    card: true,
-    "card-bordered": !!props.bordered,
-    "card-compact": !!props.compact,
-    "card-side": !!props.side,
-    glass: !!props.glass,
-    ...(props.class ? { [props.class]: true } : {}),
-  });
+  const classes = () => {
+    const baseClasses: Record<string, boolean> = {
+      card: true,
+      "card-bordered": !!props.bordered,
+      "card-compact": !!props.compact,
+      "card-side": !!props.side,
+      glass: !!props.glass,
+    };
+
+    // Add size classes using Tailwind width classes
+    if (props.size) {
+      switch (props.size) {
+        case "xs":
+          baseClasses["w-24"] = true;
+          break;
+        case "sm":
+          baseClasses["w-32"] = true;
+          break;
+        case "md":
+          baseClasses["w-64"] = true;
+          break;
+        case "lg":
+          baseClasses["w-96"] = true;
+          break;
+        case "xl":
+          baseClasses["max-w-lg"] = true;
+          break;
+      }
+    }
+
+    // Add custom class if provided
+    if (props.class) {
+      baseClasses[props.class] = true;
+    }
+
+    return baseClasses;
+  };
 
   // Handle keyboard events for clickable cards
   const handleKeyDown = (event: KeyboardEvent) => {

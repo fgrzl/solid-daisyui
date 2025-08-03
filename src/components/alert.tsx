@@ -6,7 +6,8 @@ import { JSX, createSignal } from "solid-js";
  * @property {JSX.Element} [children] - The content to display inside the alert.
  * @property {string} [class] - Additional CSS classes to apply to the alert.
  * @property {Record<string, boolean>} [classList] - Dynamic class list for conditional styling.
- * @property {'info' | 'success' | 'warning' | 'error'} [type] - The type of alert, which determines its styling using official DaisyUI classes.
+ * @property {'info' | 'success' | 'warning' | 'error'} [type] - The type of alert, which determines its styling using official DaisyUI classes. (Deprecated: use 'variant' instead)
+ * @property {'info' | 'success' | 'warning' | 'error'} [variant] - The variant of alert, which determines its styling using official DaisyUI classes.
  * @property {JSX.Element} [icon] - An optional icon to display in the alert.
  * @property {boolean} [hideIcon] - If true, hides the icon in the alert.
  * @property {'soft' | 'outline' | 'dash'} [style] - Official DaisyUI style variants (alert-soft, alert-outline, alert-dash).
@@ -19,7 +20,8 @@ export interface AlertProps {
   children?: JSX.Element;
   class?: string;
   classList?: Record<string, boolean>;
-  type?: "info" | "success" | "warning" | "error";
+  type?: "info" | "success" | "warning" | "error"; // Deprecated: use 'variant' instead
+  variant?: "info" | "success" | "warning" | "error";
   icon?: JSX.Element;
   hideIcon?: boolean;
   style?: "soft" | "outline" | "dash";
@@ -47,6 +49,8 @@ export default function Alert(props: AlertProps): JSX.Element | null {
   const [isVisible, setIsVisible] = createSignal(true);
 
   // Default icons following DaisyUI patterns
+  const alertVariant = () => props.variant || props.type || "info"; // Support both variant and type for backward compatibility
+  
   const defaultIcons = {
     info: (
       <svg
@@ -121,8 +125,9 @@ export default function Alert(props: AlertProps): JSX.Element | null {
     };
 
     // Add official DaisyUI type classes
-    if (props.type) {
-      baseClasses[`alert-${props.type}`] = true;
+    const variant = alertVariant();
+    if (variant) {
+      baseClasses[`alert-${variant}`] = true;
     }
 
     // Add official DaisyUI style modifiers
@@ -179,15 +184,15 @@ export default function Alert(props: AlertProps): JSX.Element | null {
   return (
     <div
       role="alert"
-      aria-live={props.type === "error" ? "assertive" : "polite"}
+      aria-live={alertVariant() === "error" ? "assertive" : "polite"}
       classList={{
         ...classes(),
         ...props.classList,
       }}
     >
       {/* Icon - First child in DaisyUI grid structure */}
-      {!props.hideIcon && (props.icon || defaultIcons[props.type || "info"]) && (
-        props.icon || defaultIcons[props.type || "info"]
+      {!props.hideIcon && (props.icon || defaultIcons[alertVariant()]) && (
+        props.icon || defaultIcons[alertVariant()]
       )}
       
       {/* Main content - Second child in DaisyUI grid structure */}
