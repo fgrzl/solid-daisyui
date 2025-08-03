@@ -1,20 +1,27 @@
 import { JSX, createSignal, For } from "solid-js";
+import Link from "./link";
 
 /**
  * Props for individual tab items.
  *
  * @property {string} label - The label text displayed in the tab.
  * @property {JSX.Element} [content] - The content to display in the tab panel.
+ * @property {string} [href] - URL for navigation tabs. When provided, uses Link component for routing.
+ * @property {string} [target] - Where to display the linked URL (e.g., '_blank' for new window).
  * @property {boolean} [disabled] - Whether the tab is disabled.
  * @property {string} [class] - Additional CSS classes to apply to the tab.
  * @property {Record<string, boolean>} [classList] - Dynamic class list for conditional styling.
+ * @property {(event: MouseEvent | KeyboardEvent) => void} [onClick] - Click event handler for non-navigation tabs.
  */
 export interface TabItem {
   label: string;
   content?: JSX.Element;
+  href?: string;
+  target?: string;
   disabled?: boolean;
   class?: string;
   classList?: Record<string, boolean>;
+  onClick?: (event: MouseEvent | KeyboardEvent) => void;
 }
 
 /**
@@ -48,35 +55,78 @@ export interface TabsProps {
  * Props for the Tab component when used as children.
  *
  * @property {string} label - The label text displayed in the tab.
- * @property {JSX.Element} children - The content to display in the tab panel.
+ * @property {JSX.Element} [children] - The content to display in the tab panel.
+ * @property {string} [href] - URL for navigation tabs. When provided, uses Link component for routing.
+ * @property {string} [target] - Where to display the linked URL (e.g., '_blank' for new window).
  * @property {boolean} [disabled] - Whether the tab is disabled.
  * @property {string} [class] - Additional CSS classes to apply to the tab.
  * @property {Record<string, boolean>} [classList] - Dynamic class list for conditional styling.
+ * @property {(event: MouseEvent | KeyboardEvent) => void} [onClick] - Click event handler for non-navigation tabs.
  */
 export interface TabProps {
   label: string;
-  children: JSX.Element;
+  children?: JSX.Element;
+  href?: string;
+  target?: string;
   disabled?: boolean;
   class?: string;
   classList?: Record<string, boolean>;
+  onClick?: (event: MouseEvent | KeyboardEvent) => void;
 }
 
 /**
  * Tab component for individual tab items within a Tabs container.
- * Should be used as children of the Tabs component.
+ * Can be used as children of the Tabs component or standalone.
  * 
- * This is mainly for the compound component pattern but the tab rendering
- * is handled by the parent Tabs component.
+ * When href is provided, uses the Link component for proper routing.
+ * Without href, acts as a clickable button element.
  *
  * @param {TabProps} props - The properties to configure the Tab component.
  * @returns {JSX.Element} The rendered Tab component.
  */
 function Tab(props: TabProps): JSX.Element {
-  // This component is used for the compound pattern but doesn't render directly
-  // The actual rendering is handled by the Tabs component
-  return <div data-tab-label={props.label} data-tab-disabled={props.disabled} style={{ display: "none" }}>
-    {props.children}
-  </div>;
+  const handleClick = (event: MouseEvent | KeyboardEvent) => {
+    if (props.disabled) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+    
+    props.onClick?.(event);
+  };
+
+  // For compound component pattern, we store the props in data attributes
+  // so the parent Tabs component can extract them
+  const tabData = {
+    "data-tab-label": props.label,
+    "data-tab-disabled": props.disabled,
+    "data-tab-href": props.href,
+    "data-tab-target": props.target,
+  };
+
+  // When used standalone (not as children of Tabs), render the actual tab
+  if (props.href) {
+    return (
+      <Link
+        href={props.href}
+        target={props.target}
+        class={props.class}
+        classList={props.classList}
+        disabled={props.disabled}
+        onClick={handleClick}
+        {...tabData}
+      >
+        {props.label}
+      </Link>
+    );
+  }
+
+  // For non-navigation tabs or when used in compound pattern
+  return (
+    <div {...tabData} style={{ display: "none" }}>
+      {props.children}
+    </div>
+  );
 }
 
 /**
@@ -120,9 +170,12 @@ export default function Tabs(props: TabsProps): JSX.Element {
           validTabs.push({
             label: child.props.label,
             content: child.props.children,
+            href: child.props.href,
+            target: child.props.target,
             disabled: child.props.disabled,
             class: child.props.class,
             classList: child.props.classList,
+            onClick: child.props.onClick,
           });
         }
       });
@@ -203,8 +256,15 @@ export default function Tabs(props: TabsProps): JSX.Element {
 
   // Handle tab click
   const handleTabClick = (index: number) => {
-    if (!tabsData[index]?.disabled) {
-      setActiveTab(index);
+    const tabData = tabsData[index];
+    if (!tabData?.disabled) {
+      // For navigation tabs with href, don't set active state
+      // (they navigate away or to different sections)
+      if (!tabData.href) {
+        setActiveTab(index);
+      }
+      // Call custom onClick handler if provided
+      tabData.onClick?.(undefined as any); // Event will be provided by the actual element
     }
   };
 
@@ -270,25 +330,54 @@ export default function Tabs(props: TabsProps): JSX.Element {
         onKeyDown={handleKeyDown}
       >
         <For each={tabsData}>
-          {(tabData, index) => (
-            <button
-              id={generateTabId(index())}
-              role="tab"
-              aria-selected={activeTab() === index()}
-              aria-controls={generatePanelId(index())}
-              aria-disabled={tabData.disabled}
-              tabindex={activeTab() === index() && !tabData.disabled ? 0 : -1}
-              data-tab-index={index()}
-              classList={{
-                ...getTabClasses(index(), tabData),
-                ...tabData.classList,
-              }}
-              onClick={() => handleTabClick(index())}
-              onKeyDown={(e) => handleTabKeyDown(e, index())}
-            >
-              {tabData.label}
-            </button>
-          )}
+          {(tabData, index) => {
+            // If tab has href, render as Link, otherwise as button
+            if (tabData.href) {
+              return (
+                <Link
+                  id={generateTabId(index())}
+                  role="tab"
+                  aria-selected={activeTab() === index()}
+                  aria-controls={generatePanelId(index())}
+                  aria-disabled={tabData.disabled}
+                  tabindex={activeTab() === index() && !tabData.disabled ? 0 : -1}
+                  data-tab-index={index()}
+                  href={tabData.href}
+                  target={tabData.target}
+                  disabled={tabData.disabled}
+                  classList={{
+                    ...getTabClasses(index(), tabData),
+                    ...tabData.classList,
+                  }}
+                  onClick={() => handleTabClick(index())}
+                  onKeyDown={(e) => handleTabKeyDown(e, index())}
+                >
+                  {tabData.label}
+                </Link>
+              );
+            }
+
+            // Regular button for non-href tabs (original logic)
+            return (
+              <button
+                id={generateTabId(index())}
+                role="tab"
+                aria-selected={activeTab() === index()}
+                aria-controls={generatePanelId(index())}
+                aria-disabled={tabData.disabled}
+                tabindex={activeTab() === index() && !tabData.disabled ? 0 : -1}
+                data-tab-index={index()}
+                classList={{
+                  ...getTabClasses(index(), tabData),
+                  ...tabData.classList,
+                }}
+                onClick={() => handleTabClick(index())}
+                onKeyDown={(e) => handleTabKeyDown(e, index())}
+              >
+                {tabData.label}
+              </button>
+            );
+          }}
         </For>
       </div>
       
@@ -319,3 +408,6 @@ export default function Tabs(props: TabsProps): JSX.Element {
 
 // Export Tab as a property of Tabs for compound component pattern
 Tabs.Tab = Tab;
+
+// Also export Tab as a standalone component
+export { Tab };

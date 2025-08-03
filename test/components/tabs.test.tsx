@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, fireEvent } from "@solidjs/testing-library";
 import { createSignal } from "solid-js";
-import Tabs from "@/components/tabs";
+import Tabs, { Tab } from "@/components/tabs";
 
 describe("Tabs Component", () => {
   // Test data
@@ -371,6 +371,199 @@ describe("Tabs Component", () => {
       const tabs = getAllByRole("tab");
       expect(tabs[0]).toHaveAttribute("aria-selected", "false");
       expect(tabs[1]).toHaveAttribute("aria-selected", "true");
+    });
+  });
+
+  // Navigation Tabs (href) Tests
+  describe("Navigation Tabs with href", () => {
+    const navigationTabs = [
+      { label: "Home", content: <div>Home content</div> },
+      { label: "About", href: "/about" },
+      { label: "Contact", href: "/contact", target: "_blank" },
+    ];
+
+    it("renders navigation tabs with Link component", () => {
+      const { getAllByRole } = render(() => <Tabs tabs={navigationTabs} />);
+      
+      const tabs = getAllByRole("tab");
+      expect(tabs).toHaveLength(3);
+      
+      // First tab is regular button
+      expect(tabs[0].tagName).toBe("BUTTON");
+      
+      // Second and third tabs should be Link components (which render as anchor tags)
+      expect(tabs[1].tagName).toBe("A");
+      expect(tabs[1]).toHaveAttribute("href", "/about");
+      
+      expect(tabs[2].tagName).toBe("A");
+      expect(tabs[2]).toHaveAttribute("href", "/contact");
+      expect(tabs[2]).toHaveAttribute("target", "_blank");
+    });
+
+    it("navigation tabs don't affect active state", () => {
+      const { getAllByRole } = render(() => <Tabs tabs={navigationTabs} />);
+      
+      const tabs = getAllByRole("tab");
+      
+      // Initially first tab (regular tab) is active
+      expect(tabs[0]).toHaveAttribute("aria-selected", "true");
+      expect(tabs[1]).toHaveAttribute("aria-selected", "false");
+      
+      // Click navigation tab shouldn't change active state
+      fireEvent.click(tabs[1]);
+      
+      // First tab should still be active (navigation tabs don't become active)
+      expect(tabs[0]).toHaveAttribute("aria-selected", "true");
+      expect(tabs[1]).toHaveAttribute("aria-selected", "false");
+    });
+
+    it("supports onClick handlers for navigation tabs", () => {
+      const onAboutClick = vi.fn();
+      const tabsWithClickHandler = [
+        { label: "Home", content: <div>Home content</div> },
+        { label: "About", href: "/about", onClick: onAboutClick },
+      ];
+      
+      const { getAllByRole } = render(() => <Tabs tabs={tabsWithClickHandler} />);
+      
+      const tabs = getAllByRole("tab");
+      fireEvent.click(tabs[1]);
+      
+      expect(onAboutClick).toHaveBeenCalled();
+    });
+  });
+
+  // Compound Component Pattern Tests
+  describe("Compound Component Pattern", () => {
+    it("renders with Tab children components", () => {
+      const { getAllByRole } = render(() => (
+        <Tabs>
+          <Tab label="Home">Home content</Tab>
+          <Tab label="About">About content</Tab>
+        </Tabs>
+      ));
+      
+      const tabs = getAllByRole("tab");
+      expect(tabs).toHaveLength(2);
+      expect(tabs[0]).toHaveTextContent("Home");
+      expect(tabs[1]).toHaveTextContent("About");
+    });
+
+    it("supports href in Tab children for navigation", () => {
+      const { getAllByRole } = render(() => (
+        <Tabs>
+          <Tab label="Home">Home content</Tab>
+          <Tab label="About" href="/about" />
+          <Tab label="Contact" href="/contact" target="_blank" />
+        </Tabs>
+      ));
+      
+      const tabs = getAllByRole("tab");
+      expect(tabs).toHaveLength(3);
+      
+      // First tab is regular button
+      expect(tabs[0].tagName).toBe("BUTTON");
+      
+      // Second and third tabs are Link components
+      expect(tabs[1].tagName).toBe("A");
+      expect(tabs[1]).toHaveAttribute("href", "/about");
+      
+      expect(tabs[2].tagName).toBe("A");
+      expect(tabs[2]).toHaveAttribute("href", "/contact");
+      expect(tabs[2]).toHaveAttribute("target", "_blank");
+    });
+
+    it("supports disabled tabs in compound pattern", () => {
+      const { getAllByRole } = render(() => (
+        <Tabs>
+          <Tab label="Home">Home content</Tab>
+          <Tab label="About" disabled>About content</Tab>
+        </Tabs>
+      ));
+      
+      const tabs = getAllByRole("tab");
+      expect(tabs[1]).toHaveAttribute("aria-disabled", "true");
+      expect(tabs[1]).toHaveClass("tab-disabled");
+    });
+
+    it("supports custom classes in compound pattern", () => {
+      const { getAllByRole } = render(() => (
+        <Tabs>
+          <Tab label="Home" class="custom-tab">Home content</Tab>
+        </Tabs>
+      ));
+      
+      const tabs = getAllByRole("tab");
+      expect(tabs[0]).toHaveClass("tab", "custom-tab");
+    });
+
+    it("supports tab content with showContent prop", () => {
+      const { getByText } = render(() => (
+        <Tabs showContent>
+          <Tab label="Home">
+            <div>Home content here</div>
+          </Tab>
+          <Tab label="About">
+            <div>About content here</div>
+          </Tab>
+        </Tabs>
+      ));
+      
+      // First tab content should be visible
+      expect(getByText("Home content here")).toBeVisible();
+      expect(getByText("About content here")).not.toBeVisible();
+    });
+
+    it("can mix tabs array and children (tabs array takes precedence)", () => {
+      const mixedTabs = [{ label: "Array Tab", content: <div>Array content</div> }];
+      
+      const { getAllByRole } = render(() => (
+        <Tabs tabs={mixedTabs}>
+          <Tab label="Child Tab">Child content</Tab>
+        </Tabs>
+      ));
+      
+      const tabs = getAllByRole("tab");
+      expect(tabs).toHaveLength(1);
+      expect(tabs[0]).toHaveTextContent("Array Tab");
+    });
+  });
+
+  // Tab Standalone Component Tests
+  describe("Tab Standalone Component", () => {
+    it("renders as Link when href is provided", () => {
+      const { container } = render(() => <Tab label="About" href="/about" />);
+      
+      const link = container.querySelector("a");
+      expect(link).toBeInTheDocument();
+      expect(link).toHaveAttribute("href", "/about");
+      expect(link).toHaveTextContent("About");
+    });
+
+    it("renders as hidden div when no href (for compound pattern)", () => {
+      const { container } = render(() => <Tab label="Home">Content</Tab>);
+      
+      const div = container.querySelector("div");
+      expect(div).toBeInTheDocument();
+      expect(div).toHaveStyle("display: none");
+      expect(div).toHaveAttribute("data-tab-label", "Home");
+    });
+
+    it("supports onClick handler when used as standalone Link", () => {
+      const onClick = vi.fn();
+      const { container } = render(() => <Tab label="About" href="/about" onClick={onClick} />);
+      
+      const link = container.querySelector("a");
+      fireEvent.click(link!);
+      
+      expect(onClick).toHaveBeenCalled();
+    });
+
+    it("supports disabled state for standalone Link", () => {
+      const { container } = render(() => <Tab label="About" href="/about" disabled />);
+      
+      const link = container.querySelector("a");
+      expect(link).toHaveAttribute("aria-disabled", "true");
     });
   });
 });

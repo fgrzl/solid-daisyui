@@ -90,6 +90,7 @@ function getRouterA(): any {
  * @property {number} [tabIndex] - Tab order for keyboard navigation. Defaults to 0.
  * @property {string} [aria-label] - Accessible label for screen readers.
  * @property {string} [aria-describedby] - ID of element that describes the link.
+ * @property {string} [role] - ARIA role for the link. Defaults to "link" if href is provided, "button" otherwise.
  * @property {(event: MouseEvent | KeyboardEvent) => void} [onClick] - Click event handler that accepts both mouse and keyboard events.
  */
 export interface LinkProps {
@@ -106,6 +107,7 @@ export interface LinkProps {
   tabIndex?: number;
   "aria-label"?: string;
   "aria-describedby"?: string;
+  role?: string;
   onClick?: (event: MouseEvent | KeyboardEvent) => void;
 }
 
@@ -194,13 +196,13 @@ export default function Link(props: LinkProps): JSX.Element {
   };
 
   // Determine accessibility attributes
-  const role = props.href ? "link" : "button";
+  const role = props.role ?? (props.href ? "link" : "button");
   const tabIndex = props.disabled ? -1 : (props.tabIndex ?? 0);
 
   // Common props for router component
   const routerProps = {
     href: props.href,
-    role: role as "link" | "button",
+    role: role,
     tabindex: tabIndex,
     "aria-disabled": props.disabled ? "true" as const : undefined,
     "aria-label": props["aria-label"],
@@ -218,7 +220,7 @@ export default function Link(props: LinkProps): JSX.Element {
     href: props.href,
     target: props.target,
     rel: computedRel(),
-    role: role as "link" | "button",
+    role: role,
     tabindex: tabIndex,
     "aria-disabled": props.disabled ? "true" as const : undefined,
     "aria-label": props["aria-label"],
