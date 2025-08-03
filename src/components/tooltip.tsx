@@ -1,4 +1,4 @@
-import { JSX, createSignal, createUniqueId, onMount, createEffect, children } from "solid-js";
+import { JSX, createSignal, createUniqueId, onMount, onCleanup, createEffect, children } from "solid-js";
 
 /**
  * Props for the Tooltip component.
@@ -59,7 +59,7 @@ export default function Tooltip(props: TooltipProps): JSX.Element {
     }
 
     // Add open class when tooltip should be visible
-    if (isOpen() || props.open) {
+    if (isOpen()) {
       baseClasses["tooltip-open"] = true;
     }
 
@@ -100,28 +100,40 @@ export default function Tooltip(props: TooltipProps): JSX.Element {
   // Setup event listeners for child elements
   onMount(() => {
     if (containerRef) {
-      // Find all elements within the container
-      const allElements = containerRef.querySelectorAll('*');
+      const cleanupFns: (() => void)[] = [];
+      
+      // Find only focusable elements within the container
+      const focusableElements = containerRef.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
       
       // Add accessibility attributes and event listeners
-      allElements.forEach((element) => {
+      focusableElements.forEach((element) => {
         // Add aria-describedby to focusable elements
-        if (element.matches('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')) {
-          element.setAttribute('aria-describedby', tooltipId);
-        }
+        element.setAttribute('aria-describedby', tooltipId);
         
-        // Add focus/blur event listeners to all elements
-        element.addEventListener('focus', () => {
+        // Add focus/blur event listeners to focusable elements
+        const focusHandler = () => {
           if (props.open === undefined) {
             setIsOpen(true);
           }
-        });
-        
-        element.addEventListener('blur', () => {
+        };
+        const blurHandler = () => {
           if (props.open === undefined) {
             setIsOpen(false);
           }
+        };
+        
+        element.addEventListener('focus', focusHandler);
+        element.addEventListener('blur', blurHandler);
+        
+        // Store cleanup function
+        cleanupFns.push(() => {
+          element.removeEventListener('focus', focusHandler);
+          element.removeEventListener('blur', blurHandler);
         });
+      });
+      
+      onCleanup(() => {
+        cleanupFns.forEach(fn => fn());
       });
     }
   });
@@ -145,7 +157,7 @@ export default function Tooltip(props: TooltipProps): JSX.Element {
       {resolvedChildren()}
       
       {/* Hidden tooltip text for accessibility - always present when open */}
-      {(isOpen() || props.open) && (
+      {isOpen() && (
         <span
           id={tooltipId}
           role="tooltip"
