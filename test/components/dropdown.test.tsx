@@ -821,7 +821,7 @@ describe("Dropdown Component", () => {
 
   // New Component Tests
   describe("DropdownMenu Component", () => {
-    it("renders as ul element with menu class", () => {
+    it("renders as ul element with dropdown-content and menu classes", () => {
       const { container } = render(() => (
         <DropdownMenu>
           <li>Item 1</li>
@@ -831,6 +831,7 @@ describe("Dropdown Component", () => {
       
       const menu = container.querySelector("ul");
       expect(menu).toBeInTheDocument();
+      expect(menu).toHaveClass("dropdown-content");
       expect(menu).toHaveClass("menu");
       expect(menu).toHaveAttribute("role", "menu");
       expect(menu).toHaveAttribute("data-dropdown-menu", "true");
@@ -844,6 +845,7 @@ describe("Dropdown Component", () => {
       ));
       
       const menu = container.querySelector("ul");
+      expect(menu).toHaveClass("dropdown-content");
       expect(menu).toHaveClass("menu");
       expect(menu).toHaveClass("bg-base-100");
       expect(menu).toHaveClass("rounded-box");
@@ -857,6 +859,8 @@ describe("Dropdown Component", () => {
       ));
       
       const menu = container.querySelector("ul");
+      expect(menu).toHaveClass("dropdown-content");
+      expect(menu).toHaveClass("menu");
       expect(menu).toHaveClass("w-52");
       expect(menu).not.toHaveClass("p-2");
     });
@@ -870,6 +874,32 @@ describe("Dropdown Component", () => {
       
       const menu = container.querySelector("ul");
       expect(menu).toHaveAttribute("role", "listbox");
+    });
+
+    it("is interchangeable with DropdownContent (both have dropdown-content class)", () => {
+      const { container: menuContainer } = render(() => (
+        <DropdownMenu>
+          <li>Menu Item</li>
+        </DropdownMenu>
+      ));
+      
+      const { container: contentContainer } = render(() => (
+        <DropdownContent>
+          <div>Content Item</div>
+        </DropdownContent>
+      ));
+      
+      const menu = menuContainer.querySelector("ul");
+      const content = contentContainer.querySelector("div");
+      
+      // Both should have dropdown-content class
+      expect(menu).toHaveClass("dropdown-content");
+      expect(content).toHaveClass("dropdown-content");
+      
+      // Menu should also have menu class for semantic structure
+      expect(menu).toHaveClass("menu");
+      // Content should not have menu class (it's a generic container)
+      expect(content).not.toHaveClass("menu");
     });
   });
 

@@ -19,8 +19,9 @@ export interface DropdownMenuProps {
  * DropdownMenu component for dropdown menu lists.
  * 
  * This component renders a ul element specifically designed for dropdown menus.
- * It automatically applies DaisyUI menu classes and provides proper semantic
- * structure for dropdown menu items.
+ * It automatically applies both DaisyUI dropdown-content and menu classes,
+ * making it interchangeable with DropdownContent for dropdown purposes while
+ * providing proper semantic structure for dropdown menu items.
  * 
  * **Usage:**
  * ```tsx
@@ -28,13 +29,11 @@ export interface DropdownMenuProps {
  *   <DropdownTrigger tabindex={0}>
  *     <span>Open Menu</span>
  *   </DropdownTrigger>
- *   <DropdownContent>
- *     <DropdownMenu class="bg-base-100 rounded-box w-52 p-2 shadow">
- *       <DropdownMenuItem>Item 1</DropdownMenuItem>
- *       <DropdownMenuItem active>Item 2</DropdownMenuItem>
- *       <DropdownMenuItem disabled>Item 3</DropdownMenuItem>
- *     </DropdownMenu>
- *   </DropdownContent>
+ *   <DropdownMenu class="bg-base-100 rounded-box w-52 p-2 shadow">
+ *     <DropdownMenuItem>Item 1</DropdownMenuItem>
+ *     <DropdownMenuItem active>Item 2</DropdownMenuItem>
+ *     <DropdownMenuItem disabled>Item 3</DropdownMenuItem>
+ *   </DropdownMenu>
  * </Dropdown>
  * ```
  * 
@@ -43,6 +42,7 @@ export interface DropdownMenuProps {
  */
 export default function DropdownMenu(props: DropdownMenuProps): JSX.Element {
   const classes = () => ({
+    "dropdown-content": true,
     menu: true,
     ...(props.class ? { [props.class]: true } : {}),
   });
