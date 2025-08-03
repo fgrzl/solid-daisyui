@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, fireEvent } from "@solidjs/testing-library";
 import { createSignal } from "solid-js";
-import List from "@/components/list";
+import { List, ListItem } from "@/components/list";
 
 describe("List Component", () => {
   // Basic Rendering Tests
@@ -387,6 +387,386 @@ describe("List Component", () => {
       ));
       
       expect(container.firstChild).toHaveClass("list", "list-numbered", "list-lg");
+    });
+  });
+});
+
+describe("ListItem Component", () => {
+  // Basic Rendering Tests
+  describe("Basic Rendering", () => {
+    it("renders as a list item element", () => {
+      const { container } = render(() => (
+        <ul>
+          <ListItem>Test Item</ListItem>
+        </ul>
+      ));
+      
+      const listItem = container.querySelector('li');
+      expect(listItem).toBeInTheDocument();
+      expect(listItem?.tagName).toBe('LI');
+    });
+
+    it("renders children properly", () => {
+      const { getByText } = render(() => (
+        <ul>
+          <ListItem>Test Content</ListItem>
+        </ul>
+      ));
+      
+      expect(getByText("Test Content")).toBeInTheDocument();
+    });
+
+    it("supports complex children content", () => {
+      const { getByText, getByRole } = render(() => (
+        <ul>
+          <ListItem>
+            <span>Text content</span>
+            <button>Action</button>
+          </ListItem>
+        </ul>
+      ));
+      
+      expect(getByText("Text content")).toBeInTheDocument();
+      expect(getByRole("button")).toBeInTheDocument();
+    });
+  });
+
+  // Integration with List Component
+  describe("Integration with List Component", () => {
+    it("works properly within List component", () => {
+      const { container, getByText } = render(() => (
+        <List variant="numbered">
+          <ListItem>First Item</ListItem>
+          <ListItem>Second Item</ListItem>
+        </List>
+      ));
+      
+      expect(container.firstChild).toHaveClass("list", "list-numbered");
+      expect(getByText("First Item")).toBeInTheDocument();
+      expect(getByText("Second Item")).toBeInTheDocument();
+      
+      const listItems = container.querySelectorAll('li');
+      expect(listItems).toHaveLength(2);
+    });
+
+    it("works alongside raw li elements", () => {
+      const { container, getByText } = render(() => (
+        <List>
+          <ListItem>ListItem Component</ListItem>
+          <li>Raw li element</li>
+        </List>
+      ));
+      
+      expect(getByText("ListItem Component")).toBeInTheDocument();
+      expect(getByText("Raw li element")).toBeInTheDocument();
+      
+      const listItems = container.querySelectorAll('li');
+      expect(listItems).toHaveLength(2);
+    });
+  });
+
+  // Interactive Features
+  describe("Interactive Features", () => {
+    it("supports onClick handler", () => {
+      const handleClick = vi.fn();
+      const { getByText } = render(() => (
+        <ul>
+          <ListItem onClick={handleClick}>Clickable Item</ListItem>
+        </ul>
+      ));
+      
+      fireEvent.click(getByText("Clickable Item"));
+      expect(handleClick).toHaveBeenCalledTimes(1);
+    });
+
+    it("supports keyboard navigation with Enter key", () => {
+      const handleClick = vi.fn();
+      const { getByText } = render(() => (
+        <ul>
+          <ListItem onClick={handleClick} tabIndex={0}>
+            Keyboard Item
+          </ListItem>
+        </ul>
+      ));
+      
+      const item = getByText("Keyboard Item");
+      fireEvent.keyDown(item, { key: 'Enter' });
+      expect(handleClick).toHaveBeenCalledTimes(1);
+    });
+
+    it("supports keyboard navigation with Space key", () => {
+      const handleClick = vi.fn();
+      const { getByText } = render(() => (
+        <ul>
+          <ListItem onClick={handleClick} tabIndex={0}>
+            Keyboard Item
+          </ListItem>
+        </ul>
+      ));
+      
+      const item = getByText("Keyboard Item");
+      fireEvent.keyDown(item, { key: ' ' });
+      expect(handleClick).toHaveBeenCalledTimes(1);
+    });
+
+    it("supports custom onKeyDown handler", () => {
+      const handleKeyDown = vi.fn();
+      const { getByText } = render(() => (
+        <ul>
+          <ListItem onKeyDown={handleKeyDown}>
+            Custom Key Item
+          </ListItem>
+        </ul>
+      ));
+      
+      const item = getByText("Custom Key Item");
+      fireEvent.keyDown(item, { key: 'a' });
+      expect(handleKeyDown).toHaveBeenCalledTimes(1);
+    });
+
+    it("calls both custom onKeyDown and onClick when Enter is pressed", () => {
+      const handleClick = vi.fn();
+      const handleKeyDown = vi.fn();
+      const { getByText } = render(() => (
+        <ul>
+          <ListItem onClick={handleClick} onKeyDown={handleKeyDown}>
+            Combined Handlers
+          </ListItem>
+        </ul>
+      ));
+      
+      const item = getByText("Combined Handlers");
+      fireEvent.keyDown(item, { key: 'Enter' });
+      expect(handleKeyDown).toHaveBeenCalledTimes(1);
+      expect(handleClick).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  // Accessibility Features
+  describe("Accessibility", () => {
+    it("supports custom aria-label", () => {
+      const { container } = render(() => (
+        <ul>
+          <ListItem aria-label="Custom item label">Test Item</ListItem>
+        </ul>
+      ));
+      
+      const listItem = container.querySelector('li');
+      expect(listItem).toHaveAttribute('aria-label', 'Custom item label');
+    });
+
+    it("supports custom role attribute", () => {
+      const { container } = render(() => (
+        <ul>
+          <ListItem role="button">Button Item</ListItem>
+        </ul>
+      ));
+      
+      const listItem = container.querySelector('li');
+      expect(listItem).toHaveAttribute('role', 'button');
+    });
+
+    it("supports tabIndex for keyboard navigation", () => {
+      const { container } = render(() => (
+        <ul>
+          <ListItem tabIndex={0}>Focusable Item</ListItem>
+        </ul>
+      ));
+      
+      const listItem = container.querySelector('li');
+      expect(listItem).toHaveAttribute('tabIndex', '0');
+    });
+
+    it("can be focused when interactive", () => {
+      const { getByText } = render(() => (
+        <ul>
+          <ListItem tabIndex={0}>Focusable Item</ListItem>
+        </ul>
+      ));
+      
+      const item = getByText("Focusable Item");
+      item.focus();
+      expect(document.activeElement).toBe(item);
+    });
+  });
+
+  // Styling and Customization
+  describe("Styling and Customization", () => {
+    it("supports custom class prop", () => {
+      const { container } = render(() => (
+        <ul>
+          <ListItem class="custom-item">Styled Item</ListItem>
+        </ul>
+      ));
+      
+      const listItem = container.querySelector('li');
+      expect(listItem).toHaveClass('custom-item');
+    });
+
+    it("supports classList prop", () => {
+      const { container } = render(() => (
+        <ul>
+          <ListItem classList={{ "active": true, "inactive": false }}>
+            Dynamic Item
+          </ListItem>
+        </ul>
+      ));
+      
+      const listItem = container.querySelector('li');
+      expect(listItem).toHaveClass('active');
+      expect(listItem).not.toHaveClass('inactive');
+    });
+
+    it("combines class and classList props", () => {
+      const { container } = render(() => (
+        <ul>
+          <ListItem 
+            class="static-class" 
+            classList={{ "dynamic-class": true }}
+          >
+            Combined Classes
+          </ListItem>
+        </ul>
+      ));
+      
+      const listItem = container.querySelector('li');
+      expect(listItem).toHaveClass('static-class', 'dynamic-class');
+    });
+
+    it("supports style attribute", () => {
+      const { container } = render(() => (
+        <ul>
+          <ListItem style="color: red;">Styled Item</ListItem>
+        </ul>
+      ));
+      
+      const listItem = container.querySelector('li');
+      expect(listItem).toHaveAttribute('style', 'color: red;');
+    });
+
+    it("supports id attribute", () => {
+      const { container } = render(() => (
+        <ul>
+          <ListItem id="unique-item">Identified Item</ListItem>
+        </ul>
+      ));
+      
+      const listItem = container.querySelector('li');
+      expect(listItem).toHaveAttribute('id', 'unique-item');
+    });
+  });
+
+  // Edge Cases
+  describe("Edge Cases", () => {
+    it("handles empty children gracefully", () => {
+      const { container } = render(() => (
+        <ul>
+          <ListItem></ListItem>
+        </ul>
+      ));
+      
+      const listItem = container.querySelector('li');
+      expect(listItem).toBeInTheDocument();
+      expect(listItem).toBeEmptyDOMElement();
+    });
+
+    it("handles null children gracefully", () => {
+      const { container } = render(() => (
+        <ul>
+          <ListItem>{null}</ListItem>
+        </ul>
+      ));
+      
+      const listItem = container.querySelector('li');
+      expect(listItem).toBeInTheDocument();
+    });
+
+    it("handles undefined children gracefully", () => {
+      const { container } = render(() => (
+        <ul>
+          <ListItem>{undefined}</ListItem>
+        </ul>
+      ));
+      
+      const listItem = container.querySelector('li');
+      expect(listItem).toBeInTheDocument();
+    });
+
+    it("works without any props", () => {
+      const { container, getByText } = render(() => (
+        <ul>
+          <ListItem>Basic Item</ListItem>
+        </ul>
+      ));
+      
+      expect(getByText("Basic Item")).toBeInTheDocument();
+      const listItem = container.querySelector('li');
+      expect(listItem?.tagName).toBe('LI');
+    });
+  });
+
+  // Performance and State Management
+  describe("Performance and State Management", () => {
+    it("re-renders efficiently when props change", () => {
+      const [active, setActive] = createSignal(false);
+      
+      const { container } = render(() => (
+        <ul>
+          <ListItem classList={{ active: active() }}>
+            Dynamic Item
+          </ListItem>
+        </ul>
+      ));
+      
+      const listItem = container.querySelector('li');
+      expect(listItem).not.toHaveClass('active');
+      
+      setActive(true);
+      expect(listItem).toHaveClass('active');
+    });
+
+    it("maintains consistent DOM structure", () => {
+      const { container } = render(() => (
+        <ul>
+          <ListItem>Consistent Item</ListItem>
+        </ul>
+      ));
+      
+      const listItem = container.querySelector('li');
+      expect(listItem?.tagName).toBe('LI');
+      expect(listItem).toBeInTheDocument();
+    });
+  });
+
+  // TypeScript Interface Validation
+  describe("TypeScript Interface", () => {
+    it("accepts all expected props without TypeScript errors", () => {
+      const handleClick = vi.fn();
+      const handleKeyDown = vi.fn();
+      
+      const { container } = render(() => (
+        <ul>
+          <ListItem
+            class="test-class"
+            classList={{ active: true }}
+            id="test-id"
+            style="margin: 4px;"
+            onClick={handleClick}
+            onKeyDown={handleKeyDown}
+            tabIndex={0}
+            aria-label="Test item"
+            role="button"
+          >
+            Complete Props Test
+          </ListItem>
+        </ul>
+      ));
+      
+      const listItem = container.querySelector('li');
+      expect(listItem).toHaveClass('test-class', 'active');
+      expect(listItem).toHaveAttribute('id', 'test-id');
+      expect(listItem).toHaveAttribute('aria-label', 'Test item');
+      expect(listItem).toHaveAttribute('role', 'button');
     });
   });
 });
