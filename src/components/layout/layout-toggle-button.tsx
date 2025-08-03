@@ -52,6 +52,12 @@ export default function LayoutToggleButton(props: LayoutToggleButtonProps): JSX.
   // Handle toggle action
   const handleToggle = () => {
     context.setNavCollapsed(!context.isNavCollapsed());
+    
+    // Also toggle the drawer input if it exists
+    const drawerInput = document.getElementById('layout-drawer-toggle') as HTMLInputElement;
+    if (drawerInput) {
+      drawerInput.checked = context.isNavCollapsed();
+    }
   };
 
   // Handle keyboard events

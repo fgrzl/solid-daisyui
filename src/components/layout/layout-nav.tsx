@@ -60,16 +60,23 @@ export default function LayoutNav(props: LayoutNavProps): JSX.Element {
   // Render different structures based on variant
   if (context.variant === "left" || context.variant === "right") {
     return (
-      <aside
-        classList={{
-          ...classes(),
-          ...props.classList,
-        }}
-      >
-        <ul class="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
-          {props.children}
-        </ul>
-      </aside>
+      <>
+        <aside
+          classList={{
+            ...classes(),
+            ...props.classList,
+          }}
+        >
+          <label 
+            for="layout-drawer-toggle" 
+            aria-label="close sidebar"
+            class="drawer-overlay"
+          ></label>
+          <ul class="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
+            {props.children}
+          </ul>
+        </aside>
+      </>
     );
   }
 

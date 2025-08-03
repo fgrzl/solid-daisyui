@@ -104,6 +104,16 @@ export default function Layout(props: LayoutProps): JSX.Element {
           ...props.classList,
         }}
       >
+        {/* Drawer input for proper DaisyUI drawer functionality */}
+        {(variant() === "left" || variant() === "right") && (
+          <input 
+            id="layout-drawer-toggle" 
+            type="checkbox" 
+            class="drawer-toggle" 
+            checked={!isNavCollapsed()}
+            onChange={(e) => setNavCollapsed(!e.target.checked)}
+          />
+        )}
         {props.children}
       </div>
     </LayoutContext.Provider>
