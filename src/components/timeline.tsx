@@ -168,11 +168,12 @@ export function TimelineItem(props: TimelineItemProps): JSX.Element {
       </div>
 
       {/* Timeline middle (icon) */}
-      <div class="timeline-middle">
-        <Show when={props.icon} fallback={defaultIcon}>
-          {props.icon}
-        </Show>
-      </div>
+      <Show
+        when={props.icon}
+        fallback={defaultIcon}
+      >
+        <div class="timeline-middle">{props.icon}</div>
+      </Show>
 
       {/* Timeline end content */}
       <div class="timeline-end">
