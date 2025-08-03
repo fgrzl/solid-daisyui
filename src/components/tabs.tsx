@@ -1,33 +1,12 @@
-import { JSX, createSignal, For, children } from "solid-js";
+import { JSX, createSignal, For, children as solidChildren } from "solid-js";
 import Link from "./link";
 
-/**
- * Props for individual tab items.
- *
- * @property {string} label - The label text displayed in the tab.
- * @property {JSX.Element} [content] - The content to display in the tab panel.
- * @property {string} [href] - URL for navigation tabs. When provided, uses Link component for routing.
- * @property {string} [target] - Where to display the linked URL (e.g., '_blank' for new window).
- * @property {boolean} [disabled] - Whether the tab is disabled.
- * @property {string} [class] - Additional CSS classes to apply to the tab.
- * @property {Record<string, boolean>} [classList] - Dynamic class list for conditional styling.
- * @property {(event: MouseEvent | KeyboardEvent) => void} [onClick] - Click event handler for non-navigation tabs.
- */
-export interface TabItem {
-  label: string;
-  content?: JSX.Element;
-  href?: string;
-  target?: string;
-  disabled?: boolean;
-  class?: string;
-  classList?: Record<string, boolean>;
-  onClick?: (event: MouseEvent | KeyboardEvent) => void;
-}
+// Global registry for storing Tab onClick handlers
+const tabClickHandlers = new Map<string, (event: MouseEvent | KeyboardEvent) => void>();
 
 /**
  * Props for the Tabs component.
  *
- * @property {TabItem[]} [tabs] - Array of tab items to display.
  * @property {JSX.Element} [children] - Tab components to display (compound component pattern).
  * @property {"bordered" | "lifted" | "boxed"} [variant] - The DaisyUI variant style for the tabs.
  * @property {"xs" | "sm" | "md" | "lg"} [size] - The size of the tabs using DaisyUI size classes.
@@ -39,7 +18,6 @@ export interface TabItem {
  * @property {Record<string, boolean>} [classList] - Dynamic class list for conditional styling.
  */
 export interface TabsProps {
-  tabs?: TabItem[];
   children?: JSX.Element;
   variant?: "bordered" | "lifted" | "boxed";
   size?: "xs" | "sm" | "md" | "lg";
@@ -76,43 +54,24 @@ export interface TabProps {
 
 /**
  * Tab component for individual tab items within a Tabs container.
- * Can be used as children of the Tabs component or standalone.
+ * Used as children of the Tabs component in compound pattern.
  * 
- * When href is provided, uses the Link component for proper routing.
- * Without href, acts as a clickable button element.
+ * This component renders as a hidden container that stores the tab data
+ * for the parent Tabs component to extract and render properly.
  *
  * @param {TabProps} props - The properties to configure the Tab component.
- * @returns {JSX.Element} The rendered Tab component.
+ * @returns {JSX.Element} The rendered Tab component (hidden data container).
  */
 function Tab(props: TabProps): JSX.Element {
-  const handleClick = (event: MouseEvent | KeyboardEvent) => {
-    if (props.disabled) {
-      event.preventDefault();
-      event.stopPropagation();
-      return;
-    }
-    
-    props.onClick?.(event);
-  };
-
-  // When used standalone with href, render as Link
-  if (props.href) {
-    return (
-      <Link
-        href={props.href}
-        target={props.target}
-        class={props.class}
-        classList={props.classList}
-        disabled={props.disabled}
-        onClick={handleClick}
-        role="tab"
-      >
-        {props.label}
-      </Link>
-    );
+  // Generate a unique ID for this tab to store the click handler
+  const tabId = `tab-${Math.random().toString(36).slice(2)}`;
+  
+  // Store the onClick handler in the global registry if provided
+  if (props.onClick) {
+    tabClickHandlers.set(tabId, props.onClick);
   }
-
-  // For standalone non-href tabs or testing - render as hidden div with data attributes
+  
+  // Store the content as a hidden container that the parent can access
   return (
     <div 
       style={{ display: "none" }}
@@ -120,6 +79,9 @@ function Tab(props: TabProps): JSX.Element {
       data-tab-disabled={props.disabled}
       data-tab-href={props.href}
       data-tab-target={props.target}
+      data-tab-class={props.class}
+      data-tab-id={tabId}
+      data-tab-onclick={props.onClick ? 'true' : undefined}
     >
       {props.children}
     </div>
@@ -129,6 +91,8 @@ function Tab(props: TabProps): JSX.Element {
 /**
  * Tabs component for creating tabbed interfaces with keyboard navigation and accessibility support.
  * Follows DaisyUI Tab component patterns with support for variants, sizes, and proper ARIA attributes.
+ * 
+ * Only supports compound component pattern: <Tabs><Tab /></Tabs>
  * 
  * Supports both controlled and uncontrolled modes:
  * - Controlled: Use `activeTab` and `onTabChange` props
@@ -141,7 +105,7 @@ function Tab(props: TabProps): JSX.Element {
  * - Size variants (xs, sm, md, lg)
  * - Optional tab content panels
  * - Disabled tab support
- * - Two API modes: tabs prop (array of objects) or children (compound components)
+ * - Navigation tabs with href support using Link component
  *
  * @param {TabsProps} props - The properties to configure the Tabs component.
  * @returns {JSX.Element} The rendered Tabs component.
@@ -151,21 +115,66 @@ export default function Tabs(props: TabsProps): JSX.Element {
   const [tabsId] = createSignal(`tabs-${Math.random().toString(36).slice(2)}`);
   let tabsRef: HTMLDivElement | undefined;
 
-  // Extract tab data from either props.tabs or children
-  const getTabsData = (): TabItem[] => {
-    if (props.tabs) {
-      return props.tabs;
-    }
+  // Extract tab data from children
+  const getTabsData = () => {
+    if (!props.children) return [];
 
-    // Simple fallback for compound component pattern - just return empty for now
-    // This allows the component to still render children directly as a fallback
-    return [];
+    // For SolidJS, we need to resolve the children first
+    const resolved = solidChildren(() => props.children);
+    const childElements = resolved();
+    
+    if (!childElements) return [];
+
+    // Handle both single child and array of children
+    const childArray = Array.isArray(childElements) ? childElements : [childElements];
+    
+    return childArray.map((child: any, index) => {
+      // Check if it's an HTMLDivElement (our Tab components render as hidden divs)
+      if (child && child instanceof HTMLDivElement) {
+        // Extract data from data attributes
+        const label = child.getAttribute('data-tab-label') || `Tab ${index + 1}`;
+        const href = child.getAttribute('data-tab-href');
+        const target = child.getAttribute('data-tab-target');
+        const disabled = child.getAttribute('data-tab-disabled') === 'true';
+        const customClass = child.getAttribute('data-tab-class');
+        const content = child.textContent || child.innerHTML;
+        
+        const tabId = child.getAttribute('data-tab-id');
+        const hasOnClick = child.getAttribute('data-tab-onclick') === 'true';
+        const clickHandler = tabId ? tabClickHandlers.get(tabId) : undefined;
+        
+        return {
+          label,
+          content: child.innerHTML ? (() => {
+            let contentRef: HTMLDivElement | undefined;
+            return <div ref={el => {
+              contentRef = el;
+              if (el) el.innerHTML = child.innerHTML;
+            }} />;
+          })() : null,
+          href,
+          target,
+          disabled,
+          class: customClass,
+          classList: {},
+          onClick: clickHandler,
+        };
+      }
+      
+      return {
+        label: `Tab ${index + 1}`,
+        content: null,
+        href: undefined,
+        target: undefined,
+        disabled: false,
+        class: undefined,
+        classList: {},
+        onClick: undefined,
+      };
+    }).filter(Boolean);
   };
 
   const tabsData = getTabsData();
-
-  // If we have children but no tabs data, use children directly
-  const shouldUseChildren = () => props.children && tabsData.length === 0;
 
   // Determine active tab (controlled vs uncontrolled)
   const activeTab = () => {
@@ -213,7 +222,7 @@ export default function Tabs(props: TabsProps): JSX.Element {
   };
 
   // Build tab classes following DaisyUI patterns
-  const getTabClasses = (index: number, tabData: TabItem) => {
+  const getTabClasses = (index: number, tabData: any) => {
     const baseClasses: Record<string, boolean> = {
       tab: true,
       "tab-active": activeTab() === index,
@@ -308,49 +317,22 @@ export default function Tabs(props: TabsProps): JSX.Element {
         }}
         onKeyDown={handleKeyDown}
       >
-        {shouldUseChildren() ? (
-          // Render children directly for compound component pattern (basic support)
-          props.children
-        ) : (
-          // Render tabs from tabsData array (full functionality)
-          <For each={tabsData}>
-            {(tabData, index) => {
-              // If tab has href, render as Link, otherwise as button
-              if (tabData.href) {
-                return (
-                  <Link
-                    id={generateTabId(index())}
-                    role="tab"
-                    aria-selected={false} // Navigation tabs don't participate in tab state
-                    aria-controls={generatePanelId(index())}
-                    aria-disabled={tabData.disabled}
-                    tabindex={-1} // Navigation tabs aren't part of keyboard navigation sequence
-                    data-tab-index={index()}
-                    href={tabData.href}
-                    target={tabData.target}
-                    disabled={tabData.disabled}
-                    classList={{
-                      ...getTabClasses(index(), tabData),
-                      ...tabData.classList,
-                    }}
-                    onClick={() => handleTabClick(index())}
-                    onKeyDown={(e) => handleTabKeyDown(e, index())}
-                  >
-                    {tabData.label}
-                  </Link>
-                );
-              }
-
-              // Regular button for non-href tabs (original logic)
+        <For each={tabsData}>
+          {(tabData, index) => {
+            // If tab has href, render as Link, otherwise as button
+            if (tabData.href) {
               return (
-                <button
+                <Link
                   id={generateTabId(index())}
                   role="tab"
-                  aria-selected={activeTab() === index()}
+                  aria-selected={false} // Navigation tabs don't participate in tab state
                   aria-controls={generatePanelId(index())}
                   aria-disabled={tabData.disabled}
-                  tabindex={activeTab() === index() && !tabData.disabled ? 0 : -1}
+                  tabindex={-1} // Navigation tabs aren't part of keyboard navigation sequence
                   data-tab-index={index()}
+                  href={tabData.href}
+                  target={tabData.target}
+                  disabled={tabData.disabled}
                   classList={{
                     ...getTabClasses(index(), tabData),
                     ...tabData.classList,
@@ -359,14 +341,35 @@ export default function Tabs(props: TabsProps): JSX.Element {
                   onKeyDown={(e) => handleTabKeyDown(e, index())}
                 >
                   {tabData.label}
-                </button>
+                </Link>
               );
-            }}
-          </For>
-        )}
+            }
+
+            // Regular button for non-href tabs
+            return (
+              <button
+                id={generateTabId(index())}
+                role="tab"
+                aria-selected={activeTab() === index()}
+                aria-controls={generatePanelId(index())}
+                aria-disabled={tabData.disabled}
+                tabindex={activeTab() === index() && !tabData.disabled ? 0 : -1}
+                data-tab-index={index()}
+                classList={{
+                  ...getTabClasses(index(), tabData),
+                  ...tabData.classList,
+                }}
+                onClick={() => handleTabClick(index())}
+                onKeyDown={(e) => handleTabKeyDown(e, index())}
+              >
+                {tabData.label}
+              </button>
+            );
+          }}
+        </For>
       </div>
       
-      {props.showContent && !shouldUseChildren() && tabsData.length > 0 && (
+      {props.showContent && tabsData.length > 0 && (
         <div class="tab-content">
           <For each={tabsData}>
             {(tabData, index) => (

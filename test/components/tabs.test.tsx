@@ -4,27 +4,25 @@ import { createSignal } from "solid-js";
 import Tabs, { Tab } from "@/components/tabs";
 
 describe("Tabs Component", () => {
-  // Test data
-  const basicTabs = [
-    { label: "Tab 1", content: <div>Content 1</div> },
-    { label: "Tab 2", content: <div>Content 2</div> },
-  ];
-
-  const tabsWithDisabled = [
-    { label: "Tab 1", content: <div>Content 1</div> },
-    { label: "Tab 2", content: <div>Content 2</div>, disabled: true },
-    { label: "Tab 3", content: <div>Content 3</div> },
-  ];
-
   // Basic Rendering Tests
   describe("Basic Rendering", () => {
     it("renders with required props", () => {
-      const { container } = render(() => <Tabs tabs={basicTabs} />);
+      const { container } = render(() => (
+        <Tabs>
+          <Tab label="Tab 1">Content 1</Tab>
+          <Tab label="Tab 2">Content 2</Tab>
+        </Tabs>
+      ));
       expect(container.firstChild?.firstChild).toHaveClass("tabs");
     });
 
     it("renders tab navigation items", () => {
-      const { getByRole, getAllByRole } = render(() => <Tabs tabs={basicTabs} />);
+      const { getByRole, getAllByRole } = render(() => (
+        <Tabs>
+          <Tab label="Tab 1">Content 1</Tab>
+          <Tab label="Tab 2">Content 2</Tab>
+        </Tabs>
+      ));
       
       const tablist = getByRole("tablist");
       expect(tablist).toBeInTheDocument();
@@ -36,14 +34,23 @@ describe("Tabs Component", () => {
     });
 
     it("renders with base classes and proper ARIA roles", () => {
-      const { getByRole } = render(() => <Tabs tabs={basicTabs} />);
+      const { getByRole } = render(() => (
+        <Tabs>
+          <Tab label="Tab 1">Content 1</Tab>
+        </Tabs>
+      ));
       
       const tablist = getByRole("tablist");
       expect(tablist).toHaveClass("tabs");
     });
 
     it("shows first tab as active by default", () => {
-      const { getAllByRole } = render(() => <Tabs tabs={basicTabs} />);
+      const { getAllByRole } = render(() => (
+        <Tabs>
+          <Tab label="Tab 1">Content 1</Tab>
+          <Tab label="Tab 2">Content 2</Tab>
+        </Tabs>
+      ));
       
       const tabs = getAllByRole("tab");
       expect(tabs[0]).toHaveAttribute("aria-selected", "true");
@@ -56,19 +63,31 @@ describe("Tabs Component", () => {
   // DaisyUI Variant Tests
   describe("DaisyUI Variants", () => {
     it("applies tab-bordered variant class", () => {
-      const { getByRole } = render(() => <Tabs tabs={basicTabs} variant="bordered" />);
+      const { getByRole } = render(() => (
+        <Tabs variant="bordered">
+          <Tab label="Tab 1">Content 1</Tab>
+        </Tabs>
+      ));
       const tablist = getByRole("tablist");
       expect(tablist).toHaveClass("tabs", "tabs-bordered");
     });
 
     it("applies tab-lifted variant class", () => {
-      const { getByRole } = render(() => <Tabs tabs={basicTabs} variant="lifted" />);
+      const { getByRole } = render(() => (
+        <Tabs variant="lifted">
+          <Tab label="Tab 1">Content 1</Tab>
+        </Tabs>
+      ));
       const tablist = getByRole("tablist");
       expect(tablist).toHaveClass("tabs", "tabs-lifted");
     });
 
     it("applies tab-boxed variant class", () => {
-      const { getByRole } = render(() => <Tabs tabs={basicTabs} variant="boxed" />);
+      const { getByRole } = render(() => (
+        <Tabs variant="boxed">
+          <Tab label="Tab 1">Content 1</Tab>
+        </Tabs>
+      ));
       const tablist = getByRole("tablist");
       expect(tablist).toHaveClass("tabs", "tabs-boxed");
     });
@@ -77,25 +96,41 @@ describe("Tabs Component", () => {
   // DaisyUI Size Tests
   describe("DaisyUI Sizes", () => {
     it("applies tab-xs size class", () => {
-      const { getAllByRole } = render(() => <Tabs tabs={basicTabs} size="xs" />);
+      const { getAllByRole } = render(() => (
+        <Tabs size="xs">
+          <Tab label="Tab 1">Content 1</Tab>
+        </Tabs>
+      ));
       const tab = getAllByRole("tab")[0];
       expect(tab).toHaveClass("tab", "tab-xs");
     });
 
     it("applies tab-sm size class", () => {
-      const { getAllByRole } = render(() => <Tabs tabs={basicTabs} size="sm" />);
+      const { getAllByRole } = render(() => (
+        <Tabs size="sm">
+          <Tab label="Tab 1">Content 1</Tab>
+        </Tabs>
+      ));
       const tab = getAllByRole("tab")[0];
       expect(tab).toHaveClass("tab", "tab-sm");
     });
 
     it("applies tab-md size class", () => {
-      const { getAllByRole } = render(() => <Tabs tabs={basicTabs} size="md" />);
+      const { getAllByRole } = render(() => (
+        <Tabs size="md">
+          <Tab label="Tab 1">Content 1</Tab>
+        </Tabs>
+      ));
       const tab = getAllByRole("tab")[0];
       expect(tab).toHaveClass("tab", "tab-md");
     });
 
     it("applies tab-lg size class", () => {
-      const { getAllByRole } = render(() => <Tabs tabs={basicTabs} size="lg" />);
+      const { getAllByRole } = render(() => (
+        <Tabs size="lg">
+          <Tab label="Tab 1">Content 1</Tab>
+        </Tabs>
+      ));
       const tab = getAllByRole("tab")[0];
       expect(tab).toHaveClass("tab", "tab-lg");
     });
@@ -104,7 +139,12 @@ describe("Tabs Component", () => {
   // User Interactions Tests
   describe("User Interactions", () => {
     it("switches active tab on click", () => {
-      const { getAllByRole } = render(() => <Tabs tabs={basicTabs} />);
+      const { getAllByRole } = render(() => (
+        <Tabs>
+          <Tab label="Tab 1">Content 1</Tab>
+          <Tab label="Tab 2">Content 2</Tab>
+        </Tabs>
+      ));
       
       const tabs = getAllByRole("tab");
       
@@ -122,7 +162,12 @@ describe("Tabs Component", () => {
 
     it("calls onTabChange callback when tab changes", () => {
       const onTabChange = vi.fn();
-      const { getAllByRole } = render(() => <Tabs tabs={basicTabs} onTabChange={onTabChange} />);
+      const { getAllByRole } = render(() => (
+        <Tabs onTabChange={onTabChange}>
+          <Tab label="Tab 1">Content 1</Tab>
+          <Tab label="Tab 2">Content 2</Tab>
+        </Tabs>
+      ));
       
       const tabs = getAllByRole("tab");
       fireEvent.click(tabs[1]);
@@ -132,9 +177,12 @@ describe("Tabs Component", () => {
 
     it("supports controlled mode with activeTab prop", () => {
       const [activeTab, setActiveTab] = createSignal(1);
-      const { getAllByRole } = render(() => 
-        <Tabs tabs={basicTabs} activeTab={activeTab()} onTabChange={setActiveTab} />
-      );
+      const { getAllByRole } = render(() => (
+        <Tabs activeTab={activeTab()} onTabChange={setActiveTab}>
+          <Tab label="Tab 1">Content 1</Tab>
+          <Tab label="Tab 2">Content 2</Tab>
+        </Tabs>
+      ));
       
       const tabs = getAllByRole("tab");
       
@@ -147,7 +195,12 @@ describe("Tabs Component", () => {
   // Keyboard Navigation Tests
   describe("Keyboard Navigation", () => {
     it("navigates to next tab with ArrowRight", () => {
-      const { getAllByRole } = render(() => <Tabs tabs={basicTabs} />);
+      const { getAllByRole } = render(() => (
+        <Tabs>
+          <Tab label="Tab 1">Content 1</Tab>
+          <Tab label="Tab 2">Content 2</Tab>
+        </Tabs>
+      ));
       
       const tabs = getAllByRole("tab");
       tabs[0].focus();
@@ -157,7 +210,12 @@ describe("Tabs Component", () => {
     });
 
     it("navigates to previous tab with ArrowLeft", () => {
-      const { getAllByRole } = render(() => <Tabs tabs={basicTabs} />);
+      const { getAllByRole } = render(() => (
+        <Tabs>
+          <Tab label="Tab 1">Content 1</Tab>
+          <Tab label="Tab 2">Content 2</Tab>
+        </Tabs>
+      ));
       
       const tabs = getAllByRole("tab");
       tabs[1].focus();
@@ -167,12 +225,13 @@ describe("Tabs Component", () => {
     });
 
     it("navigates to first tab with Home key", () => {
-      const threeTabs = [
-        { label: "Tab 1", content: <div>Content 1</div> },
-        { label: "Tab 2", content: <div>Content 2</div> },
-        { label: "Tab 3", content: <div>Content 3</div> },
-      ];
-      const { getAllByRole } = render(() => <Tabs tabs={threeTabs} />);
+      const { getAllByRole } = render(() => (
+        <Tabs>
+          <Tab label="Tab 1">Content 1</Tab>
+          <Tab label="Tab 2">Content 2</Tab>
+          <Tab label="Tab 3">Content 3</Tab>
+        </Tabs>
+      ));
       
       const tabs = getAllByRole("tab");
       tabs[2].focus();
@@ -182,12 +241,13 @@ describe("Tabs Component", () => {
     });
 
     it("navigates to last tab with End key", () => {
-      const threeTabs = [
-        { label: "Tab 1", content: <div>Content 1</div> },
-        { label: "Tab 2", content: <div>Content 2</div> },
-        { label: "Tab 3", content: <div>Content 3</div> },
-      ];
-      const { getAllByRole } = render(() => <Tabs tabs={threeTabs} />);
+      const { getAllByRole } = render(() => (
+        <Tabs>
+          <Tab label="Tab 1">Content 1</Tab>
+          <Tab label="Tab 2">Content 2</Tab>
+          <Tab label="Tab 3">Content 3</Tab>
+        </Tabs>
+      ));
       
       const tabs = getAllByRole("tab");
       tabs[0].focus();
@@ -197,7 +257,12 @@ describe("Tabs Component", () => {
     });
 
     it("activates tab with Enter key", () => {
-      const { getAllByRole } = render(() => <Tabs tabs={basicTabs} />);
+      const { getAllByRole } = render(() => (
+        <Tabs>
+          <Tab label="Tab 1">Content 1</Tab>
+          <Tab label="Tab 2">Content 2</Tab>
+        </Tabs>
+      ));
       
       const tabs = getAllByRole("tab");
       tabs[1].focus();
@@ -207,7 +272,12 @@ describe("Tabs Component", () => {
     });
 
     it("activates tab with Space key", () => {
-      const { getAllByRole } = render(() => <Tabs tabs={basicTabs} />);
+      const { getAllByRole } = render(() => (
+        <Tabs>
+          <Tab label="Tab 1">Content 1</Tab>
+          <Tab label="Tab 2">Content 2</Tab>
+        </Tabs>
+      ));
       
       const tabs = getAllByRole("tab");
       tabs[1].focus();
@@ -217,7 +287,12 @@ describe("Tabs Component", () => {
     });
 
     it("wraps keyboard navigation at boundaries", () => {
-      const { getAllByRole } = render(() => <Tabs tabs={basicTabs} />);
+      const { getAllByRole } = render(() => (
+        <Tabs>
+          <Tab label="Tab 1">Content 1</Tab>
+          <Tab label="Tab 2">Content 2</Tab>
+        </Tabs>
+      ));
       
       const tabs = getAllByRole("tab");
       
@@ -236,7 +311,12 @@ describe("Tabs Component", () => {
   // Accessibility Tests
   describe("Accessibility", () => {
     it("has proper ARIA attributes", () => {
-      const { getByRole, getAllByRole } = render(() => <Tabs tabs={basicTabs} />);
+      const { getByRole, getAllByRole } = render(() => (
+        <Tabs>
+          <Tab label="Tab 1">Content 1</Tab>
+          <Tab label="Tab 2">Content 2</Tab>
+        </Tabs>
+      ));
       
       const tablist = getByRole("tablist");
       const tabs = getAllByRole("tab");
@@ -250,7 +330,12 @@ describe("Tabs Component", () => {
     });
 
     it("has proper tab IDs and controls relationships", () => {
-      const { getAllByRole } = render(() => <Tabs tabs={basicTabs} />);
+      const { getAllByRole } = render(() => (
+        <Tabs>
+          <Tab label="Tab 1">Content 1</Tab>
+          <Tab label="Tab 2">Content 2</Tab>
+        </Tabs>
+      ));
       
       const tabs = getAllByRole("tab");
       tabs.forEach((tab) => {
@@ -264,7 +349,13 @@ describe("Tabs Component", () => {
     });
 
     it("supports disabled tabs", () => {
-      const { getAllByRole } = render(() => <Tabs tabs={tabsWithDisabled} />);
+      const { getAllByRole } = render(() => (
+        <Tabs>
+          <Tab label="Tab 1">Content 1</Tab>
+          <Tab label="Tab 2" disabled>Content 2</Tab>
+          <Tab label="Tab 3">Content 3</Tab>
+        </Tabs>
+      ));
       
       const tabs = getAllByRole("tab");
       expect(tabs[1]).toHaveAttribute("aria-disabled", "true");
@@ -273,7 +364,13 @@ describe("Tabs Component", () => {
     });
 
     it("skips disabled tabs in keyboard navigation", () => {
-      const { getAllByRole } = render(() => <Tabs tabs={tabsWithDisabled} />);
+      const { getAllByRole } = render(() => (
+        <Tabs>
+          <Tab label="Tab 1">Content 1</Tab>
+          <Tab label="Tab 2" disabled>Content 2</Tab>
+          <Tab label="Tab 3">Content 3</Tab>
+        </Tabs>
+      ));
       
       const tabs = getAllByRole("tab");
       tabs[0].focus();
@@ -287,15 +384,21 @@ describe("Tabs Component", () => {
   // Custom Classes Tests
   describe("Custom Classes", () => {
     it("applies custom class prop", () => {
-      const { getByRole } = render(() => <Tabs tabs={basicTabs} class="custom-class" />);
+      const { getByRole } = render(() => (
+        <Tabs class="custom-class">
+          <Tab label="Tab 1">Content 1</Tab>
+        </Tabs>
+      ));
       const tablist = getByRole("tablist");
       expect(tablist).toHaveClass("tabs", "custom-class");
     });
 
     it("applies custom classList prop", () => {
-      const { getByRole } = render(() => 
-        <Tabs tabs={basicTabs} classList={{ "custom-dynamic": true, "other-class": false }} />
-      );
+      const { getByRole } = render(() => (
+        <Tabs classList={{ "custom-dynamic": true, "other-class": false }}>
+          <Tab label="Tab 1">Content 1</Tab>
+        </Tabs>
+      ));
       const tablist = getByRole("tablist");
       expect(tablist).toHaveClass("tabs", "custom-dynamic");
       expect(tablist).not.toHaveClass("other-class");
@@ -305,7 +408,12 @@ describe("Tabs Component", () => {
   // Tab Content Panel Tests
   describe("Tab Content Panels", () => {
     it("renders tab content panels with proper ARIA attributes", () => {
-      const { container } = render(() => <Tabs tabs={basicTabs} showContent />);
+      const { container } = render(() => (
+        <Tabs showContent>
+          <Tab label="Tab 1">Content 1</Tab>
+          <Tab label="Tab 2">Content 2</Tab>
+        </Tabs>
+      ));
       
       const tabpanels = container.querySelectorAll('[role="tabpanel"]');
       expect(tabpanels).toHaveLength(2);
@@ -322,7 +430,12 @@ describe("Tabs Component", () => {
     });
 
     it("shows only active tab content", () => {
-      const { getByText, getAllByRole } = render(() => <Tabs tabs={basicTabs} showContent />);
+      const { getByText, getAllByRole } = render(() => (
+        <Tabs showContent>
+          <Tab label="Tab 1">Content 1</Tab>
+          <Tab label="Tab 2">Content 2</Tab>
+        </Tabs>
+      ));
       
       // Initially first tab content is visible
       expect(getByText("Content 1")).toBeVisible();
@@ -341,13 +454,16 @@ describe("Tabs Component", () => {
   // Edge Cases Tests
   describe("Edge Cases", () => {
     it("handles no tabs gracefully", () => {
-      const { container } = render(() => <Tabs tabs={[]} />);
+      const { container } = render(() => <Tabs />);
       expect(container.firstChild?.firstChild).toHaveClass("tabs");
     });
 
     it("handles single tab", () => {
-      const singleTab = [{ label: "Tab 1", content: <div>Content 1</div> }];
-      const { getAllByRole } = render(() => <Tabs tabs={singleTab} />);
+      const { getAllByRole } = render(() => (
+        <Tabs>
+          <Tab label="Tab 1">Content 1</Tab>
+        </Tabs>
+      ));
       
       const tabs = getAllByRole("tab");
       expect(tabs).toHaveLength(1);
@@ -355,7 +471,13 @@ describe("Tabs Component", () => {
     });
 
     it("doesn't activate disabled tabs on click", () => {
-      const { getAllByRole } = render(() => <Tabs tabs={tabsWithDisabled} />);
+      const { getAllByRole } = render(() => (
+        <Tabs>
+          <Tab label="Tab 1">Content 1</Tab>
+          <Tab label="Tab 2" disabled>Content 2</Tab>
+          <Tab label="Tab 3">Content 3</Tab>
+        </Tabs>
+      ));
       
       const tabs = getAllByRole("tab");
       fireEvent.click(tabs[1]);
@@ -366,7 +488,12 @@ describe("Tabs Component", () => {
     });
 
     it("maintains default active tab when no activeTab prop provided", () => {
-      const { getAllByRole } = render(() => <Tabs tabs={basicTabs} defaultActiveTab={1} />);
+      const { getAllByRole } = render(() => (
+        <Tabs defaultActiveTab={1}>
+          <Tab label="Tab 1">Content 1</Tab>
+          <Tab label="Tab 2">Content 2</Tab>
+        </Tabs>
+      ));
       
       const tabs = getAllByRole("tab");
       expect(tabs[0]).toHaveAttribute("aria-selected", "false");
@@ -376,14 +503,14 @@ describe("Tabs Component", () => {
 
   // Navigation Tabs (href) Tests
   describe("Navigation Tabs with href", () => {
-    const navigationTabs = [
-      { label: "Home", content: <div>Home content</div> },
-      { label: "About", href: "/about" },
-      { label: "Contact", href: "/contact", target: "_blank" },
-    ];
-
     it("renders navigation tabs with Link component", () => {
-      const { getAllByRole } = render(() => <Tabs tabs={navigationTabs} />);
+      const { getAllByRole } = render(() => (
+        <Tabs>
+          <Tab label="Home">Home content</Tab>
+          <Tab label="About" href="/about" />
+          <Tab label="Contact" href="/contact" target="_blank" />
+        </Tabs>
+      ));
       
       const tabs = getAllByRole("tab");
       expect(tabs).toHaveLength(3);
@@ -401,7 +528,13 @@ describe("Tabs Component", () => {
     });
 
     it("navigation tabs don't affect active state", () => {
-      const { getAllByRole } = render(() => <Tabs tabs={navigationTabs} />);
+      const { getAllByRole } = render(() => (
+        <Tabs>
+          <Tab label="Home">Home content</Tab>
+          <Tab label="About" href="/about" />
+          <Tab label="Contact" href="/contact" target="_blank" />
+        </Tabs>
+      ));
       
       const tabs = getAllByRole("tab");
       
@@ -419,12 +552,12 @@ describe("Tabs Component", () => {
 
     it("supports onClick handlers for navigation tabs", () => {
       const onAboutClick = vi.fn();
-      const tabsWithClickHandler = [
-        { label: "Home", content: <div>Home content</div> },
-        { label: "About", href: "/about", onClick: onAboutClick },
-      ];
-      
-      const { getAllByRole } = render(() => <Tabs tabs={tabsWithClickHandler} />);
+      const { getAllByRole } = render(() => (
+        <Tabs>
+          <Tab label="Home">Home content</Tab>
+          <Tab label="About" href="/about" onClick={onAboutClick} />
+        </Tabs>
+      ));
       
       const tabs = getAllByRole("tab");
       fireEvent.click(tabs[1]);
@@ -435,20 +568,6 @@ describe("Tabs Component", () => {
 
   // Compound Component Pattern Tests
   describe("Compound Component Pattern", () => {
-    it("renders with Tab children components", () => {
-      const { getAllByRole } = render(() => (
-        <Tabs>
-          <Tab label="Home">Home content</Tab>
-          <Tab label="About">About content</Tab>
-        </Tabs>
-      ));
-      
-      const tabs = getAllByRole("tab");
-      expect(tabs).toHaveLength(2);
-      expect(tabs[0]).toHaveTextContent("Home");
-      expect(tabs[1]).toHaveTextContent("About");
-    });
-
     it("supports href in Tab children for navigation", () => {
       const { getAllByRole } = render(() => (
         <Tabs>
@@ -471,19 +590,6 @@ describe("Tabs Component", () => {
       expect(tabs[2].tagName).toBe("A");
       expect(tabs[2]).toHaveAttribute("href", "/contact");
       expect(tabs[2]).toHaveAttribute("target", "_blank");
-    });
-
-    it("supports disabled tabs in compound pattern", () => {
-      const { getAllByRole } = render(() => (
-        <Tabs>
-          <Tab label="Home">Home content</Tab>
-          <Tab label="About" disabled>About content</Tab>
-        </Tabs>
-      ));
-      
-      const tabs = getAllByRole("tab");
-      expect(tabs[1]).toHaveAttribute("aria-disabled", "true");
-      expect(tabs[1]).toHaveClass("tab-disabled");
     });
 
     it("supports custom classes in compound pattern", () => {
@@ -513,57 +619,17 @@ describe("Tabs Component", () => {
       expect(getByText("Home content here")).toBeVisible();
       expect(getByText("About content here")).not.toBeVisible();
     });
-
-    it("can mix tabs array and children (tabs array takes precedence)", () => {
-      const mixedTabs = [{ label: "Array Tab", content: <div>Array content</div> }];
-      
-      const { getAllByRole } = render(() => (
-        <Tabs tabs={mixedTabs}>
-          <Tab label="Child Tab">Child content</Tab>
-        </Tabs>
-      ));
-      
-      const tabs = getAllByRole("tab");
-      expect(tabs).toHaveLength(1);
-      expect(tabs[0]).toHaveTextContent("Array Tab");
-    });
   });
 
   // Tab Standalone Component Tests
   describe("Tab Standalone Component", () => {
-    it("renders as Link when href is provided", () => {
-      const { container } = render(() => <Tab label="About" href="/about" />);
-      
-      const link = container.querySelector("a");
-      expect(link).toBeInTheDocument();
-      expect(link).toHaveAttribute("href", "/about");
-      expect(link).toHaveTextContent("About");
-    });
-
-    it("renders as hidden div when no href (for compound pattern)", () => {
+    it("renders as hidden div when used without href (for compound pattern)", () => {
       const { container } = render(() => <Tab label="Home">Content</Tab>);
       
       const div = container.querySelector("div");
       expect(div).toBeInTheDocument();
       expect(div).toHaveStyle("display: none");
       expect(div).toHaveAttribute("data-tab-label", "Home");
-    });
-
-    it("supports onClick handler when used as standalone Link", () => {
-      const onClick = vi.fn();
-      const { container } = render(() => <Tab label="About" href="/about" onClick={onClick} />);
-      
-      const link = container.querySelector("a");
-      fireEvent.click(link!);
-      
-      expect(onClick).toHaveBeenCalled();
-    });
-
-    it("supports disabled state for standalone Link", () => {
-      const { container } = render(() => <Tab label="About" href="/about" disabled />);
-      
-      const link = container.querySelector("a");
-      expect(link).toHaveAttribute("aria-disabled", "true");
     });
   });
 });
