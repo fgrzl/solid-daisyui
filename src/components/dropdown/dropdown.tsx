@@ -281,9 +281,20 @@ export default function Dropdown(props: DropdownProps): JSX.Element {
 
   // Enhanced event delegation to handle the trigger element directly
   const enhanceTriggerElement = (element: JSX.Element, wrapperElement: HTMLElement) => {
-    // Add event listeners to the actual trigger element, not the wrapper
+    // Add event listeners to the actual trigger element
     createEffect(() => {
-      const triggerElement = wrapperElement.firstElementChild as HTMLElement;
+      // For structured DropdownTrigger components, the trigger is the div itself
+      // For legacy components, find the first child element
+      let triggerElement: HTMLElement;
+      
+      // Check if this is a DropdownTrigger component (has data-dropdown-trigger)
+      if (wrapperElement.firstElementChild?.getAttribute("data-dropdown-trigger") === "true") {
+        triggerElement = wrapperElement.firstElementChild as HTMLElement;
+      } else {
+        // Legacy pattern - look for child element
+        triggerElement = wrapperElement.firstElementChild as HTMLElement;
+      }
+      
       if (triggerElement) {
         // Set ARIA attributes directly on the trigger element
         setAriaAttributes(triggerElement, triggerId(), contentId(), isOpen(), props.ariaLabel);

@@ -1,7 +1,14 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, fireEvent } from "@solidjs/testing-library";
 import { createSignal } from "solid-js";
-import { Dropdown, DropdownTrigger, DropdownContent, DropdownItem } from "@/components/dropdown";
+import { 
+  Dropdown, 
+  DropdownTrigger, 
+  DropdownContent, 
+  DropdownMenu,
+  DropdownMenuItem,
+  DropdownItem 
+} from "@/components/dropdown";
 
 describe("Dropdown Component", () => {
   beforeEach(() => {
@@ -809,6 +816,308 @@ describe("Dropdown Component", () => {
         fireEvent.click(trigger);
         expect(container.firstChild).not.toHaveClass("dropdown-open");
       });
+    });
+  });
+
+  // New Component Tests
+  describe("DropdownMenu Component", () => {
+    it("renders as ul element with menu class", () => {
+      const { container } = render(() => (
+        <DropdownMenu>
+          <li>Item 1</li>
+          <li>Item 2</li>
+        </DropdownMenu>
+      ));
+      
+      const menu = container.querySelector("ul");
+      expect(menu).toBeInTheDocument();
+      expect(menu).toHaveClass("menu");
+      expect(menu).toHaveAttribute("role", "menu");
+      expect(menu).toHaveAttribute("data-dropdown-menu", "true");
+    });
+
+    it("supports custom classes", () => {
+      const { container } = render(() => (
+        <DropdownMenu class="bg-base-100 rounded-box">
+          <li>Item</li>
+        </DropdownMenu>
+      ));
+      
+      const menu = container.querySelector("ul");
+      expect(menu).toHaveClass("menu");
+      expect(menu).toHaveClass("bg-base-100");
+      expect(menu).toHaveClass("rounded-box");
+    });
+
+    it("supports dynamic classList", () => {
+      const { container } = render(() => (
+        <DropdownMenu classList={{ "w-52": true, "p-2": false }}>
+          <li>Item</li>
+        </DropdownMenu>
+      ));
+      
+      const menu = container.querySelector("ul");
+      expect(menu).toHaveClass("w-52");
+      expect(menu).not.toHaveClass("p-2");
+    });
+
+    it("supports custom role", () => {
+      const { container } = render(() => (
+        <DropdownMenu role="listbox">
+          <li>Item</li>
+        </DropdownMenu>
+      ));
+      
+      const menu = container.querySelector("ul");
+      expect(menu).toHaveAttribute("role", "listbox");
+    });
+  });
+
+  describe("DropdownMenuItem Component", () => {
+    it("renders as li element with proper attributes", () => {
+      const { container } = render(() => (
+        <DropdownMenuItem>
+          <a>Test Item</a>
+        </DropdownMenuItem>
+      ));
+      
+      const item = container.querySelector("li");
+      expect(item).toBeInTheDocument();
+      expect(item).toHaveAttribute("role", "menuitem");
+      expect(item).toHaveAttribute("data-dropdown-menu-item", "true");
+      expect(item).toHaveAttribute("aria-disabled", "false");
+    });
+
+    it("supports active state", () => {
+      const { container } = render(() => (
+        <DropdownMenuItem active>
+          <a>Active Item</a>
+        </DropdownMenuItem>
+      ));
+      
+      const item = container.querySelector("li");
+      expect(item).toHaveClass("active");
+    });
+
+    it("supports disabled state", () => {
+      const { container } = render(() => (
+        <DropdownMenuItem disabled>
+          <a>Disabled Item</a>
+        </DropdownMenuItem>
+      ));
+      
+      const item = container.querySelector("li");
+      expect(item).toHaveClass("disabled");
+      expect(item).toHaveAttribute("aria-disabled", "true");
+    });
+
+    it("handles click events properly", () => {
+      const onClick = vi.fn();
+      const { container } = render(() => (
+        <DropdownMenuItem onClick={onClick}>
+          <a>Clickable Item</a>
+        </DropdownMenuItem>
+      ));
+      
+      const item = container.querySelector("li");
+      fireEvent.click(item!);
+      expect(onClick).toHaveBeenCalledOnce();
+    });
+
+    it("prevents click when disabled", () => {
+      const onClick = vi.fn();
+      const { container } = render(() => (
+        <DropdownMenuItem disabled onClick={onClick}>
+          <a>Disabled Item</a>
+        </DropdownMenuItem>
+      ));
+      
+      const item = container.querySelector("li");
+      fireEvent.click(item!);
+      expect(onClick).not.toHaveBeenCalled();
+    });
+
+    it("supports custom role", () => {
+      const { container } = render(() => (
+        <DropdownMenuItem role="option">
+          <a>Option Item</a>
+        </DropdownMenuItem>
+      ));
+      
+      const item = container.querySelector("li");
+      expect(item).toHaveAttribute("role", "option");
+    });
+
+    it("supports custom classes", () => {
+      const { container } = render(() => (
+        <DropdownMenuItem class="custom-class">
+          <a>Custom Item</a>
+        </DropdownMenuItem>
+      ));
+      
+      const item = container.querySelector("li");
+      expect(item).toHaveClass("custom-class");
+    });
+  });
+
+  describe("Enhanced DropdownTrigger Component", () => {
+    it("renders as div element with tabindex", () => {
+      const { container } = render(() => (
+        <DropdownTrigger>
+          <span>Trigger Content</span>
+        </DropdownTrigger>
+      ));
+      
+      const trigger = container.querySelector("div");
+      expect(trigger).toBeInTheDocument();
+      expect(trigger).toHaveAttribute("tabindex", "0");
+      expect(trigger).toHaveAttribute("role", "button");
+      expect(trigger).toHaveAttribute("data-dropdown-trigger", "true");
+    });
+
+    it("supports custom tabindex", () => {
+      const { container } = render(() => (
+        <DropdownTrigger tabindex={5}>
+          <span>Trigger Content</span>
+        </DropdownTrigger>
+      ));
+      
+      const trigger = container.querySelector("div");
+      expect(trigger).toHaveAttribute("tabindex", "5");
+    });
+
+    it("supports custom role", () => {
+      const { container } = render(() => (
+        <DropdownTrigger role="combobox">
+          <span>Trigger Content</span>
+        </DropdownTrigger>
+      ));
+      
+      const trigger = container.querySelector("div");
+      expect(trigger).toHaveAttribute("role", "combobox");
+    });
+
+    it("supports aria-label", () => {
+      const { container } = render(() => (
+        <DropdownTrigger ariaLabel="Open dropdown menu">
+          <span>Trigger</span>
+        </DropdownTrigger>
+      ));
+      
+      const trigger = container.querySelector("div");
+      expect(trigger).toHaveAttribute("aria-label", "Open dropdown menu");
+    });
+
+    it("handles click events", () => {
+      const onClick = vi.fn();
+      const { container } = render(() => (
+        <DropdownTrigger onClick={onClick}>
+          <span>Clickable Trigger</span>
+        </DropdownTrigger>
+      ));
+      
+      const trigger = container.querySelector("div");
+      fireEvent.click(trigger!);
+      expect(onClick).toHaveBeenCalledOnce();
+    });
+
+    it("handles keyboard events", () => {
+      const onKeyDown = vi.fn();
+      const { container } = render(() => (
+        <DropdownTrigger onKeyDown={onKeyDown}>
+          <span>Keyboard Trigger</span>
+        </DropdownTrigger>
+      ));
+      
+      const trigger = container.querySelector("div");
+      fireEvent.keyDown(trigger!, { key: "Enter" });
+      expect(onKeyDown).toHaveBeenCalledOnce();
+    });
+  });
+
+  describe("Complete New Component Integration", () => {
+    it("works with new structured components", () => {
+      const { container, getByText } = render(() => (
+        <Dropdown>
+          <DropdownTrigger tabindex={0}>
+            <span>Open Menu</span>
+          </DropdownTrigger>
+          <DropdownContent>
+            <DropdownMenu class="bg-base-100 rounded-box w-52 p-2 shadow">
+              <DropdownMenuItem>
+                <a>Item 1</a>
+              </DropdownMenuItem>
+              <DropdownMenuItem active>
+                <a>Item 2 (Active)</a>
+              </DropdownMenuItem>
+              <DropdownMenuItem disabled>
+                <a>Item 3 (Disabled)</a>
+              </DropdownMenuItem>
+            </DropdownMenu>
+          </DropdownContent>
+        </Dropdown>
+      ));
+      
+      // Check dropdown container
+      expect(container.firstChild).toHaveClass("dropdown");
+      
+      // Check trigger
+      const trigger = container.querySelector("[data-dropdown-trigger='true']");
+      expect(trigger).toBeInTheDocument();
+      expect(trigger).toHaveAttribute("tabindex", "0");
+      expect(getByText("Open Menu")).toBeInTheDocument();
+      
+      // Check content structure
+      const content = container.querySelector("[data-dropdown-content='true']");
+      expect(content).toBeInTheDocument();
+      
+      // Check menu
+      const menu = container.querySelector("[data-dropdown-menu='true']");
+      expect(menu).toBeInTheDocument();
+      expect(menu).toHaveClass("menu");
+      expect(menu).toHaveClass("bg-base-100");
+      
+      // Check menu items
+      const menuItems = container.querySelectorAll("[data-dropdown-menu-item='true']");
+      expect(menuItems).toHaveLength(3);
+      
+      // Check active item
+      expect(menuItems[1]).toHaveClass("active");
+      
+      // Check disabled item
+      expect(menuItems[2]).toHaveClass("disabled");
+      expect(menuItems[2]).toHaveAttribute("aria-disabled", "true");
+    });
+
+    it("new structured dropdown is interactive", () => {
+      const { container } = render(() => (
+        <Dropdown>
+          <DropdownTrigger tabindex={0}>
+            <span>Open Menu</span>
+          </DropdownTrigger>
+          <DropdownContent>
+            <DropdownMenu class="bg-base-100">
+              <DropdownMenuItem>
+                <a>Item 1</a>
+              </DropdownMenuItem>
+            </DropdownMenu>
+          </DropdownContent>
+        </Dropdown>
+      ));
+      
+      const dropdown = container.firstChild as HTMLElement;
+      const trigger = container.querySelector("[data-dropdown-trigger='true']") as HTMLElement;
+      
+      // Initially closed
+      expect(dropdown).not.toHaveClass("dropdown-open");
+      
+      // Click to open
+      fireEvent.click(trigger);
+      expect(dropdown).toHaveClass("dropdown-open");
+      
+      // Click again to close
+      fireEvent.click(trigger);
+      expect(dropdown).not.toHaveClass("dropdown-open");
     });
   });
 });

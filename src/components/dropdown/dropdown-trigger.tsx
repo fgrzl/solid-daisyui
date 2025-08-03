@@ -4,36 +4,43 @@ import { JSX } from "solid-js";
  * Props for the DropdownTrigger component.
  *
  * @property {JSX.Element} [children] - The trigger element content (button, link, etc.).
- * @property {string} [class] - Additional CSS classes to apply to the trigger wrapper.
+ * @property {string} [class] - Additional CSS classes to apply to the trigger div.
  * @property {Record<string, boolean>} [classList] - Dynamic class list for conditional styling.
+ * @property {number} [tabindex] - Tab index for keyboard navigation support.
+ * @property {(event: MouseEvent) => void} [onClick] - Click event handler for the trigger.
+ * @property {(event: KeyboardEvent) => void} [onKeyDown] - Keyboard event handler for the trigger.
+ * @property {string} [role] - ARIA role for the trigger element.
+ * @property {string} [ariaLabel] - ARIA label for accessibility.
  */
 export interface DropdownTriggerProps {
   children?: JSX.Element;
   class?: string;
   classList?: Record<string, boolean>;
+  tabindex?: number;
+  onClick?: (event: MouseEvent) => void;
+  onKeyDown?: (event: KeyboardEvent) => void;
+  role?: string;
+  ariaLabel?: string;
 }
 
 /**
  * DropdownTrigger component for the dropdown trigger element.
  * 
- * This component wraps the trigger element (button, link, etc.) that opens/closes
- * the dropdown. It provides better type safety and composition when used within
- * a Dropdown component.
- * 
- * The trigger element should be an interactive element like a button or link
- * that can receive focus and respond to click/keyboard events.
+ * This component renders a div element that acts as the trigger for the dropdown.
+ * It supports tabindex for keyboard navigation and can contain any trigger content.
+ * The div element provides better structure and accessibility support.
  * 
  * **Usage:**
  * ```tsx
  * <Dropdown>
- *   <DropdownTrigger>
- *     <button class="btn">Open Menu</button>
+ *   <DropdownTrigger tabindex={0} role="button">
+ *     <span>Open Menu</span>
  *   </DropdownTrigger>
  *   <DropdownContent>
- *     <ul class="menu">
- *       <li><a>Item 1</a></li>
- *       <li><a>Item 2</a></li>
- *     </ul>
+ *     <DropdownMenu>
+ *       <DropdownMenuItem>Item 1</DropdownMenuItem>
+ *       <DropdownMenuItem>Item 2</DropdownMenuItem>
+ *     </DropdownMenu>
  *   </DropdownContent>
  * </Dropdown>
  * ```
@@ -46,7 +53,11 @@ export default function DropdownTrigger(props: DropdownTriggerProps): JSX.Elemen
     <div
       class={props.class}
       classList={props.classList}
-      style="display: contents;"
+      tabindex={props.tabindex ?? 0}
+      onClick={props.onClick}
+      onKeyDown={props.onKeyDown}
+      role={(props.role ?? "button") as any}
+      aria-label={props.ariaLabel}
       data-dropdown-trigger="true"
     >
       {props.children}
