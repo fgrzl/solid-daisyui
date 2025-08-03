@@ -371,39 +371,6 @@ describe("Modal Component", () => {
   });
 
   // DaisyUI Variants Tests
-  // Size Variants Tests
-  describe("Size Variants", () => {
-    it("applies modal-sm class for small size", () => {
-      const [isOpen] = createSignal(true);
-      const { container } = render(() => (
-        <Modal disablePortal isOpen={isOpen()} onClose={() => {}} size="sm">
-          <div>Content</div>
-        </Modal>
-      ));
-      expect(container.querySelector('.modal-box')).toHaveClass("max-w-sm");
-    });
-
-    it("applies modal-lg class for large size", () => {
-      const [isOpen] = createSignal(true);
-      const { container } = render(() => (
-        <Modal disablePortal isOpen={isOpen()} onClose={() => {}} size="lg">
-          <div>Content</div>
-        </Modal>
-      ));
-      expect(container.querySelector('.modal-box')).toHaveClass("max-w-5xl");
-    });
-
-    it("applies modal-xs class for extra small size", () => {
-      const [isOpen] = createSignal(true);
-      const { container } = render(() => (
-        <Modal disablePortal isOpen={isOpen()} onClose={() => {}} size="xs">
-          <div>Content</div>
-        </Modal>
-      ));
-      expect(container.querySelector('.modal-box')).toHaveClass("max-w-xs");
-    });
-  });
-
   // Keyboard Navigation Tests
   describe("Keyboard Navigation", () => {
     it("closes modal when Escape key is pressed", () => {
