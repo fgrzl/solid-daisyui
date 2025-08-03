@@ -1,7 +1,7 @@
 import { fireEvent, render } from "@solidjs/testing-library";
 import { describe, it, expect, vi } from "vitest";
 import { createSignal } from "solid-js";
-import Modal from "@/components/modal";
+import { Modal } from "@/components/modal";
 
 describe("Modal Component", () => {
   // Basic Rendering Tests
