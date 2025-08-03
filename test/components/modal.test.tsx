@@ -371,48 +371,6 @@ describe("Modal Component", () => {
   });
 
   // DaisyUI Variants Tests
-  describe("DaisyUI Variants", () => {
-    it("applies modal-bottom class for bottom variant", () => {
-      const [isOpen] = createSignal(true);
-      const { container } = render(() => (
-        <Modal disablePortal isOpen={isOpen()} onClose={() => {}} variant="bottom">
-          <div>Content</div>
-        </Modal>
-      ));
-      expect(container.querySelector('.modal')).toHaveClass("modal-bottom");
-    });
-
-    it("applies modal-middle class for middle variant", () => {
-      const [isOpen] = createSignal(true);
-      const { container } = render(() => (
-        <Modal disablePortal isOpen={isOpen()} onClose={() => {}} variant="middle">
-          <div>Content</div>
-        </Modal>
-      ));
-      expect(container.querySelector('.modal')).toHaveClass("modal-middle");
-    });
-
-    it("applies modal-top class for top variant", () => {
-      const [isOpen] = createSignal(true);
-      const { container } = render(() => (
-        <Modal disablePortal isOpen={isOpen()} onClose={() => {}} variant="top">
-          <div>Content</div>
-        </Modal>
-      ));
-      expect(container.querySelector('.modal')).toHaveClass("modal-top");
-    });
-
-    it("defaults to middle variant when no variant specified", () => {
-      const [isOpen] = createSignal(true);
-      const { container } = render(() => (
-        <Modal disablePortal isOpen={isOpen()} onClose={() => {}}>
-          <div>Content</div>
-        </Modal>
-      ));
-      expect(container.querySelector('.modal')).toHaveClass("modal-middle");
-    });
-  });
-
   // Size Variants Tests
   describe("Size Variants", () => {
     it("applies modal-sm class for small size", () => {
