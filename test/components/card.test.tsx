@@ -1,6 +1,6 @@
 import { fireEvent, render } from "@solidjs/testing-library";
 import { describe, it, expect, vi } from "vitest";
-import Card from "@/components/card";
+import Card, { CardHeader, CardBody, CardActions } from "@/components/card";
 
 describe("Card Component", () => {
   describe("Basic Rendering", () => {
@@ -40,6 +40,23 @@ describe("Card Component", () => {
       expect(container.firstChild).toHaveClass(
         "card", "card-bordered", "card-compact", "card-side", "glass"
       );
+    });
+
+    it("applies size classes correctly", () => {
+      const { container: xsContainer } = render(() => (
+        <Card size="xs">XS Card</Card>
+      ));
+      expect(xsContainer.firstChild).toHaveClass("card", "w-24");
+
+      const { container: lgContainer } = render(() => (
+        <Card size="lg">LG Card</Card>
+      ));
+      expect(lgContainer.firstChild).toHaveClass("card", "w-96");
+
+      const { container: xlContainer } = render(() => (
+        <Card size="xl">XL Card</Card>
+      ));
+      expect(xlContainer.firstChild).toHaveClass("card", "max-w-lg");
     });
   });
 
@@ -171,6 +188,49 @@ describe("Card Component", () => {
       expect(getByText("Full Featured Card")).toBeInTheDocument();
       expect(getByText("Action")).toBeInTheDocument();
       expect(container.firstChild).toHaveAttribute("aria-label", "Full featured card");
+    });
+  });
+
+  describe("Compound Components", () => {
+    it("renders with compound Card components", () => {
+      const { getByText, container } = render(() => (
+        <Card>
+          <Card.Header>Card Title</Card.Header>
+          <Card.Body>Card content</Card.Body>
+          <Card.Actions position="center">
+            <button>Action 1</button>
+            <button>Action 2</button>
+          </Card.Actions>
+        </Card>
+      ));
+      
+      expect(getByText("Card Title")).toBeInTheDocument();
+      expect(getByText("Card content")).toBeInTheDocument();
+      expect(getByText("Action 1")).toBeInTheDocument();
+      expect(getByText("Action 2")).toBeInTheDocument();
+      
+      expect(container.querySelector(".card-title")).toBeInTheDocument();
+      expect(container.querySelector(".card-body")).toBeInTheDocument();
+      expect(container.querySelector(".card-actions")).toBeInTheDocument();
+      expect(container.querySelector(".card-actions")).toHaveClass("justify-center");
+    });
+
+    it("renders individual compound components", () => {
+      const { getByText, container } = render(() => (
+        <div>
+          <CardHeader>Standalone Header</CardHeader>
+          <CardBody>Standalone Body</CardBody>
+          <CardActions position="start">Standalone Actions</CardActions>
+        </div>
+      ));
+      
+      expect(getByText("Standalone Header")).toBeInTheDocument();
+      expect(getByText("Standalone Body")).toBeInTheDocument();
+      expect(getByText("Standalone Actions")).toBeInTheDocument();
+      
+      expect(container.querySelector(".card-title")).toBeInTheDocument();
+      expect(container.querySelector(".card-body")).toBeInTheDocument();
+      expect(container.querySelector(".card-actions")).toHaveClass("justify-start");
     });
   });
 });

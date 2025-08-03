@@ -69,6 +69,45 @@ describe("Alert Component", () => {
     });
   });
 
+  // DaisyUI Variant Props Tests (New API)
+  describe("DaisyUI Variant Props", () => {
+    it("applies alert-info class for info variant", () => {
+      const { container } = render(() => (
+        <Alert variant="info">Info Alert</Alert>
+      ));
+      expect(container.firstChild).toHaveClass("alert", "alert-info");
+    });
+
+    it("applies alert-success class for success variant", () => {
+      const { container } = render(() => (
+        <Alert variant="success">Success Alert</Alert>
+      ));
+      expect(container.firstChild).toHaveClass("alert", "alert-success");
+    });
+
+    it("applies alert-warning class for warning variant", () => {
+      const { container } = render(() => (
+        <Alert variant="warning">Warning Alert</Alert>
+      ));
+      expect(container.firstChild).toHaveClass("alert", "alert-warning");
+    });
+
+    it("applies alert-error class for error variant", () => {
+      const { container } = render(() => (
+        <Alert variant="error">Error Alert</Alert>
+      ));
+      expect(container.firstChild).toHaveClass("alert", "alert-error");
+    });
+
+    it("prioritizes variant over type when both are provided", () => {
+      const { container } = render(() => (
+        <Alert variant="success" type="error">Priority Test</Alert>
+      ));
+      expect(container.firstChild).toHaveClass("alert", "alert-success");
+      expect(container.firstChild).not.toHaveClass("alert-error");
+    });
+  });
+
   // Icon Functionality Tests
   describe("Icon Functionality", () => {
     it("renders default info icon when no icon provided", () => {
