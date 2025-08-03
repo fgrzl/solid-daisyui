@@ -1,7 +1,7 @@
 import { render, fireEvent } from "@solidjs/testing-library";
 import { describe, it, expect, vi } from "vitest";
 import { createSignal } from "solid-js";
-import { modal } from "../../src/components/modal";
+import { modal } from "@/components/modal";
 
 describe("Modal - New Backdrop/Box API", () => {
   it("renders modal with backdrop and box structure", () => {
