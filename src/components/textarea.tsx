@@ -74,12 +74,53 @@ export interface TextareaProps {
  * and state modifiers. Implements WCAG 2.1 AA accessibility standards with proper ARIA 
  * attributes and keyboard navigation support.
  * 
- * Supports both controlled and uncontrolled modes:
- * - Controlled: Use `value` prop with `onChange` callback
- * - Uncontrolled: Use `defaultValue` prop and access value via ref
+ * ## Usage Examples
  * 
+ * ### Basic textarea:
+ * ```tsx
+ * <Textarea placeholder="Enter your message..." />
+ * ```
+ * 
+ * ### With size and variant:
+ * ```tsx
+ * <Textarea size="lg" variant="primary" placeholder="Large primary textarea" />
+ * ```
+ * 
+ * ### With form integration:
+ * ```tsx
+ * <Textarea 
+ *   label="Message" 
+ *   altLabel="Optional"
+ *   hint="Enter a detailed message"
+ *   placeholder="Type here..."
+ * />
+ * ```
+ * 
+ * ### Controlled mode:
+ * ```tsx
+ * const [value, setValue] = createSignal("");
+ * <Textarea value={value()} onChange={(val) => setValue(val)} />
+ * ```
+ * 
+ * ### With validation state:
+ * ```tsx
+ * <Textarea state="error" hint="This field is required" />
+ * ```
+ * 
+ * ## Supported Modes
+ * - **Controlled**: Use `value` prop with `onChange` callback for reactive updates
+ * - **Uncontrolled**: Use `defaultValue` prop and access current value via ref
+ * 
+ * ## Form Integration
  * When validation props (hint, state, label, altLabel) are provided, automatically creates
  * proper DaisyUI form-control markup with labels and hint messages.
+ * 
+ * ## Accessibility Features
+ * - Semantic textarea element with proper role
+ * - ARIA attributes for screen readers
+ * - Keyboard navigation support
+ * - Proper focus management
+ * - Hint messages linked via aria-describedby
  * 
  * @param {TextareaProps} props - The properties to configure the Textarea component.
  * @returns {JSX.Element} The rendered Textarea component.
@@ -122,12 +163,12 @@ export default function Textarea(props: TextareaProps): JSX.Element {
 
   // Determine if we should show hint message
   const shouldShowHint = createMemo(() => 
-    local.hint && local.hint !== ""
+    Boolean(local.hint)
   );
 
   // Determine if we should show labels
   const shouldShowLabels = createMemo(() => 
-    local.label || local.altLabel
+    Boolean(local.label || local.altLabel)
   );
 
   // Determine if we need form-control wrapper
@@ -147,8 +188,9 @@ export default function Textarea(props: TextareaProps): JSX.Element {
     }
 
     // Add official DaisyUI color variant classes (use effective variant)
-    if (effectiveVariant()) {
-      baseClasses[`textarea-${effectiveVariant()}`] = true;
+    const variant = effectiveVariant();
+    if (variant) {
+      baseClasses[`textarea-${variant}`] = true;
     }
 
     // Add official DaisyUI state modifier classes
@@ -182,20 +224,20 @@ export default function Textarea(props: TextareaProps): JSX.Element {
     local.onChange?.(newValue, event);
   };
 
-  // Simplified ref handling
+  // Optimized ref handling
   const handleRef = (el: HTMLTextAreaElement) => {
     if (typeof local.ref === "function") {
       local.ref(el);
     }
   };
 
-  // Determine aria-describedby for accessibility
+  // Determine aria-describedby for accessibility - optimized to avoid unnecessary concatenation
   const ariaDescribedBy = createMemo(() => {
     const existingDescribedBy = (textareaProps as any)["aria-describedby"];
-    if (shouldShowHint()) {
-      return existingDescribedBy ? `${existingDescribedBy} ${hintId}` : hintId;
+    if (!shouldShowHint()) {
+      return existingDescribedBy;
     }
-    return existingDescribedBy;
+    return existingDescribedBy ? `${existingDescribedBy} ${hintId}` : hintId;
   });
 
   // Create the textarea element
