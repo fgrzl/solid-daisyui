@@ -242,7 +242,7 @@ export default function Link(props: LinkProps): JSX.Element {
     href: href,
     target: target,
     rel: computedRel(),
-    role: role,
+    role: role as any, // Allow any role value for accessibility purposes
     tabindex: computedTabIndex,
     "aria-disabled": disabled ? "true" as const : undefined,
     "aria-label": ariaLabel,

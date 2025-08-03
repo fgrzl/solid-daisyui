@@ -137,18 +137,13 @@ export default function Tabs(props: TabsProps): JSX.Element {
         const target = child.getAttribute('data-tab-target');
         const disabled = child.getAttribute('data-tab-disabled') === 'true';
         const customClass = child.getAttribute('data-tab-class');
-        const content = child.textContent || child.innerHTML;
-        
         const tabId = child.getAttribute('data-tab-id');
-        const hasOnClick = child.getAttribute('data-tab-onclick') === 'true';
         const clickHandler = tabId ? tabClickHandlers.get(tabId) : undefined;
         
         return {
           label,
           content: child.innerHTML ? (() => {
-            let contentRef: HTMLDivElement | undefined;
-            return <div ref={el => {
-              contentRef = el;
+            return <div ref={(el: HTMLDivElement) => {
               if (el) el.innerHTML = child.innerHTML;
             }} />;
           })() : null,
@@ -331,14 +326,14 @@ export default function Tabs(props: TabsProps): JSX.Element {
                   tabindex={-1} // Navigation tabs aren't part of keyboard navigation sequence
                   data-tab-index={index()}
                   href={tabData.href}
-                  target={tabData.target}
+                  target={tabData.target || undefined}
                   disabled={tabData.disabled}
                   classList={{
                     ...getTabClasses(index(), tabData),
                     ...tabData.classList,
                   }}
                   onClick={() => handleTabClick(index())}
-                  onKeyDown={(e) => handleTabKeyDown(e, index())}
+                  onKeyDown={(e: KeyboardEvent) => handleTabKeyDown(e, index())}
                 >
                   {tabData.label}
                 </Link>
